@@ -1,5 +1,5 @@
 import {Body, Controller, Get, Put} from '@nestjs/common';
-import simpleGit, {BranchSummary, BranchSummaryBranch, SimpleGit, StatusResult} from 'simple-git';
+import simpleGit, {BranchSummary, BranchSummaryBranch, FileStatusResult, SimpleGit, StatusResult} from 'simple-git';
 import {Response} from "simple-git/typings/simple-git";
 
 const git: SimpleGit = simpleGit({
@@ -21,5 +21,10 @@ export class AppController {
     @Get('/status')
     public status(): Response<StatusResult> {
         return git.status()
+    }
+
+    @Put('/file/checkout')
+    public checkoutFile(@Body() file: FileStatusResult): Response<string> {
+        return git.checkout(file.path)
     }
 }

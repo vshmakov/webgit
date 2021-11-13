@@ -26,6 +26,17 @@ class LocalStorage<T> {
     }
 }
 
+async function request(path: string, method: 'get' | 'put', body: any = null): Promise<Response> {
+    return fetch(path, {
+        method: method,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: null !== body ? JSON.stringify(body) : null
+    })
+}
+
 class State {
     public status: StatusResult | null = null
     public branchSummary: BranchSummary | null = null
@@ -107,15 +118,13 @@ class State {
     }
 
     public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
-        await fetch('/branch/checkout', {
-            method: 'put',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(branch)
-        })
+        await request('/branch/checkout', 'put', branch)
         await this.loadBranches()
+    }
+
+    public async checkoutFile(file: FileStatusResult): Promise<void> {
+        await request('/file/checkout', 'put', file)
+        await this.loadStatus()
     }
 }
 
@@ -208,6 +217,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
                     <tr>
                         <th>File</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -225,8 +235,8 @@ const Files = observer(class extends React.Component<{ state: State }> {
             M = 'Modified',
         }
 
-        const index = file.index as keyof  typeof Status
-        const workingDir = file.working_dir as keyof  typeof Status
+        const index = file.index as keyof typeof Status
+        const workingDir = file.working_dir as keyof typeof Status
 
         return (
             <tr key={file.path}>
@@ -234,8 +244,14 @@ const Files = observer(class extends React.Component<{ state: State }> {
                     {file.path}
                 </td>
                 <td>
-                    {Status[index]}
-                    {Status[workingDir]}
+                    {Status[index]} {Status[workingDir]}
+                </td>
+                <td>
+                    <button
+                        type='button'
+                        onClick={() => this.props.state.checkoutFile(file)}>
+                        Decline
+                    </button>
                 </td>
             </tr>
         )
