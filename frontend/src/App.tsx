@@ -3,6 +3,7 @@ import './App.css';
 import {makeAutoObservable} from "mobx"
 import {observer} from "mobx-react"
 import {BranchSummary, BranchSummaryBranch, StatusResult} from "simple-git";
+import {FileStatusResult} from "simple-git/typings/response";
 
 class LocalStorage<T> {
     public constructor(private readonly key: string, private value: T) {
@@ -24,17 +25,6 @@ class LocalStorage<T> {
         this.value = value
     }
 }
-
-enum FileStatus {
-    not_added = 'not_added',
-    conflicted = 'conflicted',
-    created = 'created',
-    deleted = 'deleted',
-    modified = 'modified',
-    staged = 'staged',
-}
-
-type File = { name: string, statuses: FileStatus[] }
 
 class State {
     public status: StatusResult | null = null
@@ -62,28 +52,14 @@ class State {
         this.showHiddenBranches = !this.showHiddenBranches
     }
 
-    public get files(): File[] {
+    public get files(): FileStatusResult[] {
         const status = this.status
 
         if (null === status) {
             return []
         }
 
-        const files: { [key: string]: File } = {}
-        Object.values(FileStatus).forEach((fileStatus: FileStatus): void => {
-            status[fileStatus].forEach((file: string): void => {
-                if (!Object.keys(files).includes(file)) {
-                    files[file] = {
-                        name: file,
-                        statuses: []
-                    }
-                }
-
-                files[file].statuses.push(fileStatus)
-            })
-        })
-
-        return Object.values(files)
+        return status.files
     }
 
     public get sortedBranches(): BranchSummaryBranch[] {
@@ -242,14 +218,24 @@ const Files = observer(class extends React.Component<{ state: State }> {
         );
     }
 
-    private renderFile(file: File) {
+    private renderFile(file: FileStatusResult) {
+        enum Status {
+            A = 'Added',
+            D = 'Deleted',
+            M = 'Modified',
+        }
+
+        const index = file.index as keyof  typeof Status
+        const workingDir = file.working_dir as keyof  typeof Status
+
         return (
-            <tr key={file.name}>
+            <tr key={file.path}>
                 <td>
-                    {file.name}
+                    {file.path}
                 </td>
                 <td>
-                    {file.statuses.join(', ')}
+                    {Status[index]}
+                    {Status[workingDir]}
                 </td>
             </tr>
         )
