@@ -25,6 +25,17 @@ class LocalStorage<T> {
     }
 }
 
+enum FileStatus {
+    not_added = 'not_added',
+    conflicted = 'conflicted',
+    created = 'created',
+    deleted = 'deleted',
+    modified = 'modified',
+    staged = 'staged',
+}
+
+type File = { name: string, statuses: FileStatus[] }
+
 class State {
     public status: StatusResult | null = null
     public branchSummary: BranchSummary | null = null
@@ -51,11 +62,28 @@ class State {
         this.showHiddenBranches = !this.showHiddenBranches
     }
 
-    public get files(): string[] {
-        return [
-            'file1',
-            'file2'
-        ]
+    public get files(): File[] {
+        const status = this.status
+
+        if (null === status) {
+            return []
+        }
+
+        const files: { [key: string]: File } = {}
+        Object.values(FileStatus).forEach((fileStatus: FileStatus): void => {
+            status[fileStatus].forEach((file: string): void => {
+                if (!Object.keys(files).includes(file)) {
+                    files[file] = {
+                        name: file,
+                        statuses: []
+                    }
+                }
+
+                files[file].statuses.push(fileStatus)
+            })
+        })
+
+        return Object.values(files)
     }
 
     public get sortedBranches(): BranchSummaryBranch[] {
@@ -94,7 +122,7 @@ class State {
     public async loadBranches(): Promise<void> {
         const loadStatus = this.loadStatus()
         const response = await fetch('/branches')
-        await  loadStatus
+        await loadStatus
         this.setBranchSummary(await response.json());
     }
 
@@ -203,7 +231,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
                     <thead>
                     <tr>
                         <th>File</th>
-                        <th>Actions</th>
+                        <th>Status</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -214,13 +242,15 @@ const Files = observer(class extends React.Component<{ state: State }> {
         );
     }
 
-    private renderFile(file: string) {
+    private renderFile(file: File) {
         return (
-            <tr key={file}>
+            <tr key={file.name}>
                 <td>
-                    {file}
+                    {file.name}
                 </td>
-                <td></td>
+                <td>
+                    {file.statuses.join(', ')}
+                </td>
             </tr>
         )
     }
