@@ -126,6 +126,11 @@ class State {
         await request('/file/checkout', 'put', file)
         await this.loadStatus()
     }
+
+    public async mergeTrackingBranch(): Promise<void> {
+        await request('/branch/merge-tracking', 'put')
+        await this.loadBranches()
+    }
 }
 
 const state = new State()
@@ -173,12 +178,34 @@ const Branches = observer(class extends React.Component<{ state: State }> {
                     {branch.name} {this.getTracking(branch)}
                 </td>
                 <td>
+                    {this.getMergeTrackingButton(branch)}
                     <button type='button' onClick={(): void => state.toggleHideBranch(branch.name)}>
                         {!state.hiddenBranchesStorage.getValue().includes(branch.name) ? 'Hide' : 'Show'}
                     </button>
                 </td>
             </tr>
         )
+    }
+
+    private getMergeTrackingButton(branch: BranchSummaryBranch) {
+        if (!this.canMergeTrackingBranch(branch)) {
+            return null
+        }
+
+        return (
+            <button type='button' onClick={() => state.mergeTrackingBranch(branch.name)}>
+                Merge tracking
+            </button>
+        )
+    }
+
+    private canMergeTrackingBranch(branch: BranchSummaryBranch): boolean {
+        const status = this.props.state.status
+
+        return null !== status
+                        && branch.name === status.current
+            && null !== status.tracking
+            && 0 !== status.ahead
     }
 
     private getTracking(branch: BranchSummaryBranch): string {
