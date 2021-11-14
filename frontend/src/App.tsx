@@ -60,9 +60,19 @@ class Flag {
     }
 }
 
+async function getStatus(): Promise<StatusResult> {
+    const response = await request(Method.Get, '/status')
+
+    return await response.json();
+}
+
+async function getBranchSummary(): Promise<BranchSummary> {
+    const response = await request(Method.Get, '/branches')
+
+    return await response.json();
+}
+
 class State {
-    public status: StatusResult | null = null
-    public branchSummary: BranchSummary | null = null
     public showHiddenBranches: Flag = new Flag(false)
     public stageAllFilesBeforeCommit: Flag = new Flag(true)
     public hiddenBranchesStorage: LocalStorage<string[]> = new LocalStorage<string[]>('hidden-branches-v2', [])
@@ -70,7 +80,10 @@ class State {
     public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>('precommit-command-v1', '')
     public newBranchName: string = ''
 
-    public constructor() {
+    public constructor(
+        public status: StatusResult,
+        public branchSummary: BranchSummary,
+    ) {
         makeAutoObservable(this)
     }
 
@@ -121,8 +134,7 @@ class State {
     }
 
     public async loadStatus(): Promise<void> {
-        const response = await request(Method.Get, '/status')
-        this.setStatus(await response.json());
+        this.setStatus(await getStatus())
     }
 
     private setStatus(status: StatusResult): void {
@@ -131,9 +143,9 @@ class State {
 
     public async loadBranches(): Promise<void> {
         const loadStatus = this.loadStatus()
-        const response = await request(Method.Get, '/branches')
+        const branchSummary = await getBranchSummary()
         await loadStatus
-        this.setBranchSummary(await response.json());
+        this.setBranchSummary(branchSummary)
     }
 
     private setBranchSummary(branchSummary: any): void {
@@ -191,8 +203,6 @@ class State {
         this.newBranchName = ''
     }
 }
-
-const state = new State()
 
 interface ToggleProps {
     label: string
@@ -279,6 +289,8 @@ const Branches = observer(class extends React.Component<{ state: State }> {
     }
 
     private renderBranch(branch: BranchSummaryBranch): ReactElement {
+        const {state} = this.props
+
         return (
             <tr key={branch.name}>
                 <td>
@@ -308,9 +320,11 @@ const Branches = observer(class extends React.Component<{ state: State }> {
             return null
         }
 
+        const {state} = this.props
+
         return (
             <button type='button' onClick={() => withAudio(state.mergeBranchIntoCurrent(branch))}>
-                Merge into {this.props.state.status?.current}
+                Merge into {state.status?.current}
             </button>
         )
     }
@@ -319,6 +333,8 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         if (!this.canPush(branch)) {
             return null
         }
+
+        const {state} = this.props
 
         return (
             <button type='button' onClick={() => withAudio(state.push())}>
@@ -345,6 +361,8 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         if (!this.canMergeTrackingBranch(branch)) {
             return null
         }
+
+        const {state} = this.props
 
         return (
             <button type='button' onClick={() => withAudio(state.mergeTrackingBranch())}>
@@ -485,20 +503,38 @@ const Commit = observer(class extends React.Component<{ state: State }> {
     }
 })
 
-function App(): ReactElement {
-    useEffect((): void => {
-        state.loadBranches()
-        state.fetch()
-    })
-    useEffect(() => {
-        const handle = setInterval((): void => {
-            state.fetch()
-        }, 2 * 60 * 1000)
+const initialState = new class {
+    public state: State | null = null
 
-        return (): void => {
-            clearInterval(handle)
-        }
+    public constructor() {
+        makeAutoObservable(this)
+    }
+
+    public async loadState(): Promise<void> {
+        const status = getStatus()
+        const branchSummary = getBranchSummary()
+        this.setState(new State(await status, await branchSummary))
+    }
+
+    private setState(state: State): void {
+        this.state = state
+    }
+}()
+
+const App = observer((): ReactElement => {
+    useEffect((): void => {
+        initialState.loadState()
     })
+
+    const {state} = initialState
+
+    if (null === state) {
+        return (
+            <div>
+                Loading...
+            </div>
+        )
+    }
 
     return (
         <div>
@@ -507,7 +543,7 @@ function App(): ReactElement {
             <Commit state={state}/>
             <Files state={state}/>
         </div>
-    );
-}
+    )
+})
 
 export default App;
