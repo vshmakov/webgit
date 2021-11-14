@@ -72,6 +72,10 @@ async function getBranchSummary(): Promise<BranchSummary> {
     return await response.json();
 }
 
+async function fetchRemote(): Promise<void> {
+    await request(Method.Put, '/fetch')
+}
+
 class State {
     public showHiddenBranches: Flag = new Flag(false)
     public stageAllFilesBeforeCommit: Flag = new Flag(true)
@@ -136,11 +140,6 @@ class State {
 
     private setBranchSummary(branchSummary: any): void {
         this.branchSummary = branchSummary
-    }
-
-    public async fetch(): Promise<void> {
-        await request(Method.Put, '/fetch')
-        await this.loadStatus()
     }
 
     public async commit(): Promise<void> {
@@ -492,6 +491,7 @@ const initialState = new class {
     }
 
     public async loadState(): Promise<void> {
+        await  fetchRemote()
         const status = getStatus()
         const branchSummary = getBranchSummary()
         this.setState(new State(await status, await branchSummary))
