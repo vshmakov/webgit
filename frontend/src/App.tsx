@@ -230,6 +230,18 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         return (
             <div>
                 <h2>Branches</h2>
+                <Toggle label='Create'>
+                    <form onSubmit={this.submitHandler.bind(this)}>
+                        <input
+                            type="text"
+                            value={state.newBranchName}
+                            onChange={(event) => state.newBranchName = event.target.value}
+                            required={true}/>
+                        <button type="submit">
+                            Create
+                        </button>
+                    </form>
+                </Toggle>
                 <form>
                     <label key={JSON.stringify(state)}>
                         <input
@@ -251,18 +263,6 @@ const Branches = observer(class extends React.Component<{ state: State }> {
                         </tbody>
                     </table>
                 </form>
-                <Toggle label='Create'>
-                    <form onSubmit={this.submitHandler.bind(this)}>
-                        <input
-                            type="text"
-                            value={state.newBranchName}
-                            onChange={(event) => state.newBranchName = event.target.value}
-                            required={true}/>
-                        <button type="submit">
-                            Create
-                        </button>
-                    </form>
-                </Toggle>
             </div>
         )
             ;
