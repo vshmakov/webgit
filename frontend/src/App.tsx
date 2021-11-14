@@ -37,11 +37,24 @@ async function request(path: string, method: 'get' | 'put', body: any = null): P
     })
 }
 
+class Flag {
+    public constructor(public isChecked: boolean) {
+        makeAutoObservable(this)
+    }
+
+    public toggle(): void {
+        this.isChecked = !this.isChecked
+    }
+}
+
 class State {
     public status: StatusResult | null = null
     public branchSummary: BranchSummary | null = null
-    public showHiddenBranches: boolean = false
+    public showHiddenBranches: Flag = new Flag(false)
+    public stageAllFilesBeforeCommit: Flag = new Flag(true)
     public hiddenBranchesStorage: LocalStorage<string[]> = new LocalStorage<string[]>('hidden-branches-v2', [])
+    public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>('commit-message-v1', '')
+
 
     public constructor() {
         makeAutoObservable(this)
@@ -59,10 +72,6 @@ class State {
         this.hiddenBranchesStorage.setValue(hiddenBranches)
     }
 
-    public toggleShowHiddenBranches(): void {
-        this.showHiddenBranches = !this.showHiddenBranches
-    }
-
     public get files(): FileStatusResult[] {
         const status = this.status
 
@@ -77,7 +86,7 @@ class State {
         const hiddenBranches = this.hiddenBranchesStorage.getValue()
 
         return this.localBranches
-            .filter((branch: BranchSummaryBranch): boolean => this.showHiddenBranches || !hiddenBranches.includes(branch.name))
+            .filter((branch: BranchSummaryBranch): boolean => this.showHiddenBranches.isChecked || !hiddenBranches.includes(branch.name))
             .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => branch1.name.toLowerCase() < branch2.name.toLowerCase() ? -1 : 1)
     }
 
@@ -113,13 +122,21 @@ class State {
         this.setBranchSummary(await response.json());
     }
 
+    private setBranchSummary(branchSummary: any): void {
+        this.branchSummary = branchSummary
+    }
+
     public async fetch(): Promise<void> {
         await request('/fetch', 'put')
         await this.loadStatus()
     }
 
-    private setBranchSummary(branchSummary: any): void {
-        this.branchSummary = branchSummary
+    public async commit(): Promise<void> {
+        await request('/commit', 'put', {
+            message: this.commitMessageStorage.getValue(),
+            stage: this.stageAllFilesBeforeCommit.isChecked,
+        })
+        await this.loadStatus()
     }
 
     public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
@@ -156,11 +173,12 @@ const Branches = observer(class extends React.Component<{ state: State }> {
 
         return (
             <form>
+                <h2>Branches</h2>
                 <label key={JSON.stringify(state)}>
                     <input
                         type="checkbox"
-                        checked={state.showHiddenBranches}
-                        onChange={(): void => state.toggleShowHiddenBranches()}/>
+                        checked={state.showHiddenBranches.isChecked}
+                        onChange={(): void => state.showHiddenBranches.toggle()}/>
                     Show hidden ({state.hiddenBranches.length})
                 </label>
                 <table>
@@ -176,7 +194,8 @@ const Branches = observer(class extends React.Component<{ state: State }> {
                     </tbody>
                 </table>
             </form>
-        );
+        )
+            ;
     }
 
     private renderBranch(branch: BranchSummaryBranch) {
@@ -292,7 +311,8 @@ const Files = observer(class extends React.Component<{ state: State }> {
         const {state} = this.props;
 
         return (
-            <form>
+            <div>
+                <h2>Files</h2>
                 <table>
                     <thead>
                     <tr>
@@ -305,8 +325,9 @@ const Files = observer(class extends React.Component<{ state: State }> {
                     {state.files.map(this.renderFile.bind(this))}
                     </tbody>
                 </table>
-            </form>
-        );
+            </div>
+        )
+            ;
     }
 
     private renderFile(file: FileStatusResult) {
@@ -339,6 +360,39 @@ const Files = observer(class extends React.Component<{ state: State }> {
     }
 })
 
+const Commit = observer(class extends React.Component<{ state: State }> {
+    public render() {
+        const {state} = this.props;
+
+        return (
+            <form onSubmit={this.onSubmit.bind(this)}>
+                <h2>Commit</h2>
+                <input
+                    type="text"
+                    value={state.commitMessageStorage.getValue()}
+                    onChange={(event) => state.commitMessageStorage.setValue(event.target.value)}
+                    required={true}/>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={state.stageAllFilesBeforeCommit.isChecked}
+                        onChange={(): void => state.stageAllFilesBeforeCommit.toggle()}/>
+                    Stage all files
+                </label>
+                <button type='submit'>
+                    Commit
+                </button>
+            </form>
+        );
+    }
+
+    private onSubmit(): boolean {
+        this.props.state.commit()
+
+        return false
+    }
+})
+
 function App() {
     useEffect((): void => {
         state.loadBranches()
@@ -356,9 +410,8 @@ function App() {
     return (
         <div>
             <h1>Repository</h1>
-            <h2>Branches</h2>
             <Branches state={state}/>
-            <h2>Files</h2>
+            <Commit state={state}/>
             <Files state={state}/>
         </div>
     );

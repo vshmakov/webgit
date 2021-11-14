@@ -54,4 +54,13 @@ export class AppController {
     public async fetch(): Promise<void> {
         await git.fetch()
     }
+
+    @Put('/commit')
+    public async commit(@Body() {message, stage}: { message: string, stage: boolean }): Promise<void> {
+        if (stage) {
+            await git.add('.')
+        }
+
+        await git.commit(message)
+    }
 }
