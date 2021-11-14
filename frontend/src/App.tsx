@@ -494,6 +494,7 @@ const Repository = observer(({state}: { state: State }): ReactElement => (
         </div>
     )
 )
+
 const initialState = new class {
     public state: State | null = null
 
