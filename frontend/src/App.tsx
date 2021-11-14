@@ -99,16 +99,6 @@ class State {
         this.hiddenBranchesStorage.setValue(hiddenBranches)
     }
 
-    public get files(): FileStatusResult[] {
-        const status = this.status
-
-        if (null === status) {
-            return []
-        }
-
-        return status.files
-    }
-
     public get sortedBranches(): BranchSummaryBranch[] {
         const hiddenBranches = this.hiddenBranchesStorage.getValue()
 
@@ -125,10 +115,6 @@ class State {
     }
 
     private get localBranches(): BranchSummaryBranch[] {
-        if (null === this.branchSummary) {
-            return []
-        }
-
         return Object.values(this.branchSummary.branches)
             .filter((branch: BranchSummaryBranch): boolean => !branch.name.startsWith('remotes/origin/'))
     }
@@ -344,11 +330,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
     }
 
     private canPush(branch: BranchSummaryBranch): boolean {
-        const status = this.props.state.status
-
-        if (null === status) {
-            return false
-        }
+        const {status} = this.props.state
 
         const hasAheadCommits = null !== status.tracking
             && 0 !== status.ahead
@@ -372,22 +354,21 @@ const Branches = observer(class extends React.Component<{ state: State }> {
     }
 
     private canMergeTrackingBranch(branch: BranchSummaryBranch): boolean {
-        const status = this.props.state.status
+        const {status} = this.props.state
 
-        return null !== status
-            && this.isCurrentBranch(branch)
+        return this.isCurrentBranch(branch)
             && null !== status.tracking
             && 0 !== status.behind
     }
 
     private isCurrentBranch(branch: BranchSummaryBranch): boolean {
-        return branch.name === this.props.state.status?.current
+        return branch.name === this.props.state.status.current
     }
 
     private getTracking(branch: BranchSummaryBranch): string {
-        const status = this.props.state.status
+        const {status} = this.props.state
 
-        if (null === status || !this.isCurrentBranch(branch)) {
+        if (!this.isCurrentBranch(branch)) {
             return ''
         }
 
@@ -425,7 +406,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
                     </tr>
                     </thead>
                     <tbody>
-                    {state.files.map(this.renderFile.bind(this))}
+                    {state.status.files.map(this.renderFile.bind(this))}
                     </tbody>
                 </table>
             </div>
