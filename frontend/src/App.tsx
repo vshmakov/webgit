@@ -1,4 +1,4 @@
-import React, {FormEvent, ReactElement, useEffect} from 'react';
+import React, {FormEvent, ReactElement} from 'react';
 import './App.css';
 import {makeAutoObservable} from "mobx"
 import {observer} from "mobx-react"
@@ -72,9 +72,6 @@ async function getBranchSummary(): Promise<BranchSummary> {
     return await response.json();
 }
 
-async function fetchRemote(): Promise<void> {
-    await request(Method.Put, '/fetch')
-}
 
 class State {
     public showHiddenBranches: Flag = new Flag(false)
@@ -186,6 +183,11 @@ class State {
 
     private cleanNewBranchName() {
         this.newBranchName = ''
+    }
+
+    async fetch(): Promise<void> {
+        await request(Method.Put, '/fetch')
+        await this.loadStatus()
     }
 }
 
@@ -483,6 +485,15 @@ const Commit = observer(class extends React.Component<{ state: State }> {
     }
 })
 
+const Repository = observer(({state}: { state: State }): ReactElement => (
+        <div>
+            <h1>Repository</h1>
+            <button onClick={() => withAudio(state.fetch())}>
+                Fetch
+            </button>
+        </div>
+    )
+)
 const initialState = new class {
     public state: State | null = null
 
@@ -491,7 +502,6 @@ const initialState = new class {
     }
 
     public async loadState(): Promise<void> {
-        await  fetchRemote()
         const status = getStatus()
         const branchSummary = getBranchSummary()
         this.setState(new State(await status, await branchSummary))
@@ -502,11 +512,9 @@ const initialState = new class {
     }
 }()
 
-const App = observer((): ReactElement => {
-    useEffect((): void => {
-        initialState.loadState()
-    })
+initialState.loadState()
 
+const App = observer((): ReactElement => {
     const {state} = initialState
 
     if (null === state) {
@@ -517,9 +525,10 @@ const App = observer((): ReactElement => {
         )
     }
 
+
     return (
         <div>
-            <h1>Repository</h1>
+            <Repository state={state}/>
             <Branches state={state}/>
             <Commit state={state}/>
             <Files state={state}/>
