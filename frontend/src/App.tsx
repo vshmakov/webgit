@@ -294,11 +294,23 @@ const Branches = observer(class extends React.Component<{ state: State }> {
                     {this.getMergeIntoCurrentButton(branch)}
                     {this.getMergeTrackingButton(branch)}
                     {this.getPushButton(branch)}
-                    <button type='button' onClick={(): void => state.toggleHideBranch(branch.name)}>
-                        {!state.hiddenBranchesStorage.getValue().includes(branch.name) ? 'Hide' : 'Show'}
-                    </button>
+                    {this.getButton(branch)}
                 </td>
             </tr>
+        )
+    }
+
+    private getButton(branch: BranchSummaryBranch): ReactElement | null {
+        const {state} = this.props
+
+        if (!state.showHiddenBranches.isChecked) {
+            return null
+        }
+
+        return (
+            <button type='button' onClick={(): void => state.toggleHideBranch(branch.name)}>
+                {!state.hiddenBranchesStorage.getValue().includes(branch.name) ? 'Hide' : 'Show'}
+            </button>
         )
     }
 
