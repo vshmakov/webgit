@@ -67,7 +67,9 @@ export class AppController {
         command
     }: { message: string, stage: boolean, command: string }): Promise<void> {
         if (command) {
-            await this.execCommand(command)
+            if (!await this.execCommand(command)) {
+                return
+            }
         }
 
         if (stage) {
@@ -77,16 +79,19 @@ export class AppController {
         git.commit(message)
     }
 
-    private async execCommand(command: string): Promise<void> {
-        return new Promise<void>((resolve): void => {
+    private async execCommand(command: string): Promise<boolean> {
+        return new Promise<boolean>((resolve): void => {
             exec(command, (error: ExecException | null, stdout: string, stderr: string): void => {
                 if (null !== error) {
-                    throw error
+                    console.log(error)
+                    resolve(false)
+
+                    return
                 }
 
                 console.log('stdout:', stdout)
                 console.log('stderr:', stderr)
-                resolve()
+                resolve(true)
             })
         })
     }
