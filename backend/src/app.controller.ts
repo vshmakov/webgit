@@ -78,15 +78,15 @@ export class AppController {
     }
 
     private async execCommand(command: string): Promise<void> {
-        return  new Promise<void>((resolve):void =>{
+        return new Promise<void>((resolve): void => {
             exec(command, (error: ExecException | null, stdout: string, stderr: string): void => {
-                if (null==error){
+                if (null !== error) {
                     throw error
                 }
 
                 console.log('stdout:', stdout)
                 console.log('stderr:', stderr)
-resolve()
+                resolve()
             })
         })
     }
