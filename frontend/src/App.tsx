@@ -7,7 +7,9 @@ import {FileStatusResult} from "simple-git/typings/response";
 
 async function withAudio(promice: Promise<void>): Promise<void> {
     await promice
-    await new Audio('/audio.mp3').play()
+    const audio = new Audio('/audio.mp3')
+    audio.volume = 0.5
+    await audio.play()
 }
 
 class LocalStorage<T> {
