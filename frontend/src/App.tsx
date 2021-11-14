@@ -55,6 +55,7 @@ class State {
     public hiddenBranchesStorage: LocalStorage<string[]> = new LocalStorage<string[]>('hidden-branches-v2', [])
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>('commit-message-v1', '')
     public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>('precommit-command-v1', '')
+    public newBranchName: string = ''
 
     public constructor() {
         makeAutoObservable(this)
@@ -164,6 +165,14 @@ class State {
         await request('/branch/push', 'put')
         await this.loadStatus()
     }
+
+    public async createBranch(): Promise<void> {
+        await request('/branch/create', 'put', {
+            name: this.newBranchName
+        })
+        await this.loadBranches()
+        this.newBranchName = ''
+    }
 }
 
 const state = new State()
@@ -173,30 +182,47 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         const {state} = this.props;
 
         return (
-            <form>
+            <div>
                 <h2>Branches</h2>
-                <label key={JSON.stringify(state)}>
+                <form>
+                    <label key={JSON.stringify(state)}>
+                        <input
+                            type="checkbox"
+                            checked={state.showHiddenBranches.isChecked}
+                            onChange={(): void => state.showHiddenBranches.toggle()}/>
+                        Show hidden ({state.hiddenBranches.length})
+                    </label>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Branch</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {state.sortedBranches.map(this.renderBranch.bind(this))}
+                        </tbody>
+                    </table>
+                </form>
+                <form onSubmit={this.submitHandler.bind(this)}>
                     <input
-                        type="checkbox"
-                        checked={state.showHiddenBranches.isChecked}
-                        onChange={(): void => state.showHiddenBranches.toggle()}/>
-                    Show hidden ({state.hiddenBranches.length})
-                </label>
-                <table>
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Branch</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {state.sortedBranches.map(this.renderBranch.bind(this))}
-                    </tbody>
-                </table>
-            </form>
+                        type="text"
+                        value={state.newBranchName}
+                        onChange={(event) => state.newBranchName = event.target.value}
+                        required={true}/>
+                    <button type="submit">
+                        Create
+                    </button>
+                </form>
+            </div>
         )
             ;
+    }
+
+    private submitHandler(event: FormEvent<HTMLFormElement>): void {
+        event.preventDefault()
+        this.props.state.createBranch()
     }
 
     private renderBranch(branch: BranchSummaryBranch) {

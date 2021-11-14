@@ -45,6 +45,11 @@ export class AppController {
         await git.merge([branch.name])
     }
 
+    @Put('/branch/create')
+    public async createBranch(@Body() {name}: { name: string }): Promise<void> {
+        await git.checkoutLocalBranch(name)
+    }
+
     @Get('/status')
     public async status(): Promise<StatusResult> {
         return git.status()
