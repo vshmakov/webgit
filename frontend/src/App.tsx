@@ -129,10 +129,10 @@ class State {
     }
 
     public async loadBranches(): Promise<void> {
-        const loadStatus = this.loadStatus()
-        const branchSummary = await getBranchSummary()
-        await loadStatus
-        this.setBranchSummary(branchSummary)
+        const status = this.loadStatus()
+        const branchSummary = getBranchSummary()
+        this.setBranchSummary(await branchSummary)
+        await status
     }
 
     private setBranchSummary(branchSummary: any): void {
@@ -524,7 +524,6 @@ const App = observer((): ReactElement => {
             </div>
         )
     }
-
 
     return (
         <div>
