@@ -33,7 +33,7 @@ class LocalStorage<T> {
     }
 }
 
-async function request(path: string, method: 'get' | 'put', body: any = null): Promise<Response> {
+async function request(path: string, method: 'get' | 'put' | 'post', body: any = null): Promise<Response> {
     return fetch(path, {
         method: method,
         headers: {
@@ -115,7 +115,7 @@ class State {
     }
 
     public async loadStatus(): Promise<void> {
-        const response = await fetch('/status')
+        const response = await request('/status', 'get')
         this.setStatus(await response.json());
     }
 
@@ -125,7 +125,7 @@ class State {
 
     public async loadBranches(): Promise<void> {
         const loadStatus = this.loadStatus()
-        const response = await fetch('/branches')
+        const response = await request('/branches', 'get')
         await loadStatus
         this.setBranchSummary(await response.json());
     }
@@ -140,7 +140,7 @@ class State {
     }
 
     public async commit(): Promise<void> {
-        await request('/commit', 'put', {
+        await request('/commit', 'post', {
             message: this.commitMessageStorage.getValue(),
             stage: this.stageAllFilesBeforeCommit.isChecked,
             command: this.precommitCommandStorage.getValue(),
@@ -174,7 +174,7 @@ class State {
     }
 
     public async createBranch(): Promise<void> {
-        await request('/branch/create', 'put', {
+        await request('/branch/create', 'post', {
             name: this.newBranchName
         })
         await this.loadBranches()

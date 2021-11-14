@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Put} from '@nestjs/common';
+import {Body, Controller, Get, Post, Put} from '@nestjs/common';
 import simpleGit, {BranchSummary, BranchSummaryBranch, FileStatusResult, SimpleGit, StatusResult} from 'simple-git';
 import {Response} from "simple-git/typings/simple-git";
 import {exec, ExecException} from 'child_process'
@@ -46,7 +46,7 @@ export class AppController {
         await git.merge([branch.name])
     }
 
-    @Put('/branch/create')
+    @Post('/branch/create')
     public async createBranch(@Body() {name}: { name: string }): Promise<void> {
         await git.checkoutLocalBranch(name)
     }
@@ -66,7 +66,7 @@ export class AppController {
         await git.fetch()
     }
 
-    @Put('/commit')
+    @Post('/commit')
     public async commit(@Body() {
         message,
         stage,
