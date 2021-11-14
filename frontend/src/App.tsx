@@ -178,6 +178,10 @@ class State {
             name: this.newBranchName
         })
         await this.loadBranches()
+        this.cleanNewBranchName();
+    }
+
+    private cleanNewBranchName() {
         this.newBranchName = ''
     }
 }
