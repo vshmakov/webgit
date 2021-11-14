@@ -82,7 +82,7 @@ class State {
 
     public constructor(
         public status: StatusResult,
-        public branchSummary: BranchSummary,
+        private branchSummary: BranchSummary,
     ) {
         makeAutoObservable(this)
     }
