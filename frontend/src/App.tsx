@@ -5,6 +5,11 @@ import {observer} from "mobx-react"
 import {BranchSummary, BranchSummaryBranch, StatusResult} from "simple-git";
 import {FileStatusResult} from "simple-git/typings/response";
 
+async function withAudio(promice: Promise<void>): Promise<void> {
+    await promice
+    await new Audio('/audio.mp3').play()
+}
+
 class LocalStorage<T> {
     public constructor(private readonly key: string, private value: T) {
         const localStorageValue = localStorage.getItem(this.key)
@@ -233,7 +238,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
                         type='radio'
                         name='current-branch'
                         checked={this.isCurrentBranch(branch)}
-                        onChange={() => this.props.state.checkoutBranch(branch)}/>
+                        onChange={() => withAudio(this.props.state.checkoutBranch(branch))}/>
                 </td>
                 <td>
                     {branch.name} {this.getTracking(branch)}
@@ -256,7 +261,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         }
 
         return (
-            <button type='button' onClick={() => state.mergeBranchIntoCurrent(branch)}>
+            <button type='button' onClick={() => withAudio(state.mergeBranchIntoCurrent(branch))}>
                 Merge into {this.props.state.status?.current}
             </button>
         )
@@ -268,7 +273,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         }
 
         return (
-            <button type='button' onClick={() => state.push()}>
+            <button type='button' onClick={() => withAudio(state.push())}>
                 Push
             </button>
         )
@@ -294,7 +299,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         }
 
         return (
-            <button type='button' onClick={() => state.mergeTrackingBranch()}>
+            <button type='button' onClick={() => withAudio(state.mergeTrackingBranch())}>
                 Merge tracking
             </button>
         )
@@ -383,7 +388,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
                 <td>
                     <button
                         type='button'
-                        onClick={() => this.props.state.checkoutFile(file)}>
+                        onClick={() => withAudio(this.props.state.checkoutFile(file))}>
                         Decline
                     </button>
                 </td>
@@ -424,7 +429,7 @@ const Commit = observer(class extends React.Component<{ state: State }> {
 
     private submitHandler(event: FormEvent<HTMLFormElement>): void {
         event.preventDefault()
-        this.props.state.commit()
+        withAudio(this.props.state.commit())
     }
 })
 
