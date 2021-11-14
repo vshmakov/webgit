@@ -251,10 +251,15 @@ const Branches = observer(class extends React.Component<{ state: State }> {
     private canPush(branch: BranchSummaryBranch): boolean {
         const status = this.props.state.status
 
-        return null !== status
-            && this.isCurrentBranch(branch)
-            && null !== status.tracking
+        if (null === status) {
+            return false
+        }
+
+        const hasAheadCommits = null !== status.tracking
             && 0 !== status.ahead
+
+        return this.isCurrentBranch(branch)
+            && (null === status.tracking || hasAheadCommits)
     }
 
     private getMergeTrackingButton(branch: BranchSummaryBranch) {
