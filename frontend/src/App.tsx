@@ -478,6 +478,7 @@ const Commit = observer(class extends React.Component<{ state: State }> {
 function App() {
     useEffect((): void => {
         state.loadBranches()
+        state.fetch()
     })
     useEffect(() => {
         const handle = setInterval((): void => {
