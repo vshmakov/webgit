@@ -135,7 +135,7 @@ class State {
         await status
     }
 
-    private setBranchSummary(branchSummary: any): void {
+    private setBranchSummary(branchSummary: BranchSummary): void {
         this.branchSummary = branchSummary
     }
 
