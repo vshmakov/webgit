@@ -33,7 +33,13 @@ class LocalStorage<T> {
     }
 }
 
-async function request(path: string, method: 'get' | 'put' | 'post', body: any = null): Promise<Response> {
+enum Method {
+    Get = 'get',
+    Post = 'post',
+    Put = 'put',
+}
+
+async function request(method: Method, path: string, body: any = null): Promise<Response> {
     return fetch(path, {
         method: method,
         headers: {
@@ -115,7 +121,7 @@ class State {
     }
 
     public async loadStatus(): Promise<void> {
-        const response = await request('/status', 'get')
+        const response = await request(Method.Get, '/status')
         this.setStatus(await response.json());
     }
 
@@ -125,7 +131,7 @@ class State {
 
     public async loadBranches(): Promise<void> {
         const loadStatus = this.loadStatus()
-        const response = await request('/branches', 'get')
+        const response = await request(Method.Get, '/branches')
         await loadStatus
         this.setBranchSummary(await response.json());
     }
@@ -135,12 +141,12 @@ class State {
     }
 
     public async fetch(): Promise<void> {
-        await request('/fetch', 'put')
+        await request(Method.Put, '/fetch')
         await this.loadStatus()
     }
 
     public async commit(): Promise<void> {
-        await request('/commit', 'post', {
+        await request(Method.Post, '/commit', {
             message: this.commitMessageStorage.getValue(),
             stage: this.stageAllFilesBeforeCommit.isChecked,
             command: this.precommitCommandStorage.getValue(),
@@ -149,32 +155,32 @@ class State {
     }
 
     public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
-        await request('/branch/checkout', 'put', branch)
+        await request(Method.Put, '/branch/checkout', branch)
         await this.loadStatus()
     }
 
     public async mergeBranchIntoCurrent(branch: BranchSummaryBranch): Promise<void> {
-        await request('/branch/merge-into-current', 'put', branch)
+        await request(Method.Put, '/branch/merge-into-current', branch)
         await this.loadStatus()
     }
 
     public async checkoutFile(file: FileStatusResult): Promise<void> {
-        await request('/file/checkout', 'put', file)
+        await request(Method.Put, '/file/checkout', file)
         await this.loadStatus()
     }
 
     public async mergeTrackingBranch(): Promise<void> {
-        await request('/branch/merge-tracking', 'put')
+        await request(Method.Put, '/branch/merge-tracking')
         await this.loadStatus()
     }
 
     public async push(): Promise<void> {
-        await request('/branch/push', 'put')
+        await request(Method.Put, '/branch/push')
         await this.loadStatus()
     }
 
     public async createBranch(): Promise<void> {
-        await request('/branch/create', 'post', {
+        await request(Method.Post, '/branch/create', {
             name: this.newBranchName
         })
         await this.loadBranches()
