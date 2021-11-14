@@ -54,7 +54,7 @@ class State {
     public stageAllFilesBeforeCommit: Flag = new Flag(true)
     public hiddenBranchesStorage: LocalStorage<string[]> = new LocalStorage<string[]>('hidden-branches-v2', [])
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>('commit-message-v1', '')
-
+    public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>('precommit-command-v1', '')
 
     public constructor() {
         makeAutoObservable(this)
@@ -135,6 +135,7 @@ class State {
         await request('/commit', 'put', {
             message: this.commitMessageStorage.getValue(),
             stage: this.stageAllFilesBeforeCommit.isChecked,
+            command: this.precommitCommandStorage.getValue(),
         })
         await this.loadStatus()
     }
@@ -374,6 +375,10 @@ const Commit = observer(class extends React.Component<{ state: State }> {
                         onChange={(): void => state.stageAllFilesBeforeCommit.toggle()}/>
                     Stage all files
                 </label>
+                <input
+                    type="text"
+                    value={state.precommitCommandStorage.getValue()}
+                    onChange={(event) => state.precommitCommandStorage.setValue(event.target.value)}/>
                 <input
                     type="text"
                     value={state.commitMessageStorage.getValue()}
