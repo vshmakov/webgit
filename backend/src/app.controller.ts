@@ -1,22 +1,10 @@
 import {Body, Controller, Get, Put} from '@nestjs/common';
-import simpleGit, {
-    BranchSummary,
-    BranchSummaryBranch,
-    FileStatusResult,
-    MergeResult,
-    SimpleGit,
-    StatusResult
-} from 'simple-git';
+import simpleGit, {BranchSummary, BranchSummaryBranch, FileStatusResult, SimpleGit, StatusResult} from 'simple-git';
 import {Response} from "simple-git/typings/simple-git";
 
 const git: SimpleGit = simpleGit({
     baseDir: '/home/vadim/projects/bluecentury/vemasys-prod'
 })
-
-setInterval(
-    () => git.fetch(),
-    5 * 60 * 1000
-)
 
 @Controller()
 export class AppController {
@@ -26,8 +14,8 @@ export class AppController {
     }
 
     @Put('/branch/checkout')
-    public checkoutBranch(@Body() branch: BranchSummaryBranch): Response<string> {
-        return git.checkout(branch.name)
+    public async checkoutBranch(@Body() branch: BranchSummaryBranch): Promise<void> {
+        await git.checkout(branch.name)
     }
 
     @Get('/status')
@@ -36,18 +24,23 @@ export class AppController {
     }
 
     @Put('/file/checkout')
-    public checkoutFile(@Body() file: FileStatusResult): Response<string> {
-        return git.checkout(file.path)
+    public async checkoutFile(@Body() file: FileStatusResult): Promise<void> {
+        await git.checkout(file.path)
     }
 
     @Put('/branch/merge-tracking')
-    public async mergeTracking(): Promise<null | MergeResult> {
+    public async mergeTracking(): Promise<void> {
         const status = await git.status()
 
         if (null === status.tracking) {
-            return null
+            return
         }
 
-        return git.merge([status.tracking])
+        await git.merge([status.tracking])
+    }
+
+    @Put('/fetch')
+    public async fetch(): Promise<void> {
+        await git.fetch()
     }
 }

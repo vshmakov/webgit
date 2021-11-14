@@ -113,6 +113,11 @@ class State {
         this.setBranchSummary(await response.json());
     }
 
+    public async fetch(): Promise<void> {
+        await request('/fetch', 'put')
+        await this.loadStatus()
+    }
+
     private setBranchSummary(branchSummary: any): void {
         this.branchSummary = branchSummary
     }
@@ -129,7 +134,7 @@ class State {
 
     public async mergeTrackingBranch(): Promise<void> {
         await request('/branch/merge-tracking', 'put')
-        await this.loadBranches()
+        await this.loadStatus()
     }
 }
 
@@ -209,7 +214,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
     }
 
     private isCurrentBranch(branch: BranchSummaryBranch): boolean {
-        return             branch.name === this.props.state.status?.current
+        return branch.name === this.props.state.status?.current
     }
 
     private getTracking(branch: BranchSummaryBranch): string {
@@ -275,7 +280,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
                     {file.path}
                 </td>
                 <td>
-                    {Status[index]} {Status[workingDir]}
+                    {Status[index] || index} {Status[workingDir] || workingDir}
                 </td>
                 <td>
                     <button
@@ -292,6 +297,15 @@ const Files = observer(class extends React.Component<{ state: State }> {
 function App() {
     useEffect((): void => {
         state.loadBranches()
+    })
+    useEffect(() => {
+        const handle = setInterval((): void => {
+            state.fetch()
+        }, 2 * 60 * 1000)
+
+        return (): void => {
+            clearInterval(handle)
+        }
     })
 
     return (
