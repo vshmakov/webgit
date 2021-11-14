@@ -91,6 +91,7 @@ export class AppController {
                 }
             })
             childProcess.on('exit', (code: number | null): void => {
+                console.log(code)
                 resolve(0 === code)
             })
         })
