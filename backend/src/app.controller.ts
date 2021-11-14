@@ -81,17 +81,17 @@ export class AppController {
 
     private async execCommand(command: string): Promise<boolean> {
         return new Promise<boolean>((resolve): void => {
-            exec(command, (error: ExecException | null, stdout: string, stderr: string): void => {
+            const childProcess = exec(command, (error: ExecException | null, stdout: string, stderr: string): void => {
+                console.log('stdout:', stdout)
+                console.log('stderr:', stderr)
+
                 if (null !== error) {
                     console.log(error)
                     resolve(false)
-
-                    return
                 }
-
-                console.log('stdout:', stdout)
-                console.log('stderr:', stderr)
-                resolve(true)
+            })
+            childProcess.on('exit', (code: number | null): void => {
+                resolve(0 === code)
             })
         })
     }
