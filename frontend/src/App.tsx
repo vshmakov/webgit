@@ -1,4 +1,4 @@
-import React, {FormEvent, useEffect} from 'react';
+import React, {FormEvent, ReactElement, useEffect} from 'react';
 import './App.css';
 import {makeAutoObservable} from "mobx"
 import {observer} from "mobx-react"
@@ -184,6 +184,40 @@ class State {
 
 const state = new State()
 
+interface ToggleProps {
+    label: string
+    children: ReactElement
+}
+
+interface ToggleState {
+    flag: Flag
+}
+
+const Toggle = observer(class extends React.Component<ToggleProps, ToggleState> {
+    readonly state: ToggleState = {
+        flag: new Flag(false)
+    }
+
+    public render() {
+        return (
+            <div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={this.state.flag.isChecked}
+                            onChange={() => this.state.flag.toggle()}/>
+                        {this.props.label}
+                    </label>
+                </div>
+                <div>
+                    {this.state.flag.isChecked ? this.props.children : null}
+                </div>
+            </div>
+        )
+    }
+})
+
 const Branches = observer(class extends React.Component<{ state: State }> {
     public render() {
         const {state} = this.props;
@@ -212,16 +246,18 @@ const Branches = observer(class extends React.Component<{ state: State }> {
                         </tbody>
                     </table>
                 </form>
-                <form onSubmit={this.submitHandler.bind(this)}>
-                    <input
-                        type="text"
-                        value={state.newBranchName}
-                        onChange={(event) => state.newBranchName = event.target.value}
-                        required={true}/>
-                    <button type="submit">
-                        Create
-                    </button>
-                </form>
+                <Toggle label='Create'>
+                    <form onSubmit={this.submitHandler.bind(this)}>
+                        <input
+                            type="text"
+                            value={state.newBranchName}
+                            onChange={(event) => state.newBranchName = event.target.value}
+                            required={true}/>
+                        <button type="submit">
+                            Create
+                        </button>
+                    </form>
+                </Toggle>
             </div>
         )
             ;
@@ -406,17 +442,6 @@ const Commit = observer(class extends React.Component<{ state: State }> {
         return (
             <form onSubmit={this.submitHandler.bind(this)}>
                 <h2>Commit</h2>
-                <label>
-                    <input
-                        type="checkbox"
-                        checked={state.stageAllFilesBeforeCommit.isChecked}
-                        onChange={(): void => state.stageAllFilesBeforeCommit.toggle()}/>
-                    Stage all files
-                </label>
-                <input
-                    type="text"
-                    value={state.precommitCommandStorage.getValue()}
-                    onChange={(event) => state.precommitCommandStorage.setValue(event.target.value)}/>
                 <input
                     type="text"
                     value={state.commitMessageStorage.getValue()}
@@ -425,6 +450,21 @@ const Commit = observer(class extends React.Component<{ state: State }> {
                 <button type='submit'>
                     Commit
                 </button>
+                <Toggle label={'AdditionalSettings'}>
+                    <div>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={state.stageAllFilesBeforeCommit.isChecked}
+                                onChange={(): void => state.stageAllFilesBeforeCommit.toggle()}/>
+                            Stage all files
+                        </label>
+                        <input
+                            type="text"
+                            value={state.precommitCommandStorage.getValue()}
+                            onChange={(event) => state.precommitCommandStorage.setValue(event.target.value)}/>
+                    </div>
+                </Toggle>
             </form>
         );
     }
