@@ -63,15 +63,14 @@ class Flag {
 async function getStatus(): Promise<StatusResult> {
     const response = await request(Method.Get, '/status')
 
-    return await response.json();
+    return await response.json()
 }
 
 async function getBranchSummary(): Promise<BranchSummary> {
     const response = await request(Method.Get, '/branches')
 
-    return await response.json();
+    return await response.json()
 }
-
 
 class State {
     public showHiddenBranches: Flag = new Flag(false)
