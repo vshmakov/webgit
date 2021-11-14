@@ -367,11 +367,6 @@ const Commit = observer(class extends React.Component<{ state: State }> {
         return (
             <form onSubmit={this.submitHandler.bind(this)}>
                 <h2>Commit</h2>
-                <input
-                    type="text"
-                    value={state.commitMessageStorage.getValue()}
-                    onChange={(event) => state.commitMessageStorage.setValue(event.target.value)}
-                    required={true}/>
                 <label>
                     <input
                         type="checkbox"
@@ -379,6 +374,11 @@ const Commit = observer(class extends React.Component<{ state: State }> {
                         onChange={(): void => state.stageAllFilesBeforeCommit.toggle()}/>
                     Stage all files
                 </label>
+                <input
+                    type="text"
+                    value={state.commitMessageStorage.getValue()}
+                    onChange={(event) => state.commitMessageStorage.setValue(event.target.value)}
+                    required={true}/>
                 <button type='submit'>
                     Commit
                 </button>
