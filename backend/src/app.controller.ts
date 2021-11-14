@@ -68,11 +68,11 @@ export class AppController {
         stage,
         command
     }: { message: string, stage: boolean, command: string }): Promise<void> {
-        if (command){
+        if (command) {
             const {stdout, stderr} = await exec(command)
             console.log('stdout:', stdout)
             console.log('stderr:', stderr)
-
+            
             if (stderr) {
                 return
             }
