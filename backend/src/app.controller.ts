@@ -1,6 +1,10 @@
 import {Body, Controller, Get, Put} from '@nestjs/common';
 import simpleGit, {BranchSummary, BranchSummaryBranch, FileStatusResult, SimpleGit, StatusResult} from 'simple-git';
 import {Response} from "simple-git/typings/simple-git";
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
+
 
 const git: SimpleGit = simpleGit({
     // baseDir: '/home/vadim/projects/bluecentury/vemasys-prod',
@@ -61,10 +65,14 @@ export class AppController {
 
     @Put('/commit')
     public async commit(@Body() {message, stage}: { message: string, stage: boolean }): Promise<void> {
+        const { stdout, stderr } = await exec('ls');
+        console.log('stdout:', stdout);
+        console.log('stderr:', stderr);
+
         if (stage) {
             await git.add('.')
         }
 
-        await git.commit(message)
+        git.commit(message)
     }
 }
