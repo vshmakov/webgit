@@ -7,6 +7,10 @@ const git: SimpleGit = simpleGit({
     baseDir: '/home/vadim/projects/my/webgit',
 })
 
+git.outputHandler(function (command, stdout, stderr) {
+    stdout.pipe(process.stdout);
+})
+
 @Controller()
 export class AppController {
     @Get('/branches')
