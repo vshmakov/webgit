@@ -3,7 +3,8 @@ import simpleGit, {BranchSummary, BranchSummaryBranch, FileStatusResult, SimpleG
 import {Response} from "simple-git/typings/simple-git";
 
 const git: SimpleGit = simpleGit({
-    baseDir: '/home/vadim/projects/bluecentury/vemasys-prod'
+    // baseDir: '/home/vadim/projects/bluecentury/vemasys-prod',
+    baseDir: '/home/vadim/projects/my/webgit',
 })
 
 @Controller()
@@ -18,16 +19,6 @@ export class AppController {
         await git.checkout(branch.name)
     }
 
-    @Get('/status')
-    public status(): Response<StatusResult> {
-        return git.status()
-    }
-
-    @Put('/file/checkout')
-    public async checkoutFile(@Body() file: FileStatusResult): Promise<void> {
-        await git.checkout(file.path)
-    }
-
     @Put('/branch/merge-tracking')
     public async mergeTracking(): Promise<void> {
         const status = await git.status()
@@ -37,6 +28,26 @@ export class AppController {
         }
 
         await git.merge([status.tracking])
+    }
+
+    @Put('/branch/push')
+    public async push(): Promise<void> {
+        await git.push()
+    }
+
+    @Put('/branch/merge-into-current')
+    public async mergeBranchIntoCurrent(@Body() branch: BranchSummaryBranch): Promise<void> {
+        await git.merge([branch.name])
+    }
+
+    @Get('/status')
+    public status(): Response<StatusResult> {
+        return git.status()
+    }
+
+    @Put('/file/checkout')
+    public async checkoutFile(@Body() file: FileStatusResult): Promise<void> {
+        await git.checkout(file.path)
     }
 
     @Put('/fetch')

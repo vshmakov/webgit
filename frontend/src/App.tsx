@@ -127,6 +127,11 @@ class State {
         await this.loadStatus()
     }
 
+    public async mergeBranchIntoCurrent(branch: BranchSummaryBranch): Promise<void> {
+        await request('/branch/merge-into-current', 'put', branch)
+        await this.loadStatus()
+    }
+
     public async checkoutFile(file: FileStatusResult): Promise<void> {
         await request('/file/checkout', 'put', file)
         await this.loadStatus()
@@ -134,6 +139,11 @@ class State {
 
     public async mergeTrackingBranch(): Promise<void> {
         await request('/branch/merge-tracking', 'put')
+        await this.loadStatus()
+    }
+
+    public async push(): Promise<void> {
+        await request('/branch/push', 'put')
         await this.loadStatus()
     }
 }
@@ -183,13 +193,48 @@ const Branches = observer(class extends React.Component<{ state: State }> {
                     {branch.name} {this.getTracking(branch)}
                 </td>
                 <td>
+                    {this.getMergeIntoCurrentButton(branch)}
                     {this.getMergeTrackingButton(branch)}
+                    {this.getPushButton(branch)}
                     <button type='button' onClick={(): void => state.toggleHideBranch(branch.name)}>
                         {!state.hiddenBranchesStorage.getValue().includes(branch.name) ? 'Hide' : 'Show'}
                     </button>
                 </td>
             </tr>
         )
+    }
+
+    private getMergeIntoCurrentButton(branch: BranchSummaryBranch) {
+        if (this.isCurrentBranch(branch)) {
+            return null
+        }
+
+        return (
+            <button type='button' onClick={() => state.mergeBranchIntoCurrent(branch)}>
+                Merge into {this.props.state.status?.current}
+            </button>
+        )
+    }
+
+    private getPushButton(branch: BranchSummaryBranch) {
+        if (!this.canPush(branch)) {
+            return null
+        }
+
+        return (
+            <button type='button' onClick={() => state.push()}>
+                Push
+            </button>
+        )
+    }
+
+    private canPush(branch: BranchSummaryBranch): boolean {
+        const status = this.props.state.status
+
+        return null !== status
+            && this.isCurrentBranch(branch)
+            && null !== status.tracking
+            && 0 !== status.ahead
     }
 
     private getMergeTrackingButton(branch: BranchSummaryBranch) {
@@ -210,7 +255,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         return null !== status
             && this.isCurrentBranch(branch)
             && null !== status.tracking
-            && 0 !== status.ahead
+            && 0 !== status.behind
     }
 
     private isCurrentBranch(branch: BranchSummaryBranch): boolean {
