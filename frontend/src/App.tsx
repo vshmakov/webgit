@@ -119,7 +119,7 @@ class State {
 
     public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
         await request('/branch/checkout', 'put', branch)
-        await this.loadBranches()
+        await this.loadStatus()
     }
 
     public async checkoutFile(file: FileStatusResult): Promise<void> {
@@ -171,7 +171,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
                     <input
                         type='radio'
                         name='current-branch'
-                        checked={branch.current}
+                        checked={this.isCurrentBranch(branch)}
                         onChange={() => this.props.state.checkoutBranch(branch)}/>
                 </td>
                 <td>
@@ -193,7 +193,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         }
 
         return (
-            <button type='button' onClick={() => state.mergeTrackingBranch(branch.name)}>
+            <button type='button' onClick={() => state.mergeTrackingBranch()}>
                 Merge tracking
             </button>
         )
@@ -203,15 +203,19 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         const status = this.props.state.status
 
         return null !== status
-                        && branch.name === status.current
+            && this.isCurrentBranch(branch)
             && null !== status.tracking
             && 0 !== status.ahead
+    }
+
+    private isCurrentBranch(branch: BranchSummaryBranch): boolean {
+        return             branch.name === this.props.state.status?.current
     }
 
     private getTracking(branch: BranchSummaryBranch): string {
         const status = this.props.state.status
 
-        if (null === status || branch.name !== status.current) {
+        if (null === status || !this.isCurrentBranch(branch)) {
             return ''
         }
 
