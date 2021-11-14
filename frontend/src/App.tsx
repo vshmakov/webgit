@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {FormEvent, useEffect} from 'react';
 import './App.css';
 import {makeAutoObservable} from "mobx"
 import {observer} from "mobx-react"
@@ -365,7 +365,7 @@ const Commit = observer(class extends React.Component<{ state: State }> {
         const {state} = this.props;
 
         return (
-            <form onSubmit={this.onSubmit.bind(this)}>
+            <form onSubmit={this.submitHandler.bind(this)}>
                 <h2>Commit</h2>
                 <input
                     type="text"
@@ -386,10 +386,9 @@ const Commit = observer(class extends React.Component<{ state: State }> {
         );
     }
 
-    private onSubmit(): boolean {
+    private submitHandler(event: FormEvent<HTMLFormElement>): void {
+        event.preventDefault()
         this.props.state.commit()
-
-        return false
     }
 })
 
