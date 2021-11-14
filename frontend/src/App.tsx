@@ -198,7 +198,7 @@ const Toggle = observer(class extends React.Component<ToggleProps, ToggleState> 
         flag: new Flag(false)
     }
 
-    public render() {
+    public render(): ReactElement {
         return (
             <div>
                 <div>
@@ -219,7 +219,7 @@ const Toggle = observer(class extends React.Component<ToggleProps, ToggleState> 
 })
 
 const Branches = observer(class extends React.Component<{ state: State }> {
-    public render() {
+    public render(): ReactElement {
         const {state} = this.props;
 
         return (
@@ -268,7 +268,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         this.props.state.createBranch()
     }
 
-    private renderBranch(branch: BranchSummaryBranch) {
+    private renderBranch(branch: BranchSummaryBranch): ReactElement {
         return (
             <tr key={branch.name}>
                 <td>
@@ -293,7 +293,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         )
     }
 
-    private getMergeIntoCurrentButton(branch: BranchSummaryBranch) {
+    private getMergeIntoCurrentButton(branch: BranchSummaryBranch): ReactElement | null {
         if (this.isCurrentBranch(branch)) {
             return null
         }
@@ -305,7 +305,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
         )
     }
 
-    private getPushButton(branch: BranchSummaryBranch) {
+    private getPushButton(branch: BranchSummaryBranch): ReactElement | null {
         if (!this.canPush(branch)) {
             return null
         }
@@ -331,7 +331,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
             && (null === status.tracking || hasAheadCommits)
     }
 
-    private getMergeTrackingButton(branch: BranchSummaryBranch) {
+    private getMergeTrackingButton(branch: BranchSummaryBranch): ReactElement | null {
         if (!this.canMergeTrackingBranch(branch)) {
             return null
         }
@@ -382,7 +382,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
 })
 
 const Files = observer(class extends React.Component<{ state: State }> {
-    public render() {
+    public render(): ReactElement {
         const {state} = this.props;
 
         return (
@@ -405,7 +405,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
             ;
     }
 
-    private renderFile(file: FileStatusResult) {
+    private renderFile(file: FileStatusResult): ReactElement {
         enum Status {
             A = 'Added',
             D = 'Deleted',
@@ -436,7 +436,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
 })
 
 const Commit = observer(class extends React.Component<{ state: State }> {
-    public render() {
+    public render(): ReactElement {
         const {state} = this.props;
 
         return (
@@ -475,7 +475,7 @@ const Commit = observer(class extends React.Component<{ state: State }> {
     }
 })
 
-function App() {
+function App(): ReactElement {
     useEffect((): void => {
         state.loadBranches()
         state.fetch()
