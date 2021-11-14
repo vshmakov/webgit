@@ -37,7 +37,8 @@ export class AppController {
 
     @Put('/branch/push')
     public async push(): Promise<void> {
-        await git.push()
+        const status = await git.status()
+        await git.push(['-u', 'origin', status.current])
     }
 
     @Put('/branch/merge-into-current')
