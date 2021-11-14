@@ -16,7 +16,7 @@ git.outputHandler(function (command, stdout, stderr) {
 export class AppController {
     @Get('/branches')
     public branches(): Response<BranchSummary> {
-        return git.branch()
+        return git.branchLocal()
     }
 
     @Put('/branch/checkout')

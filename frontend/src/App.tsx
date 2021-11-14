@@ -102,7 +102,7 @@ class State {
     public get sortedBranches(): BranchSummaryBranch[] {
         const hiddenBranches = this.hiddenBranchesStorage.getValue()
 
-        return this.localBranches
+        return this.branches
             .filter((branch: BranchSummaryBranch): boolean => this.showHiddenBranches.isChecked || !hiddenBranches.includes(branch.name))
             .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => branch1.name.toLowerCase() < branch2.name.toLowerCase() ? -1 : 1)
     }
@@ -110,13 +110,12 @@ class State {
     public get hiddenBranches(): BranchSummaryBranch[] {
         const hiddenBranches = this.hiddenBranchesStorage.getValue()
 
-        return this.localBranches
+        return this.branches
             .filter((branch: BranchSummaryBranch): boolean => hiddenBranches.includes(branch.name))
     }
 
-    private get localBranches(): BranchSummaryBranch[] {
+    private get branches(): BranchSummaryBranch[] {
         return Object.values(this.branchSummary.branches)
-            .filter((branch: BranchSummaryBranch): boolean => !branch.name.startsWith('remotes/origin/'))
     }
 
     public async loadStatus(): Promise<void> {
@@ -275,8 +274,6 @@ const Branches = observer(class extends React.Component<{ state: State }> {
     }
 
     private renderBranch(branch: BranchSummaryBranch): ReactElement {
-        const {state} = this.props
-
         return (
             <tr key={branch.name}>
                 <td>
