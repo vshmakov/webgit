@@ -156,8 +156,8 @@ class State {
         await this.loadStatus()
     }
 
-    public async checkoutFile(file: FileStatusResult): Promise<void> {
-        await request(Method.Put, '/file/checkout', file)
+    public async declineFile(file: FileStatusResult): Promise<void> {
+        await request(Method.Put, '/file/decline', file)
         await this.loadStatus()
     }
 
@@ -424,13 +424,13 @@ const Files = observer(class extends React.Component<{ state: State }> {
     }
 
     private renderFile(file: FileStatusResult): ReactElement {
-        enum Status {
-            A = 'Added',
-            D = 'Deleted',
-            M = 'Modified',
+        const Status = {
+            A: 'Added',
+            D: 'Deleted',
+            M: 'Modified',
+            "?": "New",
         }
 
-        const index = file.index as keyof typeof Status
         const workingDir = file.working_dir as keyof typeof Status
 
         return (
@@ -439,12 +439,12 @@ const Files = observer(class extends React.Component<{ state: State }> {
                     {file.path}
                 </td>
                 <td>
-                    {Status[index] || index} {Status[workingDir] || workingDir}
+                    {Status[workingDir] || workingDir}
                 </td>
                 <td>
                     <button
                         type='button'
-                        onClick={() => withSound(this.props.state.checkoutFile(file))}>
+                        onClick={() => withSound(this.props.state.declineFile(file))}>
                         Decline
                     </button>
                 </td>

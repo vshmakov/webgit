@@ -1,5 +1,12 @@
 import {Body, Controller, Get, Post, Put} from '@nestjs/common';
-import simpleGit, {BranchSummary, BranchSummaryBranch, FileStatusResult, SimpleGit, StatusResult} from 'simple-git';
+import simpleGit, {
+    BranchSummary,
+    BranchSummaryBranch,
+    CleanOptions,
+    FileStatusResult,
+    SimpleGit,
+    StatusResult
+} from 'simple-git';
 import {Response} from "simple-git/typings/simple-git";
 import {exec, ExecException} from 'child_process'
 
@@ -56,8 +63,15 @@ export class AppController {
         return git.status()
     }
 
-    @Put('/file/checkout')
-    public async checkoutFile(@Body() file: FileStatusResult): Promise<void> {
+    @Put('/file/decline')
+    public async declineFile(@Body() file: FileStatusResult): Promise<void> {
+
+        if ('?' === file.working_dir) {
+            await git.clean(CleanOptions.FORCE, [file.path])
+
+            return
+        }
+
         await git.checkout(file.path)
     }
 
