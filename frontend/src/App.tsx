@@ -270,7 +270,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
 
     private submitHandler(event: FormEvent<HTMLFormElement>): void {
         event.preventDefault()
-        this.props.state.createBranch()
+        withSound(this.props.state.createBranch())
     }
 
     private renderBranch(branch: BranchSummaryBranch): ReactElement {
