@@ -554,7 +554,7 @@ const Repository = observer(class extends React.Component<{ state: RepositorySta
         );
     }
 
-    getCalledAgo(ago: number | null): string {
+    private getCalledAgo(ago: number | null): string {
         if (null === ago) {
             return ''
         }
