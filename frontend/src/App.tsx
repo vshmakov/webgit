@@ -410,6 +410,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
                     <thead>
                     <tr>
                         <th>File</th>
+                        <th>Directory</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -433,11 +434,12 @@ const Files = observer(class extends React.Component<{ state: State }> {
 
         const workingDir = file.working_dir as keyof typeof Status
 
+        const {name, directory} = this.splitFileName(file)
+
         return (
             <tr key={file.path}>
-                <td>
-                    {file.path}
-                </td>
+                <td>                    {name}                </td>
+                <td>{directory}</td>
                 <td>
                     {Status[workingDir] || workingDir}
                 </td>
@@ -450,6 +452,15 @@ const Files = observer(class extends React.Component<{ state: State }> {
                 </td>
             </tr>
         )
+    }
+
+    private splitFileName(file: FileStatusResult): { name: string, directory: string } {
+        const parts = file.path.split('/')
+
+        return {
+            name: parts.pop(),
+            directory: parts.join('/')
+        }
     }
 })
 

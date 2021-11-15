@@ -65,7 +65,6 @@ export class AppController {
 
     @Put('/file/decline')
     public async declineFile(@Body() file: FileStatusResult): Promise<void> {
-
         if ('?' === file.working_dir) {
             await git.clean(CleanOptions.FORCE, [file.path])
 
