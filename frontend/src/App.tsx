@@ -60,20 +60,19 @@ class Flag {
     }
 }
 
-class StatusLoader {
+class Loader<T> {
     private calledAtStorage: LocalStorage<number | null> = new LocalStorage<number | null>('status-called-at-v1', null)
     public ago: number | null = null
 
-    public constructor() {
+    public constructor(private readonly callback: () => Promise<T>) {
         makeAutoObservable(this)
     }
 
-    public async load(): Promise<StatusResult> {
-        const response = await request(Method.Get, '/status')
-        const status = await response.json();
+    public async load(): Promise<T> {
+        const result = await this.callback()
         this.calledAtStorage.setValue(new Date().getTime())
 
-        return status
+        return result
     }
 
     public calculateAgo(): void {
@@ -85,6 +84,12 @@ class StatusLoader {
 
         this.ago = new Date().getTime() - value
     }
+}
+
+async function getStatus(): Promise<StatusResult> {
+    const response = await request(Method.Get, '/status')
+
+    return await response.json()
 }
 
 async function getBranchSummary(): Promise<BranchSummary> {
@@ -104,7 +109,7 @@ class RepositoryState {
     public constructor(
         public status: StatusResult,
         private branchSummary: BranchSummary,
-        public readonly statusLoader: StatusLoader,
+        public readonly statusLoader: Loader<StatusResult>,
     ) {
 
         makeAutoObservable(this)
@@ -538,15 +543,13 @@ const Repository = observer(class extends React.Component<{ state: RepositorySta
                     Fetch
                 </button>
                 <button>
-                    Status {this.getCalledAgo(state.statusLoader)}
+                    Status {this.getCalledAgo(state.statusLoader.ago)}
                 </button>
             </div>
         );
     }
 
-    getCalledAgo(loader: StatusLoader): string {
-        const ago = loader.ago
-
+    getCalledAgo(ago: number | null): string {
         if (null === ago) {
             return ''
         }
@@ -557,7 +560,7 @@ const Repository = observer(class extends React.Component<{ state: RepositorySta
 
 const state = new class {
     public repository: RepositoryState | null = null
-    public readonly statusLoader: StatusLoader = new StatusLoader()
+    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(getStatus)
 
     public constructor() {
         makeAutoObservable(this)
