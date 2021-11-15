@@ -79,11 +79,13 @@ class State {
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>('commit-message-v1', '')
     public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>('precommit-command-v1', '')
     public newBranchName: string = ''
+    public statusCalledAtStorage: LocalStorage<number | null> = new LocalStorage<number | null>('status-called-at-v1', null)
 
     public constructor(
         public status: StatusResult,
         private branchSummary: BranchSummary,
     ) {
+
         makeAutoObservable(this)
     }
 
@@ -458,7 +460,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
         const parts = file.path.split('/')
 
         return {
-            name: parts.pop(),
+            name: parts.pop() || '',
             directory: parts.join('/')
         }
     }
@@ -504,14 +506,33 @@ const Commit = observer(class extends React.Component<{ state: State }> {
     }
 })
 
-const Repository = observer(({state}: { state: State }): ReactElement => (
-        <div>
-            <h1>Repository</h1>
-            <button onClick={() => withSound(state.fetch())}>
-                Fetch
-            </button>
-        </div>
-    )
+const Repository = observer(class extends React.Component<{ state: State }> {
+        public render(): ReactElement {
+            const {state} = this.props;
+
+            return (
+                <div>
+                    <h1>Repository</h1>
+                    <button onClick={() => withSound(state.fetch())}>
+                        Fetch
+                    </button>
+                    <button>
+                        Status {this.getMinsAgo(state.statusCalledAtStorage)}
+                    </button>
+                </div>
+            );
+        }
+
+        getMinsAgo(storage: LocalStorage<number | null>): string {
+            const value = storage.getValue();
+
+            if (null === value) {
+                return ''
+            }
+
+            return 'ago'
+        }
+    }
 )
 
 const initialState = new class {
