@@ -61,10 +61,10 @@ class Flag {
 }
 
 class Loader<T> {
-    private calledAtStorage: LocalStorage<number | null> = new LocalStorage<number | null>('status-called-at-v1', null)
+    private calledAtStorage: LocalStorage<number | null> = new LocalStorage<number | null>(this.localStorageKey, null)
     public ago: number | null = null
 
-    public constructor(private readonly callback: () => Promise<T>) {
+    public constructor(private readonly localStorageKey: string, private readonly callback: () => Promise<T>) {
         makeAutoObservable(this)
     }
 
@@ -98,6 +98,10 @@ async function getBranchSummary(): Promise<BranchSummary> {
     return await response.json()
 }
 
+async function fetchRemote(): Promise<void> {
+    await request(Method.Put, '/fetch');
+}
+
 class RepositoryState {
     public showHiddenBranches: Flag = new Flag(false)
     public stageAllFilesBeforeCommit: Flag = new Flag(true)
@@ -110,6 +114,7 @@ class RepositoryState {
         public status: StatusResult,
         private branchSummary: BranchSummary,
         public readonly statusLoader: Loader<StatusResult>,
+        public readonly fetchLoader: Loader<void>,
     ) {
 
         makeAutoObservable(this)
@@ -212,7 +217,7 @@ class RepositoryState {
     }
 
     async fetch(): Promise<void> {
-        await request(Method.Put, '/fetch')
+        await this.fetchLoader.load()
         await this.loadStatus()
     }
 }
@@ -540,7 +545,7 @@ const Repository = observer(class extends React.Component<{ state: RepositorySta
             <div>
                 <h1>Repository</h1>
                 <button onClick={() => withSound(state.fetch())}>
-                    Fetch
+                    Fetch {this.getCalledAgo(state.fetchLoader.ago)}
                 </button>
                 <button>
                     Status {this.getCalledAgo(state.statusLoader.ago)}
@@ -560,7 +565,8 @@ const Repository = observer(class extends React.Component<{ state: RepositorySta
 
 const state = new class {
     public repository: RepositoryState | null = null
-    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(getStatus)
+    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>('status-called-at-v1', getStatus)
+    public readonly fetchLoader: Loader<void> = new Loader<void>('fetch-called-at-v1', fetchRemote)
 
     public constructor() {
         makeAutoObservable(this)
@@ -569,7 +575,12 @@ const state = new class {
     public async loadRepository(): Promise<void> {
         const status = this.statusLoader.load()
         const branchSummary = getBranchSummary()
-        this.setRepository(new RepositoryState(await status, await branchSummary, this.statusLoader))
+        this.setRepository(new RepositoryState(
+            await status,
+            await branchSummary,
+            this.statusLoader,
+            this.fetchLoader
+        ))
     }
 
     private setRepository(repository: RepositoryState): void {
@@ -604,4 +615,5 @@ state.loadRepository()
 
 setInterval((): void => {
     state.statusLoader.calculateAgo()
+    state.fetchLoader.calculateAgo()
 }, 1000)
