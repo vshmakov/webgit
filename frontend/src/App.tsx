@@ -60,10 +60,31 @@ class Flag {
     }
 }
 
-async function getStatus(): Promise<StatusResult> {
-    const response = await request(Method.Get, '/status')
+class StatusLoader {
+    private calledAtStorage: LocalStorage<number | null> = new LocalStorage<number | null>('status-called-at-v1', null)
+    public ago: number | null = null
 
-    return await response.json()
+    public constructor() {
+        makeAutoObservable(this)
+    }
+
+    public async load(): Promise<StatusResult> {
+        const response = await request(Method.Get, '/status')
+        const status = await response.json();
+        this.calledAtStorage.setValue(new Date().getTime())
+
+        return status
+    }
+
+    public calculateAgo(): void {
+        const value = this.calledAtStorage.getValue()
+
+        if (null === value) {
+            return
+        }
+
+        this.ago = new Date().getTime() - value
+    }
 }
 
 async function getBranchSummary(): Promise<BranchSummary> {
@@ -72,18 +93,18 @@ async function getBranchSummary(): Promise<BranchSummary> {
     return await response.json()
 }
 
-class State {
+class RepositoryState {
     public showHiddenBranches: Flag = new Flag(false)
     public stageAllFilesBeforeCommit: Flag = new Flag(true)
     public hiddenBranchesStorage: LocalStorage<string[]> = new LocalStorage<string[]>('hidden-branches-v2', [])
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>('commit-message-v1', '')
     public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>('precommit-command-v1', '')
     public newBranchName: string = ''
-    public statusCalledAtStorage: LocalStorage<number | null> = new LocalStorage<number | null>('status-called-at-v1', null)
 
     public constructor(
         public status: StatusResult,
         private branchSummary: BranchSummary,
+        public readonly statusLoader: StatusLoader,
     ) {
 
         makeAutoObservable(this)
@@ -121,7 +142,7 @@ class State {
     }
 
     public async loadStatus(): Promise<void> {
-        this.setStatus(await getStatus())
+        this.setStatus(await this.statusLoader.load())
     }
 
     private setStatus(status: StatusResult): void {
@@ -225,7 +246,7 @@ const Toggle = observer(class extends React.Component<ToggleProps, ToggleState> 
     }
 })
 
-const Branches = observer(class extends React.Component<{ state: State }> {
+const Branches = observer(class extends React.Component<{ state: RepositoryState }> {
     public render(): ReactElement {
         const {state} = this.props;
 
@@ -401,7 +422,7 @@ const Branches = observer(class extends React.Component<{ state: State }> {
     }
 })
 
-const Files = observer(class extends React.Component<{ state: State }> {
+const Files = observer(class extends React.Component<{ state: RepositoryState }> {
     public render(): ReactElement {
         const {state} = this.props;
 
@@ -466,7 +487,7 @@ const Files = observer(class extends React.Component<{ state: State }> {
     }
 })
 
-const Commit = observer(class extends React.Component<{ state: State }> {
+const Commit = observer(class extends React.Component<{ state: RepositoryState }> {
     public render(): ReactElement {
         const {state} = this.props;
 
@@ -506,59 +527,57 @@ const Commit = observer(class extends React.Component<{ state: State }> {
     }
 })
 
-const Repository = observer(class extends React.Component<{ state: State }> {
-        public render(): ReactElement {
-            const {state} = this.props;
+const Repository = observer(class extends React.Component<{ state: RepositoryState }> {
+    public render(): ReactElement {
+        const {state} = this.props;
 
-            return (
-                <div>
-                    <h1>Repository</h1>
-                    <button onClick={() => withSound(state.fetch())}>
-                        Fetch
-                    </button>
-                    <button>
-                        Status {this.getMinsAgo(state.statusCalledAtStorage)}
-                    </button>
-                </div>
-            );
-        }
-
-        getMinsAgo(storage: LocalStorage<number | null>): string {
-            const value = storage.getValue();
-
-            if (null === value) {
-                return ''
-            }
-
-            return 'ago'
-        }
+        return (
+            <div>
+                <h1>Repository</h1>
+                <button onClick={() => withSound(state.fetch())}>
+                    Fetch
+                </button>
+                <button>
+                    Status {this.getCalledAgo(state.statusLoader)}
+                </button>
+            </div>
+        );
     }
-)
 
-const initialState = new class {
-    public state: State | null = null
+    getCalledAgo(loader: StatusLoader): string {
+        const ago = loader.ago
+
+        if (null === ago) {
+            return ''
+        }
+
+        return `(${Math.floor(ago / 60 / 1000)} mins ago)`
+    }
+})
+
+const state = new class {
+    public repository: RepositoryState | null = null
+    public readonly statusLoader: StatusLoader = new StatusLoader()
 
     public constructor() {
         makeAutoObservable(this)
     }
 
-    public async loadState(): Promise<void> {
-        const status = getStatus()
+    public async loadRepository(): Promise<void> {
+        const status = this.statusLoader.load()
         const branchSummary = getBranchSummary()
-        this.setState(new State(await status, await branchSummary))
+        this.setRepository(new RepositoryState(await status, await branchSummary, this.statusLoader))
     }
 
-    private setState(state: State): void {
-        this.state = state
+    private setRepository(repository: RepositoryState): void {
+        this.repository = repository
     }
 }()
 
-initialState.loadState()
-
 const App = observer((): ReactElement => {
-    const {state} = initialState
+    const {repository} = state
 
-    if (null === state) {
+    if (null === repository) {
         return (
             <div>
                 Loading...
@@ -568,12 +587,18 @@ const App = observer((): ReactElement => {
 
     return (
         <div>
-            <Repository state={state}/>
-            <Branches state={state}/>
-            <Commit state={state}/>
-            <Files state={state}/>
+            <Repository state={repository}/>
+            <Branches state={repository}/>
+            <Commit state={repository}/>
+            <Files state={repository}/>
         </div>
     )
 })
 
 export default App;
+
+state.loadRepository()
+
+setInterval((): void => {
+    state.statusLoader.calculateAgo()
+}, 1000)
