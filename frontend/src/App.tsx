@@ -547,7 +547,7 @@ const Repository = observer(class extends React.Component<{ state: RepositorySta
                 <button onClick={() => withSound(state.fetch())}>
                     Fetch {this.getCalledAgo(state.fetchLoader.ago)}
                 </button>
-                <button>
+                <button onClick={() => withSound(state.loadStatus())}>
                     Status {this.getCalledAgo(state.statusLoader.ago)}
                 </button>
             </div>
