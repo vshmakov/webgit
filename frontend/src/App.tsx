@@ -62,15 +62,15 @@ class BranchesState {
         makeAutoObservable(this)
     }
 
-    public get sortedBranches(): BranchSummaryBranch[] {
-        const hiddenBranches = this.hiddenStorage.getValue()
+    public get sorted(): BranchSummaryBranch[] {
+        const hidden = this.hiddenStorage.getValue()
 
         return this.branches
-            .filter((branch: BranchSummaryBranch): boolean => this.showHidden.isChecked || !hiddenBranches.includes(branch.name))
+            .filter((branch: BranchSummaryBranch): boolean => this.showHidden.isChecked || !hidden.includes(branch.name))
             .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => branch1.name.toLowerCase() < branch2.name.toLowerCase() ? -1 : 1)
     }
 
-    public get hiddenBranches(): BranchSummaryBranch[] {
+    public get hidden(): BranchSummaryBranch[] {
         const hiddenBranches = this.hiddenStorage.getValue()
 
         return this.branches
@@ -82,15 +82,15 @@ class BranchesState {
     }
 
     public toggleHide(branch: string): void {
-        let hiddenBranches = this.hiddenStorage.getValue()
+        let hidden = this.hiddenStorage.getValue()
 
-        if (hiddenBranches.includes(branch)) {
-            hiddenBranches = hiddenBranches.filter((hiddenBranch: string): boolean => branch !== hiddenBranch)
+        if (hidden.includes(branch)) {
+            hidden = hidden.filter((hiddenBranch: string): boolean => branch !== hiddenBranch)
         } else {
-            hiddenBranches.push(branch)
+            hidden.push(branch)
         }
 
-        this.hiddenStorage.setValue(hiddenBranches)
+        this.hiddenStorage.setValue(hidden)
     }
 }
 
@@ -247,7 +247,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
                             type="checkbox"
                             checked={branches.showHidden.isChecked}
                             onChange={(): void => branches.showHidden.toggle()}/>
-                        Show hidden ({branches.hiddenBranches.length})
+                        Show hidden ({branches.hidden.length})
                     </label>
                     <table>
                         <thead>
@@ -258,7 +258,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
                         </tr>
                         </thead>
                         <tbody>
-                        {branches.sortedBranches.map(this.renderBranch.bind(this))}
+                        {branches.sorted.map(this.renderBranch.bind(this))}
                         </tbody>
                     </table>
                 </form>
