@@ -119,7 +119,7 @@ class RepositoryState {
         this.status = status
     }
 
-    public async loadBranches(): Promise<void> {
+    private async loadBranches(): Promise<void> {
         const status = this.loadStatus()
         const branchSummary = getBranchSummary()
         this.setBranchs(await branchSummary)
