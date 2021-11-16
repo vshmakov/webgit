@@ -222,7 +222,7 @@ interface RepositoryProps {
 
 const Branches = observer(class extends React.Component<RepositoryProps> {
     public render(): ReactElement {
-        const {state, branches} = this.props
+        const {state, branches, status} = this.props
 
         return (
             <div>
@@ -260,7 +260,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
                         </tbody>
                     </table>
                     <div>
-                        <Toggle label='Create pull request for current branch'>
+                        <Toggle label={`Create pull request for ${status.current}`}>
                             <form>
                                 <input
                                     type="text"
@@ -287,7 +287,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
 
         return (
             <a href={`${path}/pull-requests/new?source=${branch}&t=1`}>
-                Create for {branch}
+                Create
             </a>
         )
     }
