@@ -394,7 +394,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
 
 const Files = observer(class extends React.Component<RepositoryProps> {
     public render(): ReactElement {
-        const {state, status} = this.props;
+        const {status} = this.props;
 
         return (
             <div>
