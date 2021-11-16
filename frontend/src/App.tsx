@@ -10,6 +10,7 @@ import {Method} from "./Method";
 import {request} from "./Request";
 import {Flag} from "./Flag";
 import {LocalStorageKey} from "./LocalStorageKey";
+import {StatusSummary} from "simple-git/src/lib/responses/StatusSummary";
 
 class Loader<T> {
     private calledAtStorage: LocalStorage<number | null> = new LocalStorage<number | null>(this.localStorageKey, null)
@@ -54,6 +55,7 @@ async function fetchRemote(): Promise<void> {
 }
 
 class RepositoryState {
+    public status: StatusResult | null = null
     public showHiddenBranches: Flag = new Flag(false)
     public stageAllFilesBeforeCommit: Flag = new Flag(true)
     public hiddenBranchesStorage: LocalStorage<string[]> = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
@@ -62,13 +64,12 @@ class RepositoryState {
     public newBranchName: string = ''
 
     public constructor(
-        public status: StatusResult,
         private branchSummary: BranchSummary,
         public readonly statusLoader: Loader<StatusResult>,
         public readonly fetchLoader: Loader<void>,
     ) {
-
         makeAutoObservable(this)
+        this.loadStatus()
     }
 
     public toggleHideBranch(branch: string): void {
@@ -207,7 +208,12 @@ const Toggle = observer(class extends React.Component<ToggleProps, ToggleState> 
     }
 })
 
-const Branches = observer(class extends React.Component<{ state: RepositoryState }> {
+interface RepositoryProps {
+    state: RepositoryState
+    status: StatusSummary
+}
+
+const Branches = observer(class extends React.Component<RepositoryProps> {
     public render(): ReactElement {
         const {state} = this.props;
 
@@ -323,7 +329,7 @@ const Branches = observer(class extends React.Component<{ state: RepositoryState
     }
 
     private canPush(branch: BranchSummaryBranch): boolean {
-        const {status} = this.props.state
+        const {status} = this.props
 
         const hasAheadCommits = null !== status.tracking
             && 0 !== status.ahead
@@ -347,7 +353,7 @@ const Branches = observer(class extends React.Component<{ state: RepositoryState
     }
 
     private canMergeTrackingBranch(branch: BranchSummaryBranch): boolean {
-        const {status} = this.props.state
+        const {status} = this.props
 
         return this.isCurrentBranch(branch)
             && null !== status.tracking
@@ -355,11 +361,11 @@ const Branches = observer(class extends React.Component<{ state: RepositoryState
     }
 
     private isCurrentBranch(branch: BranchSummaryBranch): boolean {
-        return branch.name === this.props.state.status.current
+        return branch.name === this.props.status.current
     }
 
     private getTracking(branch: BranchSummaryBranch): string {
-        const {status} = this.props.state
+        const {status} = this.props
 
         if (!this.isCurrentBranch(branch)) {
             return ''
@@ -383,9 +389,9 @@ const Branches = observer(class extends React.Component<{ state: RepositoryState
     }
 })
 
-const Files = observer(class extends React.Component<{ state: RepositoryState }> {
+const Files = observer(class extends React.Component<RepositoryProps> {
     public render(): ReactElement {
-        const {state} = this.props;
+        const {state, status} = this.props;
 
         return (
             <div>
@@ -400,7 +406,7 @@ const Files = observer(class extends React.Component<{ state: RepositoryState }>
                     </tr>
                     </thead>
                     <tbody>
-                    {state.status.files.map(this.renderFile.bind(this))}
+                    {status.files.map(this.renderFile.bind(this))}
                     </tbody>
                 </table>
             </div>
@@ -448,7 +454,7 @@ const Files = observer(class extends React.Component<{ state: RepositoryState }>
     }
 })
 
-const Commit = observer(class extends React.Component<{ state: RepositoryState }> {
+const Commit = observer(class extends React.Component<RepositoryProps> {
     public render(): ReactElement {
         const {state} = this.props;
 
@@ -488,7 +494,7 @@ const Commit = observer(class extends React.Component<{ state: RepositoryState }
     }
 })
 
-const Repository = observer(class extends React.Component<{ state: RepositoryState }> {
+const Repository = observer(class extends React.Component<RepositoryProps> {
     public render(): ReactElement {
         const {state} = this.props;
 
@@ -534,10 +540,8 @@ const state = new class {
     }
 
     public async loadRepository(): Promise<void> {
-        const status = this.statusLoader.load()
         const branchSummary = getBranchSummary()
         this.setRepository(new RepositoryState(
-            await status,
             await branchSummary,
             this.statusLoader,
             this.fetchLoader
@@ -551,8 +555,9 @@ const state = new class {
 
 const App = observer((): ReactElement => {
     const {repository} = state
+    const status = repository?.status
 
-    if (null === repository) {
+    if (null === repository || !status) {
         return (
             <div>
                 Loading...
@@ -562,10 +567,10 @@ const App = observer((): ReactElement => {
 
     return (
         <div>
-            <Repository state={repository}/>
-            <Branches state={repository}/>
-            <Commit state={repository}/>
-            <Files state={repository}/>
+            <Repository state={repository} status={status}/>
+            <Branches state={repository} status={status}/>
+            <Commit state={repository} status={status}/>
+            <Files state={repository} status={status}/>
         </div>
     )
 })
