@@ -84,6 +84,7 @@ class RepositoryState {
     public readonly stageAllFilesBeforeCommit: Flag = new Flag(true)
     public readonly commitMessageStorage = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
+    public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '')
     public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.requestStatus)
     public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, this.requestFetch)
     public newBranchName: string = ''
@@ -258,10 +259,37 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
                         {branches.sorted.map(this.renderBranch.bind(this))}
                         </tbody>
                     </table>
+                    <div>
+                        <Toggle label='Create pull request for current branch'>
+                            <form>
+                                <input
+                                    type="text"
+                                    value={state.bitbucketRepositoryPathStorage.getValue()}
+                                    onChange={(event): void => state.bitbucketRepositoryPathStorage.setValue(event.target.value)}/>
+                                {this.getCreateBitbucketPullRequestLink()}
+                            </form>
+                        </Toggle>
+                    </div>
                 </form>
             </div>
         )
             ;
+    }
+
+    private getCreateBitbucketPullRequestLink(): ReactElement | null {
+        const path = this.props.state.bitbucketRepositoryPathStorage.getValue()
+
+        if (null === path) {
+            return null
+        }
+
+        const branch = this.props.status.current
+
+        return (
+            <a href={`${path}/pull-requests/new?source=${branch}&t=1`}>
+                Create for {branch}
+            </a>
+        )
     }
 
     private submitHandler(event: FormEvent<HTMLFormElement>): void {
@@ -501,48 +529,47 @@ const Commit = observer(class extends React.Component<RepositoryProps> {
 })
 
 const Repository = observer((props: { repository: RepositoryState }): ReactElement => {
-        const {repository} = props
+    const {repository} = props
 
-        useEffect((): () => void => {
-            const id = setInterval((): void => {
-                repository.statusLoader.calculateAgo()
-                repository.fetchLoader.calculateAgo()
-            }, 1000)
+    useEffect((): () => void => {
+        const id = setInterval((): void => {
+            repository.statusLoader.calculateAgo()
+            repository.fetchLoader.calculateAgo()
+        }, 1000)
 
-            return (): void => {
-                clearInterval(id)
-            }
-        })
-
-        const {status} = repository
-        const {branches} = repository
-
-        if (!status || !branches) {
-            return (
-                <div>
-                    Loading...
-                </div>
-            )
+        return (): void => {
+            clearInterval(id)
         }
+    })
 
+    const {status} = repository
+    const {branches} = repository
+
+    if (!status || !branches) {
         return (
             <div>
-                <div>
-                    <h2>Repository</h2>
-                    <button onClick={() => withSound(repository.fetch())}>
-                        Fetch {getCalledAgo(repository.fetchLoader.ago)}
-                    </button>
-                    <button onClick={() => withSound(repository.loadStatus())}>
-                        Status {getCalledAgo(repository.statusLoader.ago)}
-                    </button>
-                </div>
-                <Branches state={repository} status={status} branches={branches}/>
-                <Commit state={repository} status={status} branches={branches}/>
-                <Files state={repository} status={status} branches={branches}/>
+                Loading...
             </div>
         )
     }
-)
+
+    return (
+        <div>
+            <div>
+                <h2>Repository</h2>
+                <button onClick={() => withSound(repository.fetch())}>
+                    Fetch {getCalledAgo(repository.fetchLoader.ago)}
+                </button>
+                <button onClick={() => withSound(repository.loadStatus())}>
+                    Status {getCalledAgo(repository.statusLoader.ago)}
+                </button>
+            </div>
+            <Branches state={repository} status={status} branches={branches}/>
+            <Commit state={repository} status={status} branches={branches}/>
+            <Files state={repository} status={status} branches={branches}/>
+        </div>
+    )
+})
 
 function getCalledAgo(ago: number | null): string {
     if (null === ago) {

@@ -5,4 +5,5 @@ export enum LocalStorageKey {
     StatusCalledAt = 'StatusCalledAt',
     FetchCalledAt = 'FetchCalledAt',
     RepositoryPath = 'RepositoryPath',
+    BitbucketRepositoryPath = 'BitbucketRepositoryPath',
 }
