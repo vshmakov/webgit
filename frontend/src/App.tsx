@@ -38,22 +38,6 @@ class Loader<T> {
     }
 }
 
-async function getStatus(): Promise<StatusResult> {
-    const response = await request(Method.Get, '/status')
-
-    return await response.json()
-}
-
-async function getBranchSummary(): Promise<BranchSummary> {
-    const response = await request(Method.Get, '/branches')
-
-    return await response.json()
-}
-
-async function fetchRemote(): Promise<void> {
-    await request(Method.Put, '/fetch');
-}
-
 class BranchesState {
     public hiddenStorage: LocalStorage<string[]> = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
     public showHidden: Flag = new Flag(false)
@@ -101,11 +85,10 @@ class RepositoryState {
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
     public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
     public newBranchName: string = ''
+    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.requestStatus)
+    public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, this.requestFetch)
 
-    public constructor(
-        public readonly statusLoader: Loader<StatusResult>,
-        public readonly fetchLoader: Loader<void>,
-    ) {
+    public constructor() {
         makeAutoObservable(this)
         this.loadStatus()
         this.loadBranches()
@@ -115,13 +98,20 @@ class RepositoryState {
         this.setStatus(await this.statusLoader.load())
     }
 
+    private async requestStatus(): Promise<StatusResult> {
+        const response = await request(Method.Get, '/status')
+
+        return await response.json()
+    }
+
     private setStatus(status: StatusResult): void {
         this.status = status
     }
 
     private async loadBranches(): Promise<void> {
         const status = this.loadStatus()
-        const branchSummary = getBranchSummary()
+        const response = await request(Method.Get, '/branches')
+        const branchSummary = response.json()
         this.setBranchs(await branchSummary)
         await status
     }
@@ -179,6 +169,10 @@ class RepositoryState {
     async fetch(): Promise<void> {
         await this.fetchLoader.load()
         await this.loadStatus()
+    }
+
+    async requestFetch(): Promise<void> {
+        await request(Method.Put, '/fetch');
     }
 }
 
@@ -541,22 +535,14 @@ const Repository = observer(class extends React.Component<RepositoryProps> {
 
 const state = new class {
     public repository: RepositoryState | null = null
-    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, getStatus)
-    public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, fetchRemote)
+
 
     public constructor() {
         makeAutoObservable(this)
     }
 
-    public async loadRepository(): Promise<void> {
-        this.setRepository(new RepositoryState(
-            this.statusLoader,
-            this.fetchLoader
-        ))
-    }
-
-    private setRepository(repository: RepositoryState): void {
-        this.repository = repository
+    public loadRepository(): void {
+        this.repository = new RepositoryState()
     }
 }()
 
@@ -588,6 +574,6 @@ export default App;
 state.loadRepository()
 
 setInterval((): void => {
-    state.statusLoader.calculateAgo()
-    state.fetchLoader.calculateAgo()
+    state.repository?.statusLoader.calculateAgo()
+    state.repository?.fetchLoader.calculateAgo()
 }, 1000)
