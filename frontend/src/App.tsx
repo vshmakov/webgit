@@ -222,7 +222,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
 
         return (
             <div>
-                <h2>Branches</h2>
+                <h3>Branches</h3>
                 <Toggle label='Create'>
                     <form onSubmit={this.submitHandler.bind(this)}>
                         <input
@@ -398,7 +398,7 @@ const Files = observer(class extends React.Component<RepositoryProps> {
 
         return (
             <div>
-                <h2>Files</h2>
+                <h3>Files</h3>
                 <table>
                     <thead>
                     <tr>
@@ -463,7 +463,7 @@ const Commit = observer(class extends React.Component<RepositoryProps> {
 
         return (
             <form onSubmit={this.submitHandler.bind(this)}>
-                <h2>Commit</h2>
+                <h3>Commit</h3>
                 <input
                     type="text"
                     value={state.commitMessageStorage.getValue()}
