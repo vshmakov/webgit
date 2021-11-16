@@ -54,26 +54,35 @@ async function fetchRemote(): Promise<void> {
     await request(Method.Put, '/fetch');
 }
 
-class RepositoryState {
-    public status: StatusResult | null = null
-    public showHiddenBranches: Flag = new Flag(false)
-    public stageAllFilesBeforeCommit: Flag = new Flag(true)
-    public hiddenBranchesStorage: LocalStorage<string[]> = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
-    public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
-    public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
-    public newBranchName: string = ''
+class BranchesState {
+    public hiddenStorage: LocalStorage<string[]> = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
+    public showHidden: Flag = new Flag(false)
 
-    public constructor(
-        private branchSummary: BranchSummary,
-        public readonly statusLoader: Loader<StatusResult>,
-        public readonly fetchLoader: Loader<void>,
-    ) {
+    public constructor(private readonly summary: BranchSummary) {
         makeAutoObservable(this)
-        this.loadStatus()
     }
 
-    public toggleHideBranch(branch: string): void {
-        let hiddenBranches = this.hiddenBranchesStorage.getValue()
+    public get sortedBranches(): BranchSummaryBranch[] {
+        const hiddenBranches = this.hiddenStorage.getValue()
+
+        return this.branches
+            .filter((branch: BranchSummaryBranch): boolean => this.showHidden.isChecked || !hiddenBranches.includes(branch.name))
+            .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => branch1.name.toLowerCase() < branch2.name.toLowerCase() ? -1 : 1)
+    }
+
+    public get hiddenBranches(): BranchSummaryBranch[] {
+        const hiddenBranches = this.hiddenStorage.getValue()
+
+        return this.branches
+            .filter((branch: BranchSummaryBranch): boolean => hiddenBranches.includes(branch.name))
+    }
+
+    private get branches(): BranchSummaryBranch[] {
+        return Object.values(this.summary.branches)
+    }
+
+    public toggleHide(branch: string): void {
+        let hiddenBranches = this.hiddenStorage.getValue()
 
         if (hiddenBranches.includes(branch)) {
             hiddenBranches = hiddenBranches.filter((hiddenBranch: string): boolean => branch !== hiddenBranch)
@@ -81,26 +90,25 @@ class RepositoryState {
             hiddenBranches.push(branch)
         }
 
-        this.hiddenBranchesStorage.setValue(hiddenBranches)
+        this.hiddenStorage.setValue(hiddenBranches)
     }
+}
 
-    public get sortedBranches(): BranchSummaryBranch[] {
-        const hiddenBranches = this.hiddenBranchesStorage.getValue()
+class RepositoryState {
+    public status: StatusResult | null = null
+    public branches: BranchesState | null = null
+    public stageAllFilesBeforeCommit: Flag = new Flag(true)
+    public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
+    public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
+    public newBranchName: string = ''
 
-        return this.branches
-            .filter((branch: BranchSummaryBranch): boolean => this.showHiddenBranches.isChecked || !hiddenBranches.includes(branch.name))
-            .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => branch1.name.toLowerCase() < branch2.name.toLowerCase() ? -1 : 1)
-    }
-
-    public get hiddenBranches(): BranchSummaryBranch[] {
-        const hiddenBranches = this.hiddenBranchesStorage.getValue()
-
-        return this.branches
-            .filter((branch: BranchSummaryBranch): boolean => hiddenBranches.includes(branch.name))
-    }
-
-    private get branches(): BranchSummaryBranch[] {
-        return Object.values(this.branchSummary.branches)
+    public constructor(
+        public readonly statusLoader: Loader<StatusResult>,
+        public readonly fetchLoader: Loader<void>,
+    ) {
+        makeAutoObservable(this)
+        this.loadStatus()
+        this.loadBranches()
     }
 
     public async loadStatus(): Promise<void> {
@@ -114,12 +122,12 @@ class RepositoryState {
     public async loadBranches(): Promise<void> {
         const status = this.loadStatus()
         const branchSummary = getBranchSummary()
-        this.setBranchSummary(await branchSummary)
+        this.setBranchs(await branchSummary)
         await status
     }
 
-    private setBranchSummary(branchSummary: BranchSummary): void {
-        this.branchSummary = branchSummary
+    private setBranchs(branchSummary: BranchSummary): void {
+        this.branches = new BranchesState(branchSummary)
     }
 
     public async commit(): Promise<void> {
@@ -211,11 +219,12 @@ const Toggle = observer(class extends React.Component<ToggleProps, ToggleState> 
 interface RepositoryProps {
     state: RepositoryState
     status: StatusSummary
+    branches: BranchesState
 }
 
 const Branches = observer(class extends React.Component<RepositoryProps> {
     public render(): ReactElement {
-        const {state} = this.props;
+        const {state, branches} = this.props
 
         return (
             <div>
@@ -236,9 +245,9 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
                     <label key={JSON.stringify(state)}>
                         <input
                             type="checkbox"
-                            checked={state.showHiddenBranches.isChecked}
-                            onChange={(): void => state.showHiddenBranches.toggle()}/>
-                        Show hidden ({state.hiddenBranches.length})
+                            checked={branches.showHidden.isChecked}
+                            onChange={(): void => branches.showHidden.toggle()}/>
+                        Show hidden ({branches.hiddenBranches.length})
                     </label>
                     <table>
                         <thead>
@@ -249,7 +258,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
                         </tr>
                         </thead>
                         <tbody>
-                        {state.sortedBranches.map(this.renderBranch.bind(this))}
+                        {branches.sortedBranches.map(this.renderBranch.bind(this))}
                         </tbody>
                     </table>
                 </form>
@@ -287,15 +296,15 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
     }
 
     private getHideButton(branch: BranchSummaryBranch): ReactElement | null {
-        const {state} = this.props
+        const {branches} = this.props
 
-        if (!state.showHiddenBranches.isChecked) {
+        if (!branches.showHidden.isChecked) {
             return null
         }
 
         return (
-            <button type='button' onClick={(): void => state.toggleHideBranch(branch.name)}>
-                {!state.hiddenBranchesStorage.getValue().includes(branch.name) ? 'Hide' : 'Show'}
+            <button type='button' onClick={(): void => branches.toggleHide(branch.name)}>
+                {!branches.hiddenStorage.getValue().includes(branch.name) ? 'Hide' : 'Show'}
             </button>
         )
     }
@@ -540,9 +549,7 @@ const state = new class {
     }
 
     public async loadRepository(): Promise<void> {
-        const branchSummary = getBranchSummary()
         this.setRepository(new RepositoryState(
-            await branchSummary,
             this.statusLoader,
             this.fetchLoader
         ))
@@ -556,8 +563,9 @@ const state = new class {
 const App = observer((): ReactElement => {
     const {repository} = state
     const status = repository?.status
+    const branches = repository?.branches
 
-    if (null === repository || !status) {
+    if (null === repository || !status || !branches) {
         return (
             <div>
                 Loading...
@@ -567,10 +575,10 @@ const App = observer((): ReactElement => {
 
     return (
         <div>
-            <Repository state={repository} status={status}/>
-            <Branches state={repository} status={status}/>
-            <Commit state={repository} status={status}/>
-            <Files state={repository} status={status}/>
+            <Repository state={repository} status={status} branches={branches}/>
+            <Branches state={repository} status={status} branches={branches}/>
+            <Commit state={repository} status={status} branches={branches}/>
+            <Files state={repository} status={status} branches={branches}/>
         </div>
     )
 })
