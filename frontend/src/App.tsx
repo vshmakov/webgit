@@ -87,6 +87,7 @@ class RepositoryState {
     public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.requestStatus)
     public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, this.requestFetch)
     public newBranchName: string = ''
+    public readonly isBranchCreation = new Flag(false)
 
     public constructor() {
         makeAutoObservable(this)
@@ -159,25 +160,27 @@ class RepositoryState {
             name: this.newBranchName
         })
         await this.loadBranches()
-        this.cleanNewBranchName();
+        this.cleanBranchCreation();
     }
 
-    private cleanNewBranchName() {
+    private cleanBranchCreation() {
         this.newBranchName = ''
+        this.isBranchCreation.isChecked = false
     }
 
-    async fetch(): Promise<void> {
+    public async fetch(): Promise<void> {
         await this.fetchLoader.load()
         await this.loadStatus()
     }
 
-    async requestFetch(): Promise<void> {
+    private async requestFetch(): Promise<void> {
         await request(Method.Put, '/fetch');
     }
 }
 
 interface ToggleProps {
     label: string
+    flag?: Flag
     children: ReactElement
 }
 
@@ -187,7 +190,7 @@ interface ToggleState {
 
 const Toggle = observer(class extends React.Component<ToggleProps, ToggleState> {
     readonly state: ToggleState = {
-        flag: new Flag(false)
+        flag: this.props.flag || new Flag(false)
     }
 
     public render(): ReactElement {
@@ -223,7 +226,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
         return (
             <div>
                 <h3>Branches</h3>
-                <Toggle label='Create'>
+                <Toggle label='Create' flag={state.isBranchCreation}>
                     <form onSubmit={this.submitHandler.bind(this)}>
                         <input
                             type="text"
@@ -500,16 +503,16 @@ const Commit = observer(class extends React.Component<RepositoryProps> {
 const Repository = observer((props: { repository: RepositoryState }): ReactElement => {
         const {repository} = props
 
-    useEffect((): () => void => {
-        const id = setInterval((): void => {
-            repository.statusLoader.calculateAgo()
-            repository.fetchLoader.calculateAgo()
-        }, 1000)
+        useEffect((): () => void => {
+            const id = setInterval((): void => {
+                repository.statusLoader.calculateAgo()
+                repository.fetchLoader.calculateAgo()
+            }, 1000)
 
-        return (): void => {
-            clearInterval(id)
-        }
-    })
+            return (): void => {
+                clearInterval(id)
+            }
+        })
 
         const {status} = repository
         const {branches} = repository
@@ -522,7 +525,7 @@ const Repository = observer((props: { repository: RepositoryState }): ReactEleme
             )
         }
 
-                return (
+        return (
             <div>
                 <div>
                     <h2>Repository</h2>

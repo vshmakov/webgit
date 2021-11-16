@@ -11,8 +11,8 @@ import {Response} from "simple-git/typings/simple-git";
 import {exec, ExecException} from 'child_process'
 
 const git: SimpleGit = simpleGit({
-    // baseDir: '/home/vadim/projects/bluecentury/vemasys-prod',
-    baseDir: '/home/vadim/projects/my/webgit',
+    baseDir: '/home/vadim/projects/bluecentury/vemasys-prod',
+    // baseDir: '/home/vadim/projects/my/webgit',
 })
 
 git.outputHandler(function (command, stdout, stderr) {
