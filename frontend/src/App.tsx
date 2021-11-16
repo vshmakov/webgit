@@ -4,67 +4,18 @@ import {makeAutoObservable} from "mobx"
 import {observer} from "mobx-react"
 import {BranchSummary, BranchSummaryBranch, StatusResult} from "simple-git";
 import {FileStatusResult} from "simple-git/typings/response";
-
-async function withSound(promice: Promise<void>): Promise<void> {
-    await promice
-    const audio = new Audio('/audio.mp3')
-    audio.volume = 0.5
-    await audio.play()
-}
-
-class LocalStorage<T> {
-    public constructor(private readonly key: string, private value: T) {
-        const localStorageValue = localStorage.getItem(this.key)
-
-        if (null !== localStorageValue) {
-            this.value = JSON.parse(localStorageValue)
-        }
-
-        makeAutoObservable(this)
-    }
-
-    public getValue(): T {
-        return this.value
-    }
-
-    public setValue(value: T): void {
-        localStorage.setItem(this.key, JSON.stringify(value))
-        this.value = value
-    }
-}
-
-enum Method {
-    Get = 'get',
-    Post = 'post',
-    Put = 'put',
-}
-
-async function request(method: Method, path: string, body: any = null): Promise<Response> {
-    return fetch(path, {
-        method: method,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: null !== body ? JSON.stringify(body) : null
-    })
-}
-
-class Flag {
-    public constructor(public isChecked: boolean) {
-        makeAutoObservable(this)
-    }
-
-    public toggle(): void {
-        this.isChecked = !this.isChecked
-    }
-}
+import {withSound} from "./WithSound";
+import {LocalStorage} from "./LocalStorage";
+import {Method} from "./Method";
+import {request} from "./Request";
+import {Flag} from "./Flag";
+import {LocalStorageKey} from "./LocalStorageKey";
 
 class Loader<T> {
     private calledAtStorage: LocalStorage<number | null> = new LocalStorage<number | null>(this.localStorageKey, null)
     public ago: number | null = null
 
-    public constructor(private readonly localStorageKey: string, private readonly callback: () => Promise<T>) {
+    public constructor(private readonly localStorageKey: LocalStorageKey, private readonly callback: () => Promise<T>) {
         makeAutoObservable(this)
     }
 
@@ -105,9 +56,9 @@ async function fetchRemote(): Promise<void> {
 class RepositoryState {
     public showHiddenBranches: Flag = new Flag(false)
     public stageAllFilesBeforeCommit: Flag = new Flag(true)
-    public hiddenBranchesStorage: LocalStorage<string[]> = new LocalStorage<string[]>('hidden-branches-v2', [])
-    public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>('commit-message-v1', '')
-    public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>('precommit-command-v1', '')
+    public hiddenBranchesStorage: LocalStorage<string[]> = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
+    public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
+    public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
     public newBranchName: string = ''
 
     public constructor(
@@ -575,8 +526,8 @@ const Repository = observer(class extends React.Component<{ state: RepositorySta
 
 const state = new class {
     public repository: RepositoryState | null = null
-    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>('status-called-at-v1', getStatus)
-    public readonly fetchLoader: Loader<void> = new Loader<void>('fetch-called-at-v1', fetchRemote)
+    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, getStatus)
+    public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, fetchRemote)
 
     public constructor() {
         makeAutoObservable(this)
