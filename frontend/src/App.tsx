@@ -1,4 +1,4 @@
-import React, {FormEvent, ReactElement} from 'react';
+import React, {FormEvent, ReactElement, useEffect} from 'react';
 import './App.css';
 import {makeAutoObservable} from "mobx"
 import {observer} from "mobx-react"
@@ -13,7 +13,7 @@ import {LocalStorageKey} from "./LocalStorageKey";
 import {StatusSummary} from "simple-git/src/lib/responses/StatusSummary";
 
 class Loader<T> {
-    private calledAtStorage: LocalStorage<number | null> = new LocalStorage<number | null>(this.localStorageKey, null)
+    private readonly calledAtStorage = new LocalStorage<number | null>(this.localStorageKey, null)
     public ago: number | null = null
 
     public constructor(private readonly localStorageKey: LocalStorageKey, private readonly callback: () => Promise<T>) {
@@ -39,7 +39,7 @@ class Loader<T> {
 }
 
 class BranchesState {
-    public hiddenStorage: LocalStorage<string[]> = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
+    public readonly hiddenStorage = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
     public showHidden: Flag = new Flag(false)
 
     public constructor(private readonly summary: BranchSummary) {
@@ -81,12 +81,12 @@ class BranchesState {
 class RepositoryState {
     public status: StatusResult | null = null
     public branches: BranchesState | null = null
-    public stageAllFilesBeforeCommit: Flag = new Flag(true)
-    public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
-    public precommitCommandStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
-    public newBranchName: string = ''
+    public readonly stageAllFilesBeforeCommit: Flag = new Flag(true)
+    public readonly commitMessageStorage = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
+    public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
     public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.requestStatus)
     public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, this.requestFetch)
+    public newBranchName: string = ''
 
     public constructor() {
         makeAutoObservable(this)
@@ -497,45 +497,71 @@ const Commit = observer(class extends React.Component<RepositoryProps> {
     }
 })
 
-const Repository = observer(class extends React.Component<RepositoryProps> {
-    public render(): ReactElement {
-        const {state} = this.props;
+const Repository = observer((props: { repository: RepositoryState }): ReactElement => {
+        const {repository} = props
 
-        return (
+    useEffect((): () => void => {
+        const id = setInterval((): void => {
+            repository.statusLoader.calculateAgo()
+            repository.fetchLoader.calculateAgo()
+        }, 1000)
+
+        return (): void => {
+            clearInterval(id)
+        }
+    })
+
+        const {status} = repository
+        const {branches} = repository
+
+        if (!status || !branches) {
+            return (
+                <div>
+                    Loading...
+                </div>
+            )
+        }
+
+                return (
             <div>
-                <h1>Repository</h1>
-                <button onClick={() => withSound(state.fetch())}>
-                    Fetch {this.getCalledAgo(state.fetchLoader.ago)}
-                </button>
-                <button onClick={() => withSound(state.loadStatus())}>
-                    Status {this.getCalledAgo(state.statusLoader.ago)}
-                </button>
+                <div>
+                    <h2>Repository</h2>
+                    <button onClick={() => withSound(repository.fetch())}>
+                        Fetch {getCalledAgo(repository.fetchLoader.ago)}
+                    </button>
+                    <button onClick={() => withSound(repository.loadStatus())}>
+                        Status {getCalledAgo(repository.statusLoader.ago)}
+                    </button>
+                </div>
+                <Branches state={repository} status={status} branches={branches}/>
+                <Commit state={repository} status={status} branches={branches}/>
+                <Files state={repository} status={status} branches={branches}/>
             </div>
-        );
+        )
+    }
+)
+
+function getCalledAgo(ago: number | null): string {
+    if (null === ago) {
+        return ''
     }
 
-    private getCalledAgo(ago: number | null): string {
-        if (null === ago) {
-            return ''
-        }
+    const totalMinutes = Math.floor(ago / 60 / 1000)
+    const hours = Math.floor(totalMinutes / 60)
+    const timeParts = []
 
-        const totalMinutes = Math.floor(ago / 60 / 1000)
-        const hours = Math.floor(totalMinutes / 60)
-        const timeParts = []
-
-        if (0 !== hours) {
-            timeParts.push(`${hours}h`)
-        }
-
-        timeParts.push(`${totalMinutes % 60}m`)
-
-        return `(${timeParts.join(' ')} ago)`
+    if (0 !== hours) {
+        timeParts.push(`${hours}h`)
     }
-})
+
+    timeParts.push(`${totalMinutes % 60}m`)
+
+    return `(${timeParts.join(' ')} ago)`
+}
 
 const state = new class {
+    private readonly repositoryPathStorage = new LocalStorage<string | null>(LocalStorageKey.RepositoryPath, null)
     public repository: RepositoryState | null = null
-
 
     public constructor() {
         makeAutoObservable(this)
@@ -548,32 +574,20 @@ const state = new class {
 
 const App = observer((): ReactElement => {
     const {repository} = state
-    const status = repository?.status
-    const branches = repository?.branches
 
-    if (null === repository || !status || !branches) {
+    if (null === repository) {
         return (
-            <div>
-                Loading...
-            </div>
+            <div></div>
         )
     }
 
     return (
         <div>
-            <Repository state={repository} status={status} branches={branches}/>
-            <Branches state={repository} status={status} branches={branches}/>
-            <Commit state={repository} status={status} branches={branches}/>
-            <Files state={repository} status={status} branches={branches}/>
+            <Repository repository={repository}/>
         </div>
     )
 })
 
 export default App;
 
-state.loadRepository()
-
-setInterval((): void => {
-    state.repository?.statusLoader.calculateAgo()
-    state.repository?.fetchLoader.calculateAgo()
-}, 1000)
+state.repository = new RepositoryState()
