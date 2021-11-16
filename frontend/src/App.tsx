@@ -559,7 +559,17 @@ const Repository = observer(class extends React.Component<{ state: RepositorySta
             return ''
         }
 
-        return `(${Math.floor(ago / 60 / 1000)} mins ago)`
+        const totalMinutes = Math.floor(ago / 60 / 1000)
+        const hours = Math.floor(totalMinutes / 60)
+        const timeParts = []
+
+        if (0 !== hours) {
+            timeParts.push(`${hours}h`)
+        }
+
+        timeParts.push(`${totalMinutes % 60}m`)
+
+        return `(${timeParts.join(' ')} ago)`
     }
 })
 
