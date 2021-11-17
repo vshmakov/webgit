@@ -16,12 +16,13 @@ export class RepositoryState {
     public readonly commitMessageStorage = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
     public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '')
-    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.requestStatus)
-    public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, this.requestFetch)
+    private readonly request = request.bind(null, this.path)
+    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.requestStatus.bind(this))
+    public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, this.requestFetch.bind(this))
     public newBranchName: string = ''
     public readonly isBranchCreation = new Flag(false)
 
-    public constructor() {
+    public constructor(private readonly path: string) {
         makeAutoObservable(this)
         this.loadStatus()
         this.loadBranches()
@@ -32,7 +33,7 @@ export class RepositoryState {
     }
 
     private async requestStatus(): Promise<StatusResult> {
-        const response = await request(Method.Get, '/status')
+        const response = await this.request(Method.Get, '/status')
 
         return await response.json()
     }
@@ -43,7 +44,7 @@ export class RepositoryState {
 
     private async loadBranches(): Promise<void> {
         const status = this.loadStatus()
-        const response = await request(Method.Get, '/branches')
+        const response = await this.request(Method.Get, '/branches')
         const branchSummary = response.json()
         this.setBranchs(await branchSummary)
         await status
@@ -54,7 +55,7 @@ export class RepositoryState {
     }
 
     public async commit(): Promise<void> {
-        await request(Method.Post, '/commit', {
+        await this.request(Method.Post, '/commit', {
             message: this.commitMessageStorage.getValue(),
             stage: this.stageAllFilesBeforeCommit.isChecked,
             command: this.precommitCommandStorage.getValue(),
@@ -63,32 +64,32 @@ export class RepositoryState {
     }
 
     public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
-        await request(Method.Put, '/branch/checkout', branch)
+        await this.request(Method.Put, '/branch/checkout', branch)
         await this.loadStatus()
     }
 
     public async mergeBranchIntoCurrent(branch: BranchSummaryBranch): Promise<void> {
-        await request(Method.Put, '/branch/merge-into-current', branch)
+        await this.request(Method.Put, '/branch/merge-into-current', branch)
         await this.loadStatus()
     }
 
     public async declineFile(file: FileStatusResult): Promise<void> {
-        await request(Method.Put, '/file/decline', file)
+        await this.request(Method.Put, '/file/decline', file)
         await this.loadStatus()
     }
 
     public async mergeTrackingBranch(): Promise<void> {
-        await request(Method.Put, '/branch/merge-tracking')
+        await this.request(Method.Put, '/branch/merge-tracking')
         await this.loadStatus()
     }
 
     public async push(): Promise<void> {
-        await request(Method.Put, '/branch/push')
+        await this.request(Method.Put, '/branch/push')
         await this.loadStatus()
     }
 
     public async createBranch(): Promise<void> {
-        await request(Method.Post, '/branch/create', {
+        await this.request(Method.Post, '/branch/create', {
             name: this.newBranchName
         })
         await this.loadBranches()
@@ -106,6 +107,6 @@ export class RepositoryState {
     }
 
     private async requestFetch(): Promise<void> {
-        await request(Method.Put, '/fetch');
+        await this.request(Method.Put, '/fetch');
     }
 }

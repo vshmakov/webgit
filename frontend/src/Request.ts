@@ -1,7 +1,7 @@
 import {Method} from "./Method";
 
-export async function request(method: Method, path: string, body: any = null): Promise<Response> {
-    return fetch(path, {
+export async function request(path:string, method: Method, url: string, body: any = null): Promise<Response> {
+    return fetch(url, {
         method: method,
         headers: {
             'Accept': 'application/json',

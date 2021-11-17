@@ -394,11 +394,7 @@ class State {
 
     public chooseRepository(path: string): void {
         this.currentRepositoryPathStorage.setValue(path)
-        this.repository = new RepositoryState()
-    }
-
-    public loadRepository(): void {
-        this.repository = new RepositoryState()
+        this.repository = new RepositoryState(path)
     }
 }
 
