@@ -1,4 +1,4 @@
-import React, {FormEvent, ReactElement, useEffect} from 'react';
+import React, {ReactElement, useEffect} from 'react';
 import './App.css';
 import {makeAutoObservable} from "mobx"
 import {observer} from "mobx-react"
@@ -296,7 +296,7 @@ const Commit = observer(class extends React.Component<RepositoryProps> {
                     value={state.commitMessageStorage.getValue()}
                     onChange={(event) => state.commitMessageStorage.setValue(event.target.value)}
                     required={true}
-                accessKey='c'/>
+                    accessKey='c'/>
                 <button type='submit'>
                     Commit
                 </button>
