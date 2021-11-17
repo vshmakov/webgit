@@ -369,7 +369,7 @@ class State {
         const path = this.currentRepositoryPathStorage.getValue()
 
         if (null !== path) {
-            this.checkRepository(path)
+            this.chooseRepository(path)
         }
 
         makeAutoObservable(this)
@@ -392,7 +392,7 @@ class State {
         this.repositoryPathsStorage.setValue(paths)
     }
 
-    public checkRepository(path: string): void {
+    public chooseRepository(path: string): void {
         this.currentRepositoryPathStorage.setValue(path)
         this.repository = new RepositoryState()
     }
@@ -409,7 +409,7 @@ const RepositoryPath = observer(({path, state}: { path: string, state: State }):
                 <input
                     type="radio"
                     checked={path === state.currentRepositoryPathStorage.getValue()}
-                    onChange={() => state.currentRepositoryPathStorage.setValue(path)}/>
+                    onChange={() => state.chooseRepository(path)}/>
             </td>
             <td>{path}</td>
             <td>
