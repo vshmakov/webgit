@@ -15,7 +15,7 @@ import {getCalledAgo} from "./GetCalledAgo";
 import {preventDefault} from "./PreventDefault";
 import {LocalStorageInput} from "./LocalStorageInput";
 import {setInputValue} from "./SetInputValue";
-import {and, not} from "./Not";
+import {not} from "./Not";
 import {sameWith} from "./SameWith";
 import {compareAlphabetically} from "./CompareAlphabetically";
 
