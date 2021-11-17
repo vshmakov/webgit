@@ -3,6 +3,9 @@ import {LocalStorageKey} from "./LocalStorageKey";
 import {Flag} from "./Flag";
 import {BranchSummary, BranchSummaryBranch} from "simple-git";
 import {makeAutoObservable} from "mobx";
+import {sameWith} from "./SameWith";
+import {not} from "./Not";
+import {compareAlphabetically} from "./CompareAlphabetically";
 
 export class BranchesState {
     public readonly hiddenStorage = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
@@ -17,7 +20,7 @@ export class BranchesState {
 
         return this.branches
             .filter((branch: BranchSummaryBranch): boolean => this.showHidden.isChecked || !hidden.includes(branch.name))
-            .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => branch1.name.toLowerCase() < branch2.name.toLowerCase() ? -1 : 1)
+            .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => compareAlphabetically(branch1.name, branch2.name))
     }
 
     public get hidden(): BranchSummaryBranch[] {
@@ -35,7 +38,7 @@ export class BranchesState {
         let hidden = this.hiddenStorage.getValue()
 
         if (hidden.includes(branch)) {
-            hidden = hidden.filter((hiddenBranch: string): boolean => branch !== hiddenBranch)
+            hidden = hidden.filter(not(sameWith(branch)))
         } else {
             hidden.push(branch)
         }

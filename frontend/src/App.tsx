@@ -1,4 +1,4 @@
-import React, {ReactElement, useEffect} from 'react';
+import React, {ReactElement, useEffect, useState} from 'react';
 import './App.css';
 import {makeAutoObservable} from "mobx"
 import {observer} from "mobx-react"
@@ -12,7 +12,12 @@ import {BranchesState} from "./BranchesState";
 import {RepositoryState} from "./RepositoryState";
 import {Toggle} from "./Toggle";
 import {getCalledAgo} from "./GetCalledAgo";
-import {onSubmit} from "./OnSubmit";
+import {preventDefault} from "./PreventDefault";
+import {LocalStorageInput} from "./LocalStorageInput";
+import {setInputValue} from "./SetInputValue";
+import {and, not} from "./Not";
+import {sameWith} from "./SameWith";
+import {compareAlphabetically} from "./CompareAlphabetically";
 
 interface RepositoryProps {
     state: RepositoryState
@@ -28,7 +33,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
             <div>
                 <h3>Branches</h3>
                 <Toggle label='Create' flag={state.isBranchCreation}>
-                    <form onSubmit={onSubmit(() => withSound(state.createBranch()))}>
+                    <form onSubmit={preventDefault(() => withSound(state.createBranch()))}>
                         <input
                             type="text"
                             value={state.newBranchName}
@@ -289,14 +294,9 @@ const Commit = observer(class extends React.Component<RepositoryProps> {
         const {state} = this.props;
 
         return (
-            <form onSubmit={onSubmit(() => withSound(state.commit()))}>
+            <form onSubmit={preventDefault(() => withSound(state.commit()))}>
                 <h3>Commit</h3>
-                <input
-                    type="text"
-                    value={state.commitMessageStorage.getValue()}
-                    onChange={(event) => state.commitMessageStorage.setValue(event.target.value)}
-                    required={true}
-                    accessKey='c'/>
+                <LocalStorageInput storage={state.commitMessageStorage}/>
                 <button type='submit'>
                     Commit
                 </button>
@@ -309,10 +309,7 @@ const Commit = observer(class extends React.Component<RepositoryProps> {
                                 onChange={(): void => state.stageAllFilesBeforeCommit.toggle()}/>
                             Stage all files
                         </label>
-                        <input
-                            type="text"
-                            value={state.precommitCommandStorage.getValue()}
-                            onChange={(event) => state.precommitCommandStorage.setValue(event.target.value)}/>
+                        <LocalStorageInput storage={state.precommitCommandStorage}/>
                     </div>
                 </Toggle>
             </form>
@@ -363,35 +360,118 @@ const Repository = observer((props: { repository: RepositoryState }): ReactEleme
     )
 })
 
-const state = new class {
-    private readonly repositoryPathStorage = new LocalStorage<string | null>(LocalStorageKey.RepositoryPath, null)
+class State {
+    public readonly currentRepositoryPathStorage = new LocalStorage<string | null>(LocalStorageKey.CurrentRepositoryPath, null)
+    public readonly repositoryPathsStorage = new LocalStorage<string[]>(LocalStorageKey.RepositoryPaths, [])
     public repository: RepositoryState | null = null
 
     public constructor() {
+        const path = this.currentRepositoryPathStorage.getValue()
+
+        if (null !== path) {
+            this.checkRepository(path)
+        }
+
         makeAutoObservable(this)
+    }
+
+    public addRepositoryPath(path: string): void {
+        const paths = this.repositoryPathsStorage.getValue()
+
+        if (!paths.includes(path)) {
+            paths.push(path)
+        }
+
+        this.repositoryPathsStorage.setValue(paths)
+    }
+
+    public removeRepositoryPath(path: string): void {
+        const paths = this.repositoryPathsStorage
+            .getValue()
+            .filter(not(sameWith(path)))
+        this.repositoryPathsStorage.setValue(paths)
+    }
+
+    public checkRepository(path: string): void {
+        this.currentRepositoryPathStorage.setValue(path)
+        this.repository = new RepositoryState()
     }
 
     public loadRepository(): void {
         this.repository = new RepositoryState()
     }
-}()
+}
 
-const App = observer((): ReactElement => {
-    const {repository} = state
+const RepositoryPath = observer(({path, state}: { path: string, state: State }): ReactElement => {
+    return (
+        <tr>
+            <td>
+                <input
+                    type="radio"
+                    checked={path === state.currentRepositoryPathStorage.getValue()}
+                    onChange={() => state.currentRepositoryPathStorage.setValue(path)}/>
+            </td>
+            <td>{path}</td>
+            <td>
+                <button type='button' onClick={() => state.removeRepositoryPath(path)}>
+                    Remove
+                </button>
+            </td>
+        </tr>
+    )
+})
 
-    if (null === repository) {
-        return (
-            <div></div>
-        )
-    }
+const SwitchRepository = observer(({state}: { state: State }): ReactElement => {
+    const [path, setPath] = useState('')
+    const paths = state.repositoryPathsStorage
+        .getValue()
+        .slice()
+        .sort(compareAlphabetically)
+        .map((path: string): ReactElement => <RepositoryPath path={path} state={state}/>)
 
     return (
         <div>
-            <Repository repository={repository}/>
+            <h1>Repository</h1>
+            <Toggle label='Switch'>
+                <form onSubmit={preventDefault(() => (state.addRepositoryPath(path), setPath('')))}>
+                    <input
+                        type="text"
+                        value={path}
+                        onChange={setInputValue(setPath)}
+                        required={true}/>
+                    <button type="submit">
+                        Add
+                    </button>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Path</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {paths}
+                        </tbody>
+                    </table>
+                </form>
+            </Toggle>
+        </div>
+    )
+})
+
+const App = observer((): ReactElement => {
+    const [state] = useState(new State())
+    const {repository} = state
+
+    return (
+        <div>
+            <SwitchRepository state={state}/>
+            <div>
+                {null !== repository ? <Repository repository={repository}/> : null}
+            </div>
         </div>
     )
 })
 
 export default App;
-
-state.repository = new RepositoryState()

@@ -4,6 +4,7 @@ export enum LocalStorageKey {
     PrecommitCommand = 'PrecommitCommand',
     StatusCalledAt = 'StatusCalledAt',
     FetchCalledAt = 'FetchCalledAt',
-    RepositoryPath = 'RepositoryPath',
+    CurrentRepositoryPath = 'CurrentRepositoryPath',
+    RepositoryPaths = 'RepositoryPaths',
     BitbucketRepositoryPath = 'BitbucketRepositoryPath',
 }
