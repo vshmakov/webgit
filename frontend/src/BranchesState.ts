@@ -6,7 +6,6 @@ import {makeAutoObservable} from "mobx";
 import {sameWith} from "./SameWith";
 import {not} from "./Not";
 import {compareAlphabetically} from "./CompareAlphabetically";
-import * as path from "path";
 import {compare} from "./Compare";
 
 export class BranchesState {
@@ -26,12 +25,7 @@ export class BranchesState {
         return this.branches
             .filter((branch: BranchSummaryBranch): boolean => this.showHidden.isChecked || !hidden.includes(branch.name))
             .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => compareAlphabetically(branch1.name, branch2.name))
-            .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => {
-                const index1 = history.indexOf(branch1.name)
-                const index2 = history.indexOf(branch2.name)
-
-                return -compare(index1, index2)
-            })
+            .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => -compare(history.indexOf(branch1.name), history.indexOf(branch2.name)))
     }
 
     public get hidden(): BranchSummaryBranch[] {
