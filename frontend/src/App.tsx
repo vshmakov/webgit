@@ -11,6 +11,8 @@ import {StatusSummary} from "simple-git/src/lib/responses/StatusSummary";
 import {BranchesState} from "./BranchesState";
 import {RepositoryState} from "./RepositoryState";
 import {Toggle} from "./Toggle";
+import {getCalledAgo} from "./GetCalledAgo";
+import {onSubmit} from "./OnSubmit";
 
 interface RepositoryProps {
     state: RepositoryState
@@ -26,7 +28,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
             <div>
                 <h3>Branches</h3>
                 <Toggle label='Create' flag={state.isBranchCreation}>
-                    <form onSubmit={this.submitHandler.bind(this)}>
+                    <form onSubmit={onSubmit(() => withSound(state.createBranch()))}>
                         <input
                             type="text"
                             value={state.newBranchName}
@@ -90,12 +92,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
         )
     }
 
-    private submitHandler(event: FormEvent<HTMLFormElement>): void {
-        event.preventDefault()
-        withSound(this.props.state.createBranch())
-    }
-
-    private renderBranch(branch: BranchSummaryBranch): ReactElement {
+    private renderBranch(branch: BranchSummaryBranch, index: number): ReactElement {
         return (
             <tr key={branch.name}>
                 <td>
@@ -103,7 +100,8 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
                         type='radio'
                         name='current-branch'
                         checked={this.isCurrentBranch(branch)}
-                        onChange={() => withSound(this.props.state.checkoutBranch(branch))}/>
+                        onChange={() => withSound(this.props.state.checkoutBranch(branch))}
+                        accessKey={(index + 1).toString()}/>
                 </td>
                 <td>
                     {branch.name} {this.getTracking(branch)}
@@ -154,7 +152,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
         const {state} = this.props
 
         return (
-            <button type='button' onClick={() => withSound(state.push())}>
+            <button type='button' onClick={() => withSound(state.push())} accessKey='p'>
                 Push
             </button>
         )
@@ -178,7 +176,7 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
         const {state} = this.props
 
         return (
-            <button type='button' onClick={() => withSound(state.mergeTrackingBranch())}>
+            <button type='button' onClick={() => withSound(state.mergeTrackingBranch())} accessKey='l'>
                 Merge tracking
             </button>
         )
@@ -291,13 +289,14 @@ const Commit = observer(class extends React.Component<RepositoryProps> {
         const {state} = this.props;
 
         return (
-            <form onSubmit={this.submitHandler.bind(this)}>
+            <form onSubmit={onSubmit(() => withSound(state.commit()))}>
                 <h3>Commit</h3>
                 <input
                     type="text"
                     value={state.commitMessageStorage.getValue()}
                     onChange={(event) => state.commitMessageStorage.setValue(event.target.value)}
-                    required={true}/>
+                    required={true}
+                accessKey='c'/>
                 <button type='submit'>
                     Commit
                 </button>
@@ -319,11 +318,6 @@ const Commit = observer(class extends React.Component<RepositoryProps> {
             </form>
         );
     }
-
-    private submitHandler(event: FormEvent<HTMLFormElement>): void {
-        event.preventDefault()
-        withSound(this.props.state.commit())
-    }
 })
 
 const Repository = observer((props: { repository: RepositoryState }): ReactElement => {
@@ -340,10 +334,10 @@ const Repository = observer((props: { repository: RepositoryState }): ReactEleme
         }
     })
 
-    const {status} = repository
-    const {branches} = repository
+    const {status, branches} = repository
 
-    if (!status || !branches) {
+    if (null === status || null === branches
+    ) {
         return (
             <div>
                 Loading...
@@ -355,10 +349,10 @@ const Repository = observer((props: { repository: RepositoryState }): ReactEleme
         <div>
             <div>
                 <h2>Repository</h2>
-                <button onClick={() => withSound(repository.fetch())}>
+                <button onClick={() => withSound(repository.fetch())} accessKey='t'>
                     Fetch {getCalledAgo(repository.fetchLoader.ago)}
                 </button>
-                <button onClick={() => withSound(repository.loadStatus())}>
+                <button onClick={() => withSound(repository.loadStatus())} accessKey='s'>
                     Status {getCalledAgo(repository.statusLoader.ago)}
                 </button>
             </div>
@@ -368,24 +362,6 @@ const Repository = observer((props: { repository: RepositoryState }): ReactEleme
         </div>
     )
 })
-
-function getCalledAgo(ago: number | null): string {
-    if (null === ago) {
-        return ''
-    }
-
-    const totalMinutes = Math.floor(ago / 60 / 1000)
-    const hours = Math.floor(totalMinutes / 60)
-    const timeParts = []
-
-    if (0 !== hours) {
-        timeParts.push(`${hours}h`)
-    }
-
-    timeParts.push(`${totalMinutes % 60}m`)
-
-    return `(${timeParts.join(' ')} ago)`
-}
 
 const state = new class {
     private readonly repositoryPathStorage = new LocalStorage<string | null>(LocalStorageKey.RepositoryPath, null)

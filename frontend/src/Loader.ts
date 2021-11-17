@@ -7,12 +7,14 @@ export class Loader<T> {
     public ago: number | null = null
 
     public constructor(private readonly localStorageKey: LocalStorageKey, private readonly callback: () => Promise<T>) {
+        this.calculateAgo()
         makeAutoObservable(this)
     }
 
     public async load(): Promise<T> {
         const result = await this.callback()
         this.calledAtStorage.setValue(new Date().getTime())
+this.calculateAgo()
 
         return result
     }
