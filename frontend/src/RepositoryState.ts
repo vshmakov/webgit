@@ -8,6 +8,7 @@ import {makeAutoObservable} from "mobx";
 import {request} from "./Request";
 import {Method} from "./Method";
 import {FileStatusResult} from "simple-git/typings/response";
+import * as path from "path";
 
 export class RepositoryState {
     public status: StatusResult | null = null
@@ -51,7 +52,7 @@ export class RepositoryState {
     }
 
     private setBranchs(branchSummary: BranchSummary): void {
-        this.branches = new BranchesState(branchSummary)
+        this.branches = new BranchesState(this.path, branchSummary)
     }
 
     public async commit(): Promise<void> {
@@ -66,6 +67,7 @@ export class RepositoryState {
     public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
         await this.request(Method.Put, '/branch/checkout', branch)
         await this.loadStatus()
+        this.branches?.addHistory(branch.name)
     }
 
     public async mergeBranchIntoCurrent(branch: BranchSummaryBranch): Promise<void> {

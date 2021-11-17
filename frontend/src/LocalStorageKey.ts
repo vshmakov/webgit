@@ -1,5 +1,6 @@
 export enum LocalStorageKey {
     HiddenBranches = 'HiddenBranches',
+    BranchHistory = 'BranchHistory',
     CommitMessage = 'CommitMessage',
     PrecommitCommand = 'PrecommitCommand',
     StatusCalledAt = 'StatusCalledAt',

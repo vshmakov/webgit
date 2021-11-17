@@ -6,21 +6,32 @@ import {makeAutoObservable} from "mobx";
 import {sameWith} from "./SameWith";
 import {not} from "./Not";
 import {compareAlphabetically} from "./CompareAlphabetically";
+import * as path from "path";
+import {compare} from "./Compare";
 
 export class BranchesState {
     public readonly hiddenStorage = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
+    private readonly historyStorage: LocalStorage<string[]>
     public showHidden: Flag = new Flag(false)
 
-    public constructor(private readonly summary: BranchSummary) {
+    public constructor(private readonly path: string, private readonly summary: BranchSummary) {
+        this.historyStorage = new LocalStorage<string[]>(LocalStorageKey.BranchHistory, [], path)
         makeAutoObservable(this)
     }
 
     public get sorted(): BranchSummaryBranch[] {
         const hidden = this.hiddenStorage.getValue()
+        const history = this.historyStorage.getValue()
 
         return this.branches
             .filter((branch: BranchSummaryBranch): boolean => this.showHidden.isChecked || !hidden.includes(branch.name))
             .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => compareAlphabetically(branch1.name, branch2.name))
+            .sort((branch1: BranchSummaryBranch, branch2: BranchSummaryBranch): number => {
+                const index1 = history.indexOf(branch1.name)
+                const index2 = history.indexOf(branch2.name)
+
+                return -compare(index1, index2)
+            })
     }
 
     public get hidden(): BranchSummaryBranch[] {
@@ -44,5 +55,13 @@ export class BranchesState {
         }
 
         this.hiddenStorage.setValue(hidden)
+    }
+
+    public addHistory(branch: string): void {
+        const history = this.historyStorage
+            .getValue()
+            .filter(not(sameWith(branch)))
+        history.push(branch)
+        this.historyStorage.setValue(history)
     }
 }
