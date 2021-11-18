@@ -102,7 +102,7 @@ export class RepositoryState {
 
     private cleanBranchCreation() {
         this.newBranchName = ''
-        this.isBranchCreation.isChecked = false
+        this.isBranchCreation.uncheck()
     }
 
     public async fetch(): Promise<void> {

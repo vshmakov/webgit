@@ -1,19 +1,23 @@
 import {makeAutoObservable} from "mobx";
 
 export class Flag {
-    public constructor(public isChecked: boolean) {
+    public constructor(private flag: boolean) {
         makeAutoObservable(this)
     }
 
+    public get isChecked(): boolean {
+        return this.flag
+    }
+
     public toggle(): void {
-        this.isChecked = !this.isChecked
+        this.flag = !this.flag
     }
 
     public check(): void {
-        this.isChecked = true
+        this.flag = true
     }
 
     public uncheck(): void {
-        this.isChecked = false
+        this.flag = false
     }
 }
