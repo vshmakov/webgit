@@ -10,15 +10,20 @@ import simpleGit, {
 import {Response} from "simple-git/typings/simple-git";
 import {exec, ExecException} from 'child_process'
 
-function git(path: string): SimpleGit {
-    const client = simpleGit({
-        baseDir: path
-    });
-    client.outputHandler(function (command, stdout, stderr) {
-        stdout.pipe(process.stdout);
-    })
+const clients: { [key: string]: SimpleGit } = {}
 
-    return client
+function git(path: string): SimpleGit {
+    if (undefined === clients[path]) {
+        const client = simpleGit({
+            baseDir: path
+        });
+        client.outputHandler(function (command, stdout, stderr) {
+            stdout.pipe(process.stdout);
+        })
+        clients[path] = client
+    }
+
+    return clients[path]
 }
 
 interface PathHeaders {
