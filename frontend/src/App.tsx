@@ -403,7 +403,7 @@ class State {
 
 const RepositoryPath = observer(({path, state}: { path: string, state: State }): ReactElement => {
     return (
-        <tr key={path}>
+        <tr>
             <td>
                 <input
                     type="radio"
@@ -426,7 +426,7 @@ const SwitchRepository = observer(({state}: { state: State }): ReactElement => {
         .getValue()
         .slice()
         .sort(compareAlphabetically)
-        .map((path: string): ReactElement => <RepositoryPath path={path} state={state}/>)
+        .map((path: string): ReactElement => <RepositoryPath path={path} state={state} key={path}/>)
 
     return (
         <div>
