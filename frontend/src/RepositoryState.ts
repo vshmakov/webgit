@@ -17,8 +17,8 @@ export class RepositoryState {
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
     public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '')
     private readonly request = request.bind(null, this.path)
-    public readonly statusLoader: Loader<StatusResult> = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.requestStatus.bind(this))
-    public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, this.requestFetch.bind(this))
+    public readonly statusLoader = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.path, this.requestStatus.bind(this))
+    public readonly fetchLoader = new Loader<void>(LocalStorageKey.FetchCalledAt, this.path, this.requestFetch.bind(this))
     public newBranchName: string = ''
     public readonly isBranchCreation = new Flag(false)
     public readonly isDisabled = new Flag(false)

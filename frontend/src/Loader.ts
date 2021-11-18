@@ -3,10 +3,10 @@ import {LocalStorageKey} from "./LocalStorageKey";
 import {makeAutoObservable} from "mobx";
 
 export class Loader<T> {
-    private readonly calledAtStorage = new LocalStorage<number | null>(this.localStorageKey, null)
+    private readonly calledAtStorage = new LocalStorage<number | null>(this.localStorageKey, null, this.path)
     public ago: number | null = null
 
-    public constructor(private readonly localStorageKey: LocalStorageKey, private readonly callback: () => Promise<T>) {
+    public constructor(private readonly localStorageKey: LocalStorageKey, private readonly path: string, private readonly callback: () => Promise<T>) {
         this.calculateAgo()
         makeAutoObservable(this)
     }
@@ -14,7 +14,7 @@ export class Loader<T> {
     public async load(): Promise<T> {
         const result = await this.callback()
         this.calledAtStorage.setValue(new Date().getTime())
-this.calculateAgo()
+        this.calculateAgo()
 
         return result
     }
