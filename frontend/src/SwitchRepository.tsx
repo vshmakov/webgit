@@ -16,7 +16,7 @@ export const SwitchRepository = observer(({state}: { state: State }): ReactEleme
         .map((path: string): ReactElement => <RepositoryPath path={path} state={state} key={path}/>)
 
     return (
-        <Toggle label='Switch repository'>
+        <Toggle label='Switch repository' flag={state.switchingRepository}>
             <form onSubmit={preventDefault(() => {
                 state.addRepositoryPath(path);
                 setPath('')

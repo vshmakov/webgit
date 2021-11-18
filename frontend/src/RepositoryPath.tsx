@@ -9,7 +9,7 @@ export const RepositoryPath = observer(({path, state}: { path: string, state: St
                 <input
                     type="radio"
                     checked={path === state.currentRepositoryPathStorage.getValue()}
-                    onChange={() => state.chooseRepository(path)}/>
+                    onChange={() => state.checkRepository(path)}/>
             </td>
             <td>{path}</td>
             <td>
