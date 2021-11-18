@@ -1,11 +1,11 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {RepositoryProps} from "./RepositoryProps";
+import {LoadedRepositoryProps} from "./LoadedRepositoryProps";
 import {FileStatusResult} from "simple-git/typings/response";
 import {withSound} from "./WithSound";
 import {getFilePathParts} from "./GetFilePathParts";
 
-export const Files = observer(class extends React.Component<RepositoryProps> {
+export const Files = observer(class extends React.Component<LoadedRepositoryProps> {
     public render(): ReactElement {
         const {status} = this.props;
 

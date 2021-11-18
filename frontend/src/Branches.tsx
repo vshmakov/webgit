@@ -1,12 +1,12 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {RepositoryProps} from "./RepositoryProps";
+import {LoadedRepositoryProps} from "./LoadedRepositoryProps";
 import {Toggle} from "./Toggle";
 import {preventDefault} from "./PreventDefault";
 import {withSound} from "./WithSound";
 import {BranchSummaryBranch} from "simple-git";
 
-export const Branches = observer(class extends React.Component<RepositoryProps> {
+export const Branches = observer(class extends React.Component<LoadedRepositoryProps> {
     public render(): ReactElement {
         const {state, branches, status} = this.props
 
@@ -33,17 +33,6 @@ export const Branches = observer(class extends React.Component<RepositoryProps> 
                         {branches.sorted.map(this.renderBranch.bind(this))}
                         </tbody>
                     </table>
-                    <div>
-                        <Toggle label={`Create pull request for ${status.current}`}>
-                            <form>
-                                <input
-                                    type="text"
-                                    value={state.bitbucketRepositoryPathStorage.getValue()}
-                                    onChange={(event): void => state.bitbucketRepositoryPathStorage.setValue(event.target.value)}/>
-                                {this.getCreateBitbucketPullRequestLink()}
-                            </form>
-                        </Toggle>
-                    </div>
                 </form>
                 <Toggle label='Create' flag={state.isBranchCreation}>
                     <form onSubmit={preventDefault(() => withSound(state.createBranch()))}>
@@ -62,18 +51,20 @@ export const Branches = observer(class extends React.Component<RepositoryProps> 
             ;
     }
 
-    private getCreateBitbucketPullRequestLink(): ReactElement | null {
+    private getCreateBitbucketPullRequestLink(branch: BranchSummaryBranch): ReactElement | null {
+        if (branch.name!==this.props.status.current){
+            return  null
+        }
+
         const path = this.props.state.bitbucketRepositoryPathStorage.getValue()
 
         if (null === path) {
             return null
         }
 
-        const branch = this.props.status.current
-
-        return (
-            <a href={`${path}/pull-requests/new?source=${branch}&t=1`}>
-                Create
+                return (
+            <a href={`${path}/pull-requests/new?source=${branch.name}&t=1`}>
+                Create bitbucket pull request
             </a>
         )
     }
@@ -100,6 +91,7 @@ export const Branches = observer(class extends React.Component<RepositoryProps> 
                     {this.getMergeTrackingButton(branch)}
                     {this.getPushButton(branch)}
                     {this.getHideButton(branch)}
+                    {this.getCreateBitbucketPullRequestLink(branch)}
                 </td>
             </tr>
         )

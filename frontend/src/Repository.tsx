@@ -8,18 +8,12 @@ import {Commit} from "./Commit";
 import {Files} from "./Files";
 import {getFilePathParts} from "./GetFilePathParts";
 import {capitalizeFirstLetter} from "./CapitalizeFirstLetter";
+import {RepositorySettings} from "./RepositorySettings";
+import {EmptyCallback} from "./EmptyCallback";
+import {RepositoryProps} from "./RepositoryProps";
 
-export const Repository = observer(({repository}: { repository: RepositoryState }): ReactElement => {
-    useEffect((): () => void => {
-        const id = setInterval((): void => {
-            repository.statusLoader.calculateAgo()
-            repository.fetchLoader.calculateAgo()
-        }, 1000)
-
-        return (): void => {
-            clearInterval(id)
-        }
-    })
+export const Repository = observer(({repository}: RepositoryProps): ReactElement => {
+    useEffect(getCalculateLoadersAgoEffect(repository))
     const {status, branches} = repository
 
     if (null === status || null === branches
@@ -35,12 +29,17 @@ export const Repository = observer(({repository}: { repository: RepositoryState 
         <div>
             <div>
                 <h2>{capitalizeFirstLetter(getFilePathParts(repository.path).name)} repository</h2>
-                <button onClick={() => withSound(repository.fetch())} accessKey='t'>
-                    Fetch {getCalledAgo(repository.fetchLoader.ago)}
-                </button>
-                <button onClick={() => withSound(repository.loadStatus())} accessKey='s'>
-                    Status {getCalledAgo(repository.statusLoader.ago)}
-                </button>
+                <div>
+                    <button onClick={() => withSound(repository.fetch())} accessKey='t'>
+                        Fetch {getCalledAgo(repository.fetchLoader.ago)}
+                    </button>
+                    <button onClick={() => withSound(repository.loadStatus())} accessKey='s'>
+                        Status {getCalledAgo(repository.statusLoader.ago)}
+                    </button>
+                </div>
+                <div>
+                    <RepositorySettings repository={repository}/>
+                </div>
             </div>
             <Branches state={repository} status={status} branches={branches}/>
             <Commit state={repository} status={status} branches={branches}/>
@@ -49,4 +48,15 @@ export const Repository = observer(({repository}: { repository: RepositoryState 
     )
 })
 
+function getCalculateLoadersAgoEffect(repository: RepositoryState): EmptyCallback {
+    return (): EmptyCallback => {
+        const id = setInterval((): void => {
+            repository.statusLoader.calculateAgo()
+            repository.fetchLoader.calculateAgo()
+        }, 1000)
 
+        return (): void => {
+            clearInterval(id)
+        }
+    };
+}
