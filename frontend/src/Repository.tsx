@@ -6,10 +6,10 @@ import {getCalledAgo} from "./GetCalledAgo";
 import {Branches} from "./Branches";
 import {Commit} from "./Commit";
 import {Files} from "./Files";
+import {getFilePathParts} from "./GetFilePathParts";
+import {capitalizeFirstLetter} from "./CapitalizeFirstLetter";
 
-export const Repository = observer((props: { repository: RepositoryState }): ReactElement => {
-    const {repository} = props
-
+export const Repository = observer(({repository}: { repository: RepositoryState }): ReactElement => {
     useEffect((): () => void => {
         const id = setInterval((): void => {
             repository.statusLoader.calculateAgo()
@@ -20,7 +20,6 @@ export const Repository = observer((props: { repository: RepositoryState }): Rea
             clearInterval(id)
         }
     })
-
     const {status, branches} = repository
 
     if (null === status || null === branches
@@ -35,7 +34,7 @@ export const Repository = observer((props: { repository: RepositoryState }): Rea
     return (
         <div>
             <div>
-                <h2>Repository</h2>
+                <h2>{capitalizeFirstLetter(getFilePathParts(repository.path).name)} repository</h2>
                 <button onClick={() => withSound(repository.fetch())} accessKey='t'>
                     Fetch {getCalledAgo(repository.fetchLoader.ago)}
                 </button>
@@ -49,3 +48,5 @@ export const Repository = observer((props: { repository: RepositoryState }): Rea
         </div>
     )
 })
+
+

@@ -16,35 +16,32 @@ export const SwitchRepository = observer(({state}: { state: State }): ReactEleme
         .map((path: string): ReactElement => <RepositoryPath path={path} state={state} key={path}/>)
 
     return (
-        <div>
-            <h1>Repository</h1>
-            <Toggle label='Switch'>
-                <form onSubmit={preventDefault(() => {
-                    state.addRepositoryPath(path);
-                    setPath('')
-                })}>
-                    <input
-                        type="text"
-                        value={path}
-                        onChange={setInputValue(setPath)}
-                        required={true}/>
-                    <button type="submit">
-                        Add
-                    </button>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Path</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {paths}
-                        </tbody>
-                    </table>
-                </form>
-            </Toggle>
-        </div>
+        <Toggle label='Switch repository'>
+            <form onSubmit={preventDefault(() => {
+                state.addRepositoryPath(path);
+                setPath('')
+            })}>
+                <input
+                    type="text"
+                    value={path}
+                    onChange={setInputValue(setPath)}
+                    required={true}/>
+                <button type="submit">
+                    Add
+                </button>
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Path</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {paths}
+                    </tbody>
+                </table>
+            </form>
+        </Toggle>
     )
 })

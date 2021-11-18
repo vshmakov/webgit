@@ -3,6 +3,7 @@ import React, {ReactElement} from "react";
 import {RepositoryProps} from "./RepositoryProps";
 import {FileStatusResult} from "simple-git/typings/response";
 import {withSound} from "./WithSound";
+import {getFilePathParts} from "./GetFilePathParts";
 
 export const Files = observer(class extends React.Component<RepositoryProps> {
     public render(): ReactElement {
@@ -36,10 +37,8 @@ export const Files = observer(class extends React.Component<RepositoryProps> {
             M: 'Modified',
             "?": "New",
         }
-
         const workingDir = file.working_dir as keyof typeof Status
-
-        const {name, directory} = this.splitFileName(file)
+        const {name, directory} = getFilePathParts(file.path)
 
         return (
             <tr key={file.path}>
@@ -57,14 +56,5 @@ export const Files = observer(class extends React.Component<RepositoryProps> {
                 </td>
             </tr>
         )
-    }
-
-    private splitFileName(file: FileStatusResult): { name: string, directory: string } {
-        const parts = file.path.split('/')
-
-        return {
-            name: parts.pop() || '',
-            directory: parts.join('/')
-        }
     }
 })

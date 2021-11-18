@@ -23,7 +23,7 @@ export class RepositoryState {
     public readonly isBranchCreation = new Flag(false)
     public readonly isDisabled = new Flag(false)
 
-    public constructor(private readonly path: string) {
+    public constructor(public readonly path: string) {
         makeAutoObservable(this)
         this.loadStatus()
         this.loadBranches()

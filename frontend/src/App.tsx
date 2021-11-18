@@ -10,7 +10,10 @@ export const App = observer(({state}: { state: State }): ReactElement => {
 
     return (
         <div>
-            <SwitchRepository state={state}/>
+            <div>
+                <h1>Webgit</h1>
+                <SwitchRepository state={state}/>
+            </div>
             <div>
                 {null !== repository ? <Repository repository={repository}/> : null}
             </div>
