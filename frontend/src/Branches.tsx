@@ -13,18 +13,6 @@ export const Branches = observer(class extends React.Component<RepositoryProps> 
         return (
             <div>
                 <h3>Branches</h3>
-                <Toggle label='Create' flag={state.isBranchCreation}>
-                    <form onSubmit={preventDefault(() => withSound(state.createBranch()))}>
-                        <input
-                            type="text"
-                            value={state.newBranchName}
-                            onChange={(event) => state.newBranchName = event.target.value}
-                            required={true}/>
-                        <button type="submit">
-                            Create
-                        </button>
-                    </form>
-                </Toggle>
                 <form>
                     <label key={JSON.stringify(state)}>
                         <input
@@ -57,6 +45,18 @@ export const Branches = observer(class extends React.Component<RepositoryProps> 
                         </Toggle>
                     </div>
                 </form>
+                <Toggle label='Create' flag={state.isBranchCreation}>
+                    <form onSubmit={preventDefault(() => withSound(state.createBranch()))}>
+                        <input
+                            type="text"
+                            value={state.newBranchName}
+                            onChange={(event) => state.newBranchName = event.target.value}
+                            required={true}/>
+                        <button type="submit">
+                            Create
+                        </button>
+                    </form>
+                </Toggle>
             </div>
         )
             ;
