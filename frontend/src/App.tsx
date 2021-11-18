@@ -98,6 +98,8 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
     }
 
     private renderBranch(branch: BranchSummaryBranch, index: number): ReactElement {
+        const {state}= this.props
+
         return (
             <tr key={branch.name}>
                 <td>
@@ -106,7 +108,8 @@ const Branches = observer(class extends React.Component<RepositoryProps> {
                         name='current-branch'
                         checked={this.isCurrentBranch(branch)}
                         onChange={() => withSound(this.props.state.checkoutBranch(branch))}
-                        accessKey={(index + 1).toString()}/>
+                        accessKey={(index + 1).toString()}
+                    disabled={state.isDisabled.isChecked}/>
                 </td>
                 <td>
                     {branch.name} {this.getTracking(branch)}

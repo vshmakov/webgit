@@ -21,6 +21,7 @@ export class RepositoryState {
     public readonly fetchLoader: Loader<void> = new Loader<void>(LocalStorageKey.FetchCalledAt, this.requestFetch.bind(this))
     public newBranchName: string = ''
     public readonly isBranchCreation = new Flag(false)
+    public readonly isDisabled = new Flag(false)
 
     public constructor(private readonly path: string) {
         makeAutoObservable(this)
@@ -64,9 +65,11 @@ export class RepositoryState {
     }
 
     public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
+        this.isDisabled.check()
         await this.request(Method.Put, '/branch/checkout', branch)
         await this.loadStatus()
         this.branches?.addHistory(branch.name)
+        this.isDisabled.uncheck()
     }
 
     public async mergeBranchIntoCurrent(branch: BranchSummaryBranch): Promise<void> {
