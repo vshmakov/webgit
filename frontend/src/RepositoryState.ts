@@ -13,7 +13,7 @@ export class RepositoryState {
     public status: StatusResult | null = null
     public branches: BranchesState | null = null
     public readonly stageAllFilesBeforeCommit: Flag = new Flag(true)
-    public readonly commitMessageStorage = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
+    public readonly commitMessageStorage = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
     public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '')
     public readonly jiraPathStorage = new LocalStorage<string>(LocalStorageKey.JiraPath, '', this.path)
