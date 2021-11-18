@@ -8,4 +8,6 @@ export enum LocalStorageKey {
     CurrentRepositoryPath = 'CurrentRepositoryPath',
     RepositoryPaths = 'RepositoryPaths',
     BitbucketRepositoryPath = 'BitbucketRepositoryPath',
+    JiraPath = 'JiraPath',
+    JiraIssueTitles = 'JiraIssueTitles',
 }

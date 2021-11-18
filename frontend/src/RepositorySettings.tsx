@@ -7,7 +7,10 @@ import {LocalStorageInput} from "./LocalStorageInput";
 export const RepositorySettings = observer(({repository}: RepositoryProps): ReactElement => {
     return (
         <Toggle label='Settings'>
-            <LocalStorageInput storage={repository.bitbucketRepositoryPathStorage}/>
+            <div>
+                <LocalStorageInput storage={repository.bitbucketRepositoryPathStorage}/>
+                <LocalStorageInput storage={repository.jiraPathStorage}/>
+            </div>
         </Toggle>
     )
 })

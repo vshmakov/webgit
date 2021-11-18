@@ -84,7 +84,7 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
                         disabled={state.isDisabled.isChecked}/>
                 </td>
                 <td>
-                    {branch.name} {this.getTracking(branch)}
+                    {state.getBranchName(branch)} {this.getTracking(branch)}
                 </td>
                 <td>
                     {this.getMergeIntoCurrentButton(branch)}

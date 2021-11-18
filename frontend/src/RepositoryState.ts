@@ -16,6 +16,8 @@ export class RepositoryState {
     public readonly commitMessageStorage = new LocalStorage<string>(LocalStorageKey.CommitMessage, '')
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '')
     public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '')
+    public readonly jiraPathStorage = new LocalStorage<string>(LocalStorageKey.JiraPath, '', this.path)
+    public readonly jiraIssueTitlesStorage = new LocalStorage<{ [key: string]: string | null }>(LocalStorageKey.JiraIssueTitles, {}, this.path)
     private readonly request = request.bind(null, this.path)
     public readonly statusLoader = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.path, this.requestStatus.bind(this))
     public readonly fetchLoader = new Loader<void>(LocalStorageKey.FetchCalledAt, this.path, this.requestFetch.bind(this))
@@ -27,6 +29,29 @@ export class RepositoryState {
         makeAutoObservable(this)
         this.loadStatus()
         this.loadBranches()
+    }
+
+    public getBranchName(branch: BranchSummaryBranch): string {
+        const name = branch.name;
+        const titles = this.jiraIssueTitlesStorage.getValue()
+
+        if (undefined !== titles[name]) {
+            return `${name}: ${titles[name]}`
+        }
+
+        this.loadIssueTitle(name)
+
+        return name
+    }
+
+    private async loadIssueTitle(issue: string): Promise<void> {
+        const jiraaPath=this.jiraPathStorage.getValue()
+
+        if (''===jiraaPath){
+            return
+        }
+
+        // const response=fetch(`${jiraaPath}/browse/${issue}`)
     }
 
     public async loadStatus(): Promise<void> {
