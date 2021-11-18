@@ -400,7 +400,7 @@ class State {
 
 const RepositoryPath = observer(({path, state}: { path: string, state: State }): ReactElement => {
     return (
-        <tr>
+        <tr key={path}>
             <td>
                 <input
                     type="radio"
@@ -429,7 +429,10 @@ const SwitchRepository = observer(({state}: { state: State }): ReactElement => {
         <div>
             <h1>Repository</h1>
             <Toggle label='Switch'>
-                <form onSubmit={preventDefault(() => (state.addRepositoryPath(path), setPath('')))}>
+                <form onSubmit={preventDefault(() => {
+                    state.addRepositoryPath(path);
+                    setPath('')
+                })}>
                     <input
                         type="text"
                         value={path}
@@ -456,8 +459,9 @@ const SwitchRepository = observer(({state}: { state: State }): ReactElement => {
     )
 })
 
+const state = new State()
+
 const App = observer((): ReactElement => {
-    const [state] = useState(new State())
     const {repository} = state
 
     return (

@@ -8,7 +8,6 @@ import {makeAutoObservable} from "mobx";
 import {request} from "./Request";
 import {Method} from "./Method";
 import {FileStatusResult} from "simple-git/typings/response";
-import * as path from "path";
 
 export class RepositoryState {
     public status: StatusResult | null = null
