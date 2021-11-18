@@ -97,6 +97,7 @@ export class RepositoryState {
             name: this.newBranchName
         })
         await this.loadBranches()
+        this.branches?.addHistory(this.newBranchName)
         this.cleanBranchCreation();
     }
 

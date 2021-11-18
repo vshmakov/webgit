@@ -138,11 +138,11 @@ export const Branches = observer(class extends React.Component<RepositoryProps> 
             return null
         }
 
-        const {state} = this.props
+        const {state, status} = this.props
 
         return (
             <button type='button' onClick={() => withSound(state.push())} accessKey='p'>
-                Push
+                Push {null === status.tracking ? 'with upstream' : null}
             </button>
         )
     }
