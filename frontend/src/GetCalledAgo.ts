@@ -10,10 +10,15 @@ export function getCalledAgo(ago: number | null): string {
     }
 
     const hours = Math.floor(totalMinutes / 60)
+    const days = Math.floor(hours / 24)
     const timeParts = []
 
+    if (0 !== days) {
+        timeParts.push(`${days}d`)
+    }
+
     if (0 !== hours) {
-        timeParts.push(`${hours}h`)
+        timeParts.push(`${hours % 24}h`)
     }
 
     const minutes = totalMinutes % 60;
