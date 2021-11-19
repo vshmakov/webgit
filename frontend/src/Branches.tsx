@@ -63,7 +63,7 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
         }
 
         return (
-            <a href={`${path}/pull-requests/new?source=${branch.name}&t=1`}>
+            <a href={`${path}/pull-requests/new?source=${branch.name}&t=1`} role='button'>
                 Create bitbucket pull request
             </a>
         )
@@ -122,7 +122,7 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
             <button
                 type='button'
                 onClick={() => withSound(state.mergeBranchIntoCurrent(branch))}
-                accessKey={this.isPreviousBranch(branch) ? 'r' : undefined}>
+                accessKey={this.isPreviousBranch(branch) ? 'm' : undefined}>
                 Merge into {state.status?.current}
             </button>
         )
