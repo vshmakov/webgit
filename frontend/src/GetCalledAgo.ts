@@ -22,7 +22,10 @@ export function getCalledAgo(ago: number | null): string {
     }
 
     const minutes = totalMinutes % 60;
-    timeParts.push(`${Math.floor(minutes / 5) * 5}m`)
+
+    if (0 === days) {
+        timeParts.push(`${Math.floor(minutes / 5) * 5}m`)
+    }
 
     return `(${timeParts.join(' ')} ago)`
 }
