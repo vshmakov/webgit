@@ -13,7 +13,7 @@ export const Commit = observer(class extends React.Component<LoadedRepositoryPro
         return (
             <form onSubmit={preventDefault(() => withSound(state.commit()))}>
                 <h3>Commit</h3>
-                <LocalStorageInput storage={state.commitMessageStorage}/>
+                <LocalStorageInput storage={state.commitMessageStorage} required={true}/>
                 <button type='submit'>
                     Commit
                 </button>
