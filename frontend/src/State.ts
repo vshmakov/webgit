@@ -13,17 +13,17 @@ export class State {
     public readonly switchingRepository = new Flag(false)
 
     public constructor() {
-        this.setCurrentRepositoryPathFromParameter()
         this.checkCurrentPath()
         makeAutoObservable(this)
     }
 
-    private setCurrentRepositoryPathFromParameter(): void {
-        const searchParams = new URLSearchParams(window.location.search)
+    public setCurrentRepositoryPathFromParameter(search: string): void {
+        const searchParams = new URLSearchParams(search)
         const path = searchParams.get('path')
 
-        if (null !== path) {
+        if (null !== path && path !== this.currentRepositoryPathStorage.getValue()) {
             this.currentRepositoryPathStorage.setValue(path)
+            this.checkCurrentPath()
         }
     }
 
@@ -35,7 +35,6 @@ export class State {
         }
 
         this.checkRepository(path)
-        this.changePathParameter(path)
     }
 
     public addRepositoryPath(path: string): void {
@@ -63,6 +62,6 @@ export class State {
     }
 
     private changePathParameter(path: string): void {
-        window.history.pushState({}, '', `?path=${encodeURIComponent(path)}`)
+
     }
 }
