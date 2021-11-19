@@ -1,6 +1,6 @@
 import {BranchSummary, BranchSummaryBranch, StatusResult} from "simple-git";
 import {BranchesState} from "./BranchesState";
-import {Flag} from "./Flag";
+import {InMemoryFlag} from "./InMemoryFlag";
 import {LocalStorage} from "./LocalStorage";
 import {LocalStorageKey} from "./LocalStorageKey";
 import {Loader} from "./Loader";
@@ -8,22 +8,24 @@ import {makeAutoObservable} from "mobx";
 import {request} from "./Request";
 import {Method} from "./Method";
 import {FileStatusResult} from "simple-git/typings/response";
+import {LocalStorageFlag} from "./LocalStorageFlag";
 
 export class RepositoryState {
     public status: StatusResult | null = null
     public branches: BranchesState | null = null
-    public readonly stageAllFilesBeforeCommit: Flag = new Flag(true)
+    public readonly stageAllFilesBeforeCommit: InMemoryFlag = new InMemoryFlag(true)
     public readonly commitMessageStorage = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '', this.path)
     public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '', this.path)
     public readonly jiraPathStorage = new LocalStorage<string>(LocalStorageKey.JiraPath, '', this.path)
     public readonly jiraIssueTitlesStorage = new LocalStorage<{ [key: string]: string | null }>(LocalStorageKey.JiraIssueTitles, {}, this.path)
+    public readonly useBranchAsCommitMessagePrefix = new LocalStorageFlag(new LocalStorage<boolean>(LocalStorageKey.UseBranchAsCommitMessagePrefix, false, this.path))
     private readonly request = request.bind(null, this.path)
     public readonly statusLoader = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.path, this.requestStatus.bind(this))
     public readonly fetchLoader = new Loader<void>(LocalStorageKey.FetchCalledAt, this.path, this.requestFetch.bind(this))
     public newBranchName: string = ''
-    public readonly isBranchCreation = new Flag(false)
-    public readonly isDisabled = new Flag(false)
+    public readonly isBranchCreation = new InMemoryFlag(false)
+    public readonly isDisabled = new InMemoryFlag(false)
 
     public constructor(public readonly path: string) {
         makeAutoObservable(this)
@@ -45,9 +47,9 @@ export class RepositoryState {
     }
 
     private async loadIssueTitle(issue: string): Promise<void> {
-        const jiraaPath=this.jiraPathStorage.getValue()
+        const jiraaPath = this.jiraPathStorage.getValue()
 
-        if (''===jiraaPath){
+        if ('' === jiraaPath) {
             return
         }
 

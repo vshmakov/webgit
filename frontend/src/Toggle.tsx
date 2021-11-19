@@ -1,20 +1,20 @@
-import {Flag} from "./Flag";
+import {InMemoryFlag} from "./InMemoryFlag";
 import React, {ReactElement} from "react";
 import {observer} from "mobx-react";
 
 interface ToggleProps {
     label: string
-    flag?: Flag
+    flag?: InMemoryFlag
     children: ReactElement
 }
 
 interface ToggleState {
-    flag: Flag
+    flag: InMemoryFlag
 }
 
 export const Toggle = observer(class extends React.Component<ToggleProps, ToggleState> {
     readonly state: ToggleState = {
-        flag: this.props.flag || new Flag(false)
+        flag: this.props.flag || new InMemoryFlag(false)
     }
 
     public render(): ReactElement {

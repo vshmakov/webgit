@@ -4,13 +4,13 @@ import {RepositoryState} from "./RepositoryState";
 import {makeAutoObservable} from "mobx";
 import {not} from "./Not";
 import {sameWith} from "./SameWith";
-import {Flag} from "./Flag";
+import {InMemoryFlag} from "./InMemoryFlag";
 
 export class State {
     public readonly currentRepositoryPathStorage = new LocalStorage<string | null>(LocalStorageKey.CurrentRepositoryPath, null)
     public readonly repositoryPathsStorage = new LocalStorage<string[]>(LocalStorageKey.RepositoryPaths, [])
     public repository: RepositoryState | null = null
-    public readonly switchingRepository = new Flag(false)
+    public readonly switchingRepository = new InMemoryFlag(false)
 
     public constructor() {
         makeAutoObservable(this)

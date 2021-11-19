@@ -8,6 +8,7 @@ export enum LocalStorageKey {
     CurrentRepositoryPath = 'CurrentRepositoryPath',
     RepositoryPaths = 'RepositoryPaths',
     BitbucketRepositoryPath = 'BitbucketRepositoryPath',
+    UseBranchAsCommitMessagePrefix = 'UseBranchAsCommitMessagePrefix',
     JiraPath = 'JiraPath',
     JiraIssueTitles = 'JiraIssueTitles',
 }

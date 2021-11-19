@@ -1,6 +1,6 @@
 import {LocalStorage} from "./LocalStorage";
 import {LocalStorageKey} from "./LocalStorageKey";
-import {Flag} from "./Flag";
+import {InMemoryFlag} from "./InMemoryFlag";
 import {BranchSummary, BranchSummaryBranch} from "simple-git";
 import {makeAutoObservable} from "mobx";
 import {sameWith} from "./SameWith";
@@ -11,7 +11,7 @@ import {compare} from "./Compare";
 export class BranchesState {
     public readonly hiddenStorage = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [], this.path)
     public readonly historyStorage = new LocalStorage<string[]>(LocalStorageKey.BranchHistory, [], this.path)
-    public showHidden: Flag = new Flag(false)
+    public showHidden: InMemoryFlag = new InMemoryFlag(false)
 
     public constructor(private readonly path: string, private readonly summary: BranchSummary) {
 
