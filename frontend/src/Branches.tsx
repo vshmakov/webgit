@@ -90,10 +90,10 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
                     {repository.getBranchName(branch)} {this.getTracking(branch)}
                 </td>
                 <td>
+                    {this.getHideButton(branch)}
                     {this.getMergeIntoCurrentButton(branch)}
                     {this.getMergeTrackingButton(branch)}
                     {this.getPushButton(branch)}
-                    {this.getHideButton(branch)}
                     {this.getCreateBitbucketPullRequestLink(branch)}
                 </td>
             </tr>
