@@ -8,13 +8,13 @@ import {BranchSummaryBranch} from "simple-git";
 
 export const Branches = observer(class extends React.Component<LoadedRepositoryProps> {
     public render(): ReactElement {
-        const {state, branches} = this.props
+        const {repository, branches} = this.props
 
         return (
             <div>
                 <h3>Branches</h3>
                 <form>
-                    <label key={JSON.stringify(state)}>
+                    <label key={JSON.stringify(repository)}>
                         <input
                             type="checkbox"
                             checked={branches.showHidden.isChecked}
@@ -34,12 +34,12 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
                         </tbody>
                     </table>
                 </form>
-                <Toggle label='Create' flag={state.isBranchCreation}>
-                    <form onSubmit={preventDefault(() => withSound(state.createBranch()))}>
+                <Toggle label='Create' flag={repository.isBranchCreation}>
+                    <form onSubmit={preventDefault(() => withSound(repository.createBranch()))}>
                         <input
                             type="text"
-                            value={state.newBranchName}
-                            onChange={(event) => state.newBranchName = event.target.value}
+                            value={repository.newBranchName}
+                            onChange={(event) => repository.newBranchName = event.target.value}
                             required={true}/>
                         <button type="submit">
                             Create
@@ -56,7 +56,10 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
             return null
         }
 
-        const path = this.props.state.bitbucketRepositoryPathStorage.getValue()
+        const path = this.props
+            .repository
+            .bitbucketRepositoryPathStorage
+            .getValue()
 
         if (null === path) {
             return null
@@ -70,7 +73,7 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
     }
 
     private renderBranch(branch: BranchSummaryBranch, index: number): ReactElement {
-        const {state} = this.props
+        const {repository} = this.props
 
         return (
             <tr key={branch.name}>
@@ -79,12 +82,12 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
                         type='radio'
                         name='current-branch'
                         checked={this.isCurrentBranch(branch)}
-                        onChange={() => withSound(this.props.state.checkoutBranch(branch))}
+                        onChange={() => withSound(this.props.repository.checkoutBranch(branch))}
                         accessKey={(index + 1).toString()}
-                        disabled={state.isDisabled.isChecked}/>
+                        disabled={repository.isDisabled.isChecked}/>
                 </td>
                 <td>
-                    {state.getBranchName(branch)} {this.getTracking(branch)}
+                    {repository.getBranchName(branch)} {this.getTracking(branch)}
                 </td>
                 <td>
                     {this.getMergeIntoCurrentButton(branch)}
@@ -116,14 +119,14 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
             return null
         }
 
-        const {state} = this.props
+        const {repository} = this.props
 
         return (
             <button
                 type='button'
-                onClick={() => withSound(state.mergeBranchIntoCurrent(branch))}
+                onClick={() => withSound(repository.mergeBranchIntoCurrent(branch))}
                 accessKey={this.isPreviousBranch(branch) ? 'm' : undefined}>
-                Merge into {state.status?.current}
+                Merge into {repository.status?.current}
             </button>
         )
     }
@@ -147,10 +150,10 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
             return null
         }
 
-        const {state, status} = this.props
+        const {repository, status} = this.props
 
         return (
-            <button type='button' onClick={() => withSound(state.push())} accessKey='p'>
+            <button type='button' onClick={() => withSound(repository.push())} accessKey='p'>
                 Push {null === status.tracking ? 'with upstream' : null}
             </button>
         )
@@ -171,10 +174,10 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
             return null
         }
 
-        const {state} = this.props
+        const {repository} = this.props
 
         return (
-            <button type='button' onClick={() => withSound(state.mergeTrackingBranch())} accessKey='l'>
+            <button type='button' onClick={() => withSound(repository.mergeTrackingBranch())} accessKey='l'>
                 Merge tracking
             </button>
         )

@@ -50,7 +50,7 @@ export const Files = observer(class extends React.Component<LoadedRepositoryProp
                 <td>
                     <button
                         type='button'
-                        onClick={() => withSound(this.props.state.declineFile(file))}>
+                        onClick={() => withSound(this.props.repository.declineFile(file))}>
                         Decline
                     </button>
                 </td>

@@ -8,12 +8,12 @@ import {Toggle} from "./Toggle";
 
 export const Commit = observer(class extends React.Component<LoadedRepositoryProps> {
     public render(): ReactElement {
-        const {state} = this.props;
+        const {repository} = this.props;
 
         return (
-            <form onSubmit={preventDefault(() => withSound(state.commit()))}>
+            <form onSubmit={preventDefault(() => withSound(repository.commit()))}>
                 <h3>Commit</h3>
-                <LocalStorageInput storage={state.commitMessageStorage} required={true}/>
+                <LocalStorageInput storage={repository.commitMessageStorage} required={true}/>
                 <button type='submit'>
                     Commit
                 </button>
@@ -22,11 +22,11 @@ export const Commit = observer(class extends React.Component<LoadedRepositoryPro
                         <label>
                             <input
                                 type="checkbox"
-                                checked={state.stageAllFilesBeforeCommit.isChecked}
-                                onChange={(): void => state.stageAllFilesBeforeCommit.toggle()}/>
+                                checked={repository.stageAllFilesBeforeCommit.isChecked}
+                                onChange={(): void => repository.stageAllFilesBeforeCommit.toggle()}/>
                             Stage all files
                         </label>
-                        <LocalStorageInput storage={state.precommitCommandStorage}/>
+                        <LocalStorageInput storage={repository.precommitCommandStorage}/>
                     </div>
                 </Toggle>
             </form>
