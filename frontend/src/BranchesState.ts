@@ -10,7 +10,7 @@ import {compare} from "./Compare";
 
 export class BranchesState {
     public readonly hiddenStorage = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [])
-    private readonly historyStorage = new LocalStorage<string[]>(LocalStorageKey.BranchHistory, [], this.path)
+    public readonly historyStorage = new LocalStorage<string[]>(LocalStorageKey.BranchHistory, [], this.path)
     public showHidden: Flag = new Flag(false)
 
     public constructor(private readonly path: string, private readonly summary: BranchSummary) {

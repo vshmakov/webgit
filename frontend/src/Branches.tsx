@@ -52,8 +52,8 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
     }
 
     private getCreateBitbucketPullRequestLink(branch: BranchSummaryBranch): ReactElement | null {
-        if (branch.name!==this.props.status.current){
-            return  null
+        if (branch.name !== this.props.status.current) {
+            return null
         }
 
         const path = this.props.state.bitbucketRepositoryPathStorage.getValue()
@@ -62,7 +62,7 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
             return null
         }
 
-                return (
+        return (
             <a href={`${path}/pull-requests/new?source=${branch.name}&t=1`}>
                 Create bitbucket pull request
             </a>
@@ -119,10 +119,27 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
         const {state} = this.props
 
         return (
-            <button type='button' onClick={() => withSound(state.mergeBranchIntoCurrent(branch))}>
+            <button
+                type='button'
+                onClick={() => withSound(state.mergeBranchIntoCurrent(branch))}
+                accessKey={this.isPreviousBranch(branch) ? 'r' : undefined}>
                 Merge into {state.status?.current}
             </button>
         )
+    }
+
+    private isPreviousBranch(branch: BranchSummaryBranch): boolean {
+        const history = this.props
+            .branches
+            .historyStorage
+            .getValue();
+        const index = history.indexOf(branch.name)
+
+        if (-1 === index) {
+            return false
+        }
+
+        return index === history.length - 2
     }
 
     private getPushButton(branch: BranchSummaryBranch): ReactElement | null {
