@@ -13,7 +13,7 @@ import {EmptyCallback} from "./EmptyCallback";
 import {RepositoryProps} from "./RepositoryProps";
 
 export const Repository = observer(({repository}: RepositoryProps): ReactElement => {
-    useEffect(getCalculateLoadersAgoEffect(repository))
+    useEffect((): EmptyCallback => calculateLoadersAgo(repository))
     const {status, branches} = repository
 
     if (null === status || null === branches
@@ -48,15 +48,13 @@ export const Repository = observer(({repository}: RepositoryProps): ReactElement
     )
 })
 
-function getCalculateLoadersAgoEffect(repository: RepositoryState): EmptyCallback {
-    return (): EmptyCallback => {
-        const id = setInterval((): void => {
-            repository.statusLoader.calculateAgo()
-            repository.fetchLoader.calculateAgo()
-        }, 1000)
+function calculateLoadersAgo(repository: RepositoryState): EmptyCallback {
+    const id = setInterval((): void => {
+        repository.statusLoader.calculateAgo()
+        repository.fetchLoader.calculateAgo()
+    }, 1000)
 
-        return (): void => {
-            clearInterval(id)
-        }
-    };
+    return (): void => {
+        clearInterval(id)
+    }
 }

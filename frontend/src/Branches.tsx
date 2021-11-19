@@ -8,7 +8,7 @@ import {BranchSummaryBranch} from "simple-git";
 
 export const Branches = observer(class extends React.Component<LoadedRepositoryProps> {
     public render(): ReactElement {
-        const {state, branches, status} = this.props
+        const {state, branches} = this.props
 
         return (
             <div>
