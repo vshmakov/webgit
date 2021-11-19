@@ -3,10 +3,12 @@ import {LocalStorage} from "./LocalStorage";
 import React, {ReactElement} from "react";
 import {setInputValue} from "./SetInputValue";
 
-export const LocalStorageInput = observer(({
-                                               storage,
-                                               required
-                                           }: { storage: LocalStorage<string>, required?: boolean }): ReactElement => {
+interface Props {
+    storage: LocalStorage<string>,
+    required?: boolean
+}
+
+export const LocalStorageInput = observer(({storage, required}: Props): ReactElement => {
     return (
         <input
             type="text"

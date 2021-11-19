@@ -9,11 +9,12 @@ import {Checkbox} from "./Checkbox";
 
 export const Commit = observer(class extends React.Component<LoadedRepositoryProps> {
     public render(): ReactElement {
-        const {repository} = this.props;
+        const {repository, status} = this.props;
 
         return (
             <form onSubmit={preventDefault(() => withSound(repository.commit()))}>
                 <h3>Commit</h3>
+                {repository.useBranchAsCommitMessagePrefix.isChecked ? `${status.current}:` : ''}
                 <LocalStorageInput storage={repository.commitMessageStorage} required={true}/>
                 <button type='submit'>
                     Commit

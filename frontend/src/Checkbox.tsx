@@ -2,12 +2,12 @@ import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {Flag} from "./Flag";
 
-interface CheckboxProps {
+interface Props {
     label: string,
     flag: Flag
 }
 
-export const Checkbox = observer(({label, flag}: CheckboxProps): ReactElement => {
+export const Checkbox = observer(({label, flag}: Props): ReactElement => {
     return (
         <label>
             <input

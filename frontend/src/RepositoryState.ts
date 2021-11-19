@@ -83,8 +83,14 @@ export class RepositoryState {
     }
 
     public async commit(): Promise<void> {
-        await this.request(Method.Post, '/commit', {
-            message: this.commitMessageStorage.getValue(),
+        let message = this.commitMessageStorage.getValue()
+
+        if (this.useBranchAsCommitMessagePrefix.isChecked){
+            message=`${this.status?.current}: ${message}`
+        }
+
+                await this.request(Method.Post, '/commit', {
+            message: message,
             stage: this.stageAllFilesBeforeCommit.isChecked,
             command: this.precommitCommandStorage.getValue(),
         })
