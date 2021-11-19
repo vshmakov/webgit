@@ -13,18 +13,12 @@ export class State {
     public readonly switchingRepository = new Flag(false)
 
     public constructor() {
-        this.checkCurrentPath()
         makeAutoObservable(this)
     }
 
-    public setCurrentRepositoryPathFromParameter(search: string): void {
-        const searchParams = new URLSearchParams(search)
-        const path = searchParams.get('path')
-
-        if (null !== path && path !== this.currentRepositoryPathStorage.getValue()) {
-            this.currentRepositoryPathStorage.setValue(path)
-            this.checkCurrentPath()
-        }
+    public setCurrentRepositoryPathFromParameter(path: string): void {
+        this.currentRepositoryPathStorage.setValue(path)
+        this.checkCurrentPath()
     }
 
     private checkCurrentPath(): void {
@@ -35,6 +29,11 @@ export class State {
         }
 
         this.checkRepository(path)
+    }
+
+    private checkRepository(path: string): void {
+        this.repository = new RepositoryState(path)
+        this.switchingRepository.uncheck()
     }
 
     public addRepositoryPath(path: string): void {
@@ -52,16 +51,5 @@ export class State {
             .getValue()
             .filter(not(sameWith(path)))
         this.repositoryPathsStorage.setValue(paths)
-    }
-
-    public checkRepository(path: string): void {
-        this.changePathParameter(path);
-        this.currentRepositoryPathStorage.setValue(path)
-        this.repository = new RepositoryState(path)
-        this.switchingRepository.uncheck()
-    }
-
-    private changePathParameter(path: string): void {
-
     }
 }

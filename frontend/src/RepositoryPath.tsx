@@ -1,7 +1,8 @@
 import {observer} from "mobx-react";
 import {State} from "./State";
 import React, {ReactElement} from "react";
-import { useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {getPathUrl} from "./GetPathUrl";
 
 export const RepositoryPath = observer(({path, state}: { path: string, state: State }): ReactElement => {
     const navigate = useNavigate()
@@ -12,7 +13,7 @@ export const RepositoryPath = observer(({path, state}: { path: string, state: St
                 <input
                     type="radio"
                     checked={path === state.currentRepositoryPathStorage.getValue()}
-                    onChange={() => navigate(`?path=${encodeURIComponent(path)}`)}/>
+                    onChange={() => navigate(getPathUrl(path))}/>
             </td>
             <td>{path}</td>
             <td>
