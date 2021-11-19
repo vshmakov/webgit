@@ -54,7 +54,5 @@ function calculateLoadersAgo(repository: RepositoryState): EmptyCallback {
         repository.fetchLoader.calculateAgo()
     }, 1000)
 
-    return (): void => {
-        clearInterval(id)
-    }
+    return (): void => clearInterval(id)
 }
