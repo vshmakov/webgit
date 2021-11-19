@@ -4,27 +4,13 @@ import {observer} from "mobx-react"
 import {Repository} from "./Repository";
 import {State} from "./State";
 import {SwitchRepository} from "./SwitchRepository";
-import {useLocation, useNavigate} from "react-router-dom";
+import {NavigateFunction, useLocation, useNavigate} from "react-router-dom";
 import {getPathUrl} from "./GetPathUrl";
 
 export const App = observer(({state}: { state: State }): ReactElement => {
     const navigate = useNavigate()
     const location = useLocation()
-    useEffect(():void=>{
-        const search = location.search;
-        const searchParams = new URLSearchParams(search)
-        const parameterPath = searchParams.get('path')
-        const localStoragePath = state.currentRepositoryPathStorage.getValue()
-
-        if (null === parameterPath) {
-            if (null !== localStoragePath) {
-                navigate(getPathUrl(localStoragePath))
-            }
-        } else {
-            state.setCurrentRepositoryPathFromParameter(parameterPath)
-        }
-    }, [location, navigate, state])
-
+    useEffect((): void => setPath(location.search, state, navigate), [location, navigate, state])
     const {repository} = state
 
     return (
@@ -39,3 +25,20 @@ export const App = observer(({state}: { state: State }): ReactElement => {
         </div>
     )
 })
+
+function setPath(search: string, state: State, navigate: NavigateFunction): void {
+    const searchParams = new URLSearchParams(search)
+    const parameterPath = searchParams.get('path')
+
+    if (null !== parameterPath) {
+        state.setCurrentRepositoryPathFromParameter(parameterPath)
+
+        return
+    }
+
+    const localStoragePath = state.currentRepositoryPathStorage.getValue()
+
+    if (null !== localStoragePath) {
+        navigate(getPathUrl(localStoragePath))
+    }
+}
