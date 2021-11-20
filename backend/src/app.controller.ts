@@ -7,8 +7,10 @@ import simpleGit, {
     SimpleGit,
     StatusResult
 } from 'simple-git';
-import {Response} from "simple-git/typings/simple-git";
+import {Response as GitResponse} from "simple-git/typings/simple-git";
 import {exec, ExecException} from 'child_process'
+import fetch from "node-fetch";
+
 
 const clients: { [key: string]: SimpleGit } = {}
 
@@ -26,14 +28,26 @@ function git(path: string): SimpleGit {
     return clients[path]
 }
 
-interface PathHeaders {
-    path: string
-}
-
 @Controller()
 export class AppController {
+    @Get('/jira/issue')
+    public async issue(@Query() {key, user, token}: IssueQuery): Promise<string> {
+        const response = await fetch(`https://vemasys.atlassian.net/rest/api/latest/issue/${key}`, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                // 'Authorization': `Basic ${user} ${token}`
+            }
+        })
+        // const response =await fetch('https://yandex.ru')
+        let s = await response.text()
+        console.log(s)
+        return s
+    }
+
     @Get('/branches')
-    public branches(@Headers() {path}: PathHeaders): Response<BranchSummary> {
+    public branches(@Headers() {path}: PathHeaders): GitResponse<BranchSummary> {
         return git(path).branchLocal()
     }
 
@@ -131,4 +145,14 @@ export class AppController {
             })
         })
     }
+}
+
+interface PathHeaders {
+    path: string
+}
+
+interface IssueQuery {
+    key: string,
+    user: string,
+    token: string
 }
