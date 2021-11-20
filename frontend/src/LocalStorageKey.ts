@@ -12,5 +12,5 @@ export enum LocalStorageKey {
     JiraPath = 'JiraPath',
     JiraUser = 'JiraUser',
     JiraToken = 'JiraToken',
-    JiraIssueTitles = 'JiraIssueTitles',
+    JiraIssueSummaries = 'JiraIssueSummaries',
 }

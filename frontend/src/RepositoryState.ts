@@ -20,7 +20,7 @@ export class RepositoryState {
     public readonly jiraPathStorage = new LocalStorage<string>(LocalStorageKey.JiraPath, '', this.path)
     public readonly jiraUserStorage = new LocalStorage<string>(LocalStorageKey.JiraUser, '', this.path)
     public readonly jiraTokenStorage = new LocalStorage<string>(LocalStorageKey.JiraToken, '', this.path)
-    public readonly jiraIssueTitlesStorage = new LocalStorage<{ [key: string]: string | null }>(LocalStorageKey.JiraIssueTitles, {}, this.path)
+    public readonly jiraIssueSummariesStorage = new LocalStorage<{ [key: string]: string | null }>(LocalStorageKey.JiraIssueSummaries, {}, this.path)
     public readonly useBranchAsCommitMessagePrefix = new LocalStorageFlag(new LocalStorage<boolean>(LocalStorageKey.UseBranchAsCommitMessagePrefix, false, this.path))
     private readonly request = request.bind(null, this.path)
     public readonly statusLoader = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.path, this.requestStatus.bind(this))
@@ -28,6 +28,7 @@ export class RepositoryState {
     public newBranchName: string = ''
     public readonly isBranchCreation = new InMemoryFlag(false)
     public readonly isDisabled = new InMemoryFlag(false)
+    private readonly loadedIssueSummaries: string[] = []
 
     public constructor(public readonly path: string) {
         makeAutoObservable(this)
@@ -37,25 +38,46 @@ export class RepositoryState {
 
     public getBranchName(branch: BranchSummaryBranch): string {
         const name = branch.name;
-        const titles = this.jiraIssueTitlesStorage.getValue()
+        const summaries = this.jiraIssueSummariesStorage.getValue()
+        const summary = summaries[name]
 
-        if (undefined !== titles[name]) {
-            return `${name}: ${titles[name]}`
+        if (summary) {
+            return `${name}: ${summary}`
         }
 
-        this.loadIssueTitle(name)
+        if (undefined === summary) {
+            this.loadIssueSummary(name)
+        }
 
         return name
     }
 
-    private async loadIssueTitle(issue: string): Promise<void> {
-        const jiraaPath = this.jiraPathStorage.getValue()
+    private async loadIssueSummary(key: string): Promise<void> {
+        const path = this.jiraPathStorage.getValue()
+        const user = this.jiraUserStorage.getValue()
+        const token = this.jiraTokenStorage.getValue()
 
-        if ('' === jiraaPath) {
+        if ('' === path || '' === user || '' === token || this.loadedIssueSummaries.includes(key)) {
             return
         }
 
-        // const response=fetch(`${jiraaPath}/browse/${issue}`)
+        this.addLoadedIssueSummary(key);
+        const params = {
+            path: path,
+            user: user,
+            token: token,
+            key: key,
+        }
+        const search = new URLSearchParams(params).toString()
+        const response = await this.request(Method.Get, `/jira/issue-summary?${search}`)
+        const summary = await response.json()
+        const summaries = this.jiraIssueSummariesStorage.getValue()
+        summaries[key] = summary
+        this.jiraIssueSummariesStorage.setValue(summaries)
+    }
+
+    private addLoadedIssueSummary(key: string): void {
+        this.loadedIssueSummaries.push(key)
     }
 
     public async loadStatus(): Promise<void> {

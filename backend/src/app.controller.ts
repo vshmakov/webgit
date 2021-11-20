@@ -19,7 +19,7 @@ function git(path: string): SimpleGit {
         const client = simpleGit({
             baseDir: path
         });
-        client.outputHandler(function (command, stdout, stderr) {
+        client.outputHandler(function (command, stdout, stderr): void {
             stdout.pipe(process.stdout);
         })
         clients[path] = client
@@ -30,36 +30,59 @@ function git(path: string): SimpleGit {
 
 @Controller()
 export class AppController {
-    @Get('/jira/issue')
-    public async issue(@Body() {path, key, user, token}: IssueBody): Promise<string> {
-        const response = await fetch(`${path}/rest/api/latest/issue/${key}`, {
+    @Get('/jira/issue-summary')
+    public async issueSummary(@Query() query: IssueQuery): Promise<string> {
+        const response = await fetch(`${query.path}/rest/api/latest/issue/${query.key}`, {
             headers: {
-                'Authorization': 'Basic ' + Buffer.from(`${user}:${token}`).toString('base64'),
+                'Authorization': 'Basic ' + Buffer.from(`${query.user}:${query.token}`).toString('base64'),
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             }
         })
         const data = await response.json()
 
-        return data.fields.summary
+        return JSON.stringify(data?.fields?.summary || null)
     }
 
     @Get('/branches')
-    public branches(@Headers() {path}: PathHeaders): GitResponse<BranchSummary> {
+    public branches(@Headers()
+                        {
+                            path
+                        }
+                        :
+                        PathHeaders
+    ):
+        GitResponse<BranchSummary> {
         return git(path).branchLocal()
     }
 
     @Put('/branch/checkout')
-    public async checkoutBranch(@Headers() {path}: PathHeaders, @Body() branch: BranchSummaryBranch): Promise<void> {
+    public async checkoutBranch(@Headers()
+                                    {
+                                        path
+                                    }
+                                    :
+                                    PathHeaders, @Body()
+                                    branch: BranchSummaryBranch
+    ):
+        Promise<void> {
         await git(path).checkout(branch.name)
     }
 
     @Put('/branch/merge-tracking')
-    public async mergeTracking(@Headers() {path}: PathHeaders): Promise<void> {
+    public async mergeTracking(@Headers()
+                                   {
+                                       path
+                                   }
+                                   :
+                                   PathHeaders
+    ):
+        Promise<void> {
         const client = git(path)
         const status = await client.status()
 
-        if (null === status.tracking) {
+        if (null === status.tracking
+        ) {
             return
         }
 
@@ -67,32 +90,77 @@ export class AppController {
     }
 
     @Put('/branch/push')
-    public async push(@Headers() {path}: PathHeaders): Promise<void> {
+    public async push(@Headers()
+                          {
+                              path
+                          }
+                          :
+                          PathHeaders
+    ):
+        Promise<void> {
         const client = git(path)
         const status = await client.status()
         await client.push(['-u', 'origin', status.current])
     }
 
     @Put('/branch/merge-into-current')
-    public async mergeBranchIntoCurrent(@Headers() {path}: PathHeaders, @Body() branch: BranchSummaryBranch): Promise<void> {
+    public async mergeBranchIntoCurrent(@Headers()
+                                            {
+                                                path
+                                            }
+                                            :
+                                            PathHeaders, @Body()
+                                            branch: BranchSummaryBranch
+    ):
+        Promise<void> {
         await git(path).merge([branch.name])
     }
 
     @Post('/branch/create')
-    public async createBranch(@Headers() {path}: PathHeaders, @Body() {name}: { name: string }): Promise<void> {
+    public async createBranch(@Headers()
+                                  {
+                                      path
+                                  }
+                                  :
+                                  PathHeaders, @Body()
+                                  {
+                                      name
+                                  }
+                                  :
+                                  {
+                                      name: string
+                                  }
+    ):
+        Promise<void> {
         await git(path).checkoutLocalBranch(name)
     }
 
     @Get('/status')
-    public async status(@Headers() {path}: PathHeaders): Promise<StatusResult> {
+    public async status(@Headers()
+                            {
+                                path
+                            }
+                            :
+                            PathHeaders
+    ):
+        Promise<StatusResult> {
         return git(path).status()
     }
 
     @Put('/file/decline')
-    public async declineFile(@Headers() {path}: PathHeaders, @Body() file: FileStatusResult): Promise<void> {
+    public async declineFile(@Headers()
+                                 {
+                                     path
+                                 }
+                                 :
+                                 PathHeaders, @Body()
+                                 file: FileStatusResult
+    ):
+        Promise<void> {
         const client = git(path)
 
-        if ('?' === file.working_dir) {
+        if ('?' === file.working_dir
+        ) {
             await client.clean(CleanOptions.FORCE, [file.path])
 
             return
@@ -102,16 +170,39 @@ export class AppController {
     }
 
     @Put('/fetch')
-    public async fetch(@Headers() {path}: PathHeaders): Promise<void> {
+    public async fetch(@Headers()
+                           {
+                               path
+                           }
+                           :
+                           PathHeaders
+    ):
+        Promise<void> {
         await git(path).fetch()
     }
 
     @Post('/commit')
-    public async commit(@Headers() {path}: PathHeaders, @Body() {
-        message,
-        stage,
-        command
-    }: { message: string, stage: boolean, command: string }): Promise<void> {
+    public async commit(@Headers()
+                            {
+                                path
+                            }
+                            :
+                            PathHeaders, @Body()
+                            {
+                                message,
+                                stage,
+                                command
+                            }
+                            :
+                            {
+                                message: string, stage
+                                    :
+                                    boolean, command
+                                    :
+                                    string
+                            }
+    ):
+        Promise<void> {
         if (command) {
             if (!await this.execCommand(command)) {
                 return
@@ -149,7 +240,7 @@ interface PathHeaders {
     path: string
 }
 
-interface IssueBody {
+interface IssueQuery {
     path: string,
     key: string,
     user: string,
