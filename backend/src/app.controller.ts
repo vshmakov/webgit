@@ -33,17 +33,15 @@ export class AppController {
     @Get('/jira/issue')
     public async issue(@Query() {key, user, token}: IssueQuery): Promise<string> {
         const response = await fetch(`https://vemasys.atlassian.net/rest/api/latest/issue/${key}`, {
-            method: 'get',
             headers: {
+                'Authorization': 'Basic ' + Buffer.from(`${user}:${token}`).toString('base64'),
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                // 'Authorization': `Basic ${user} ${token}`
             }
         })
-        // const response =await fetch('https://yandex.ru')
-        let s = await response.text()
-        console.log(s)
-        return s
+        const data = await response.json()
+
+        return data.fields.summary
     }
 
     @Get('/branches')
