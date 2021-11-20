@@ -31,8 +31,8 @@ function git(path: string): SimpleGit {
 @Controller()
 export class AppController {
     @Get('/jira/issue')
-    public async issue(@Query() {key, user, token}: IssueQuery): Promise<string> {
-        const response = await fetch(`https://vemasys.atlassian.net/rest/api/latest/issue/${key}`, {
+    public async issue(@Body() {host, key, user, token}: IssueBody): Promise<string> {
+        const response = await fetch(`https://${host}/rest/api/latest/issue/${key}`, {
             headers: {
                 'Authorization': 'Basic ' + Buffer.from(`${user}:${token}`).toString('base64'),
                 'Accept': 'application/json',
@@ -149,7 +149,8 @@ interface PathHeaders {
     path: string
 }
 
-interface IssueQuery {
+interface IssueBody {
+    host: string,
     key: string,
     user: string,
     token: string
