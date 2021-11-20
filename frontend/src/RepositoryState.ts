@@ -14,7 +14,7 @@ export class RepositoryState {
     public status: StatusResult | null = null
     public branches: BranchesState | null = null
     public readonly stageAllFilesBeforeCommit: InMemoryFlag = new InMemoryFlag(true)
-    public commitMessageStorage = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
+    public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '', this.path)
     public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '', this.path)
     public readonly jiraPathStorage = new LocalStorage<string>(LocalStorageKey.JiraPath, '', this.path)
@@ -68,7 +68,7 @@ export class RepositoryState {
 
     private setStatus(status: StatusResult): void {
         this.status = status
-        this.commitMessageStorage = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', JSON.stringify([this.path, status.current]))
+        this.commitMessageStorage = new LocalStorage(LocalStorageKey.CommitMessage, '', JSON.stringify([this.path, status.current]))
     }
 
     private async loadBranches(): Promise<void> {
