@@ -6,34 +6,38 @@ import {RepositoryPath} from "./RepositoryPath";
 import {Toggle} from "./Toggle";
 import {preventDefault} from "./PreventDefault";
 import {setInputValue} from "./SetInputValue";
+import {getFilePathParts} from "./GetFilePathParts";
 
 export const SwitchRepository = observer(({state}: { state: State }): ReactElement => {
     const [path, setPath] = useState('')
     const paths = state.repositoryPathsStorage
         .getValue()
         .slice()
-        .sort(compareAlphabetically)
+        .sort((path1: string, path2: string): number => compareAlphabetically(getFilePathParts(path1).name, getFilePathParts(path2).name))
         .map((path: string): ReactElement => <RepositoryPath path={path} state={state} key={path}/>)
 
     return (
         <Toggle label='Switch repository' flag={state.switchingRepository}>
-            <form onSubmit={preventDefault(() => {
-                state.addRepositoryPath(path);
-                setPath('')
-            })}>
-                <input
-                    type="text"
-                    value={path}
-                    onChange={setInputValue(setPath)}
-                    required={true}/>
-                <button type="submit">
-                    Add
-                </button>
+            <div>
+                <form onSubmit={preventDefault(() => {
+                    state.addRepositoryPath(path);
+                    setPath('')
+                })}>
+                    <input
+                        type="text"
+                        value={path}
+                        onChange={setInputValue(setPath)}
+                        required={true}/>
+                    <button type="submit">
+                        Add
+                    </button>
+                </form>
                 <table>
                     <thead>
                     <tr>
                         <th></th>
-                        <th>Path</th>
+                        <th>Repository</th>
+                        <th>Directory</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -41,7 +45,7 @@ export const SwitchRepository = observer(({state}: { state: State }): ReactEleme
                     {paths}
                     </tbody>
                 </table>
-            </form>
+            </div>
         </Toggle>
     )
 })

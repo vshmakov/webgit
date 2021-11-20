@@ -3,9 +3,12 @@ import {State} from "./State";
 import React, {ReactElement} from "react";
 import {useNavigate} from "react-router-dom";
 import {getPathUrl} from "./GetPathUrl";
+import {getFilePathParts} from "./GetFilePathParts";
+import {capitalizeFirstLetter} from "./CapitalizeFirstLetter";
 
 export const RepositoryPath = observer(({path, state}: { path: string, state: State }): ReactElement => {
     const navigate = useNavigate()
+    const {name, directory} = getFilePathParts(path)
 
     return (
         <tr>
@@ -15,7 +18,8 @@ export const RepositoryPath = observer(({path, state}: { path: string, state: St
                     checked={path === state.currentRepositoryPathStorage.getValue()}
                     onChange={() => navigate(getPathUrl(path))}/>
             </td>
-            <td>{path}</td>
+            <td>{capitalizeFirstLetter(name)}</td>
+            <td>{directory}</td>
             <td>
                 <button type='button' onClick={() => state.removeRepositoryPath(path)}>
                     Remove
