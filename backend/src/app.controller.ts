@@ -31,8 +31,8 @@ function git(path: string): SimpleGit {
 @Controller()
 export class AppController {
     @Get('/jira/issue')
-    public async issue(@Body() {host, key, user, token}: IssueBody): Promise<string> {
-        const response = await fetch(`https://${host}/rest/api/latest/issue/${key}`, {
+    public async issue(@Body() {path, key, user, token}: IssueBody): Promise<string> {
+        const response = await fetch(`${path}/rest/api/latest/issue/${key}`, {
             headers: {
                 'Authorization': 'Basic ' + Buffer.from(`${user}:${token}`).toString('base64'),
                 'Accept': 'application/json',
@@ -150,7 +150,7 @@ interface PathHeaders {
 }
 
 interface IssueBody {
-    host: string,
+    path: string,
     key: string,
     user: string,
     token: string

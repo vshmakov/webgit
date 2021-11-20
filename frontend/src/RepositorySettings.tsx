@@ -9,8 +9,10 @@ export const RepositorySettings = observer(({repository}: RepositoryProps): Reac
     return (
         <Toggle label='Settings'>
             <div>
-                <LocalStorageInput storage={repository.bitbucketRepositoryPathStorage}/>
-                <LocalStorageInput storage={repository.jiraPathStorage}/>
+                <LocalStorageInput title='Bitbucket repository path' storage={repository.bitbucketRepositoryPathStorage}/>
+                <LocalStorageInput title='Jira path' storage={repository.jiraPathStorage}/>
+                <LocalStorageInput title='Jira user' storage={repository.jiraUserStorage}/>
+                <LocalStorageInput title='Jira token' storage={repository.jiraTokenStorage}/>
                 <Checkbox
                     label='Use branch name as commit message prefix'
                     flag={repository.useBranchAsCommitMessagePrefix}/>
