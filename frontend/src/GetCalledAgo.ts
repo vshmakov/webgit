@@ -3,9 +3,9 @@ export function getCalledAgo(ago: number | null): string {
         return ''
     }
 
-    const totalMinutes = Math.floor(ago / 60 / 1000)
+    const totalMinutes = Math.floor(ago / 60 / 1000 / 5) * 5
 
-    if (5 > totalMinutes) {
+    if (0 === totalMinutes) {
         return ''
     }
 
@@ -24,7 +24,7 @@ export function getCalledAgo(ago: number | null): string {
     const minutes = totalMinutes % 60;
 
     if (0 === days) {
-        timeParts.push(`${Math.floor(minutes / 5) * 5}m`)
+        timeParts.push(`${minutes}m`)
     }
 
     return `(${timeParts.join(' ')} ago)`
