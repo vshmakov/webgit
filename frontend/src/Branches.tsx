@@ -5,6 +5,7 @@ import {Toggle} from "./Toggle";
 import {preventDefault} from "./PreventDefault";
 import {withSound} from "./WithSound";
 import {BranchSummaryBranch} from "simple-git";
+import {Checkbox} from "./Checkbox";
 
 export const Branches = observer(class extends React.Component<LoadedRepositoryProps> {
     public render(): ReactElement {
@@ -14,13 +15,7 @@ export const Branches = observer(class extends React.Component<LoadedRepositoryP
             <div>
                 <h3>Branches</h3>
                 <form>
-                    <label key={JSON.stringify(repository)}>
-                        <input
-                            type="checkbox"
-                            checked={branches.showHidden.isChecked}
-                            onChange={(): void => branches.showHidden.toggle()}/>
-                        Show hidden ({branches.hidden.length})
-                    </label>
+                    <Checkbox label={`Show hidden (${branches.hidden.length})`} flag={branches.showHidden} key={JSON.stringify(branches.hidden)}/>
                     <table>
                         <thead>
                         <tr>
