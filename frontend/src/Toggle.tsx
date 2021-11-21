@@ -1,38 +1,27 @@
 import {InMemoryFlag} from "./InMemoryFlag";
-import React, {ReactElement} from "react";
+import React, {ReactElement, useState} from "react";
 import {observer} from "mobx-react";
+import {Flag} from "./Flag";
+import {Checkbox} from "./Checkbox";
 
-interface ToggleProps {
+interface Props {
     label: string
-    flag?: InMemoryFlag
+    flag?: Flag
     children: ReactElement
 }
 
-interface ToggleState {
-    flag: InMemoryFlag
-}
+export const Toggle = observer((props: Props): ReactElement => {
+    const {label, children} = props
+    const [flag] = useState(props.flag || new InMemoryFlag(false))
 
-export const Toggle = observer(class extends React.Component<ToggleProps, ToggleState> {
-    readonly state: ToggleState = {
-        flag: this.props.flag || new InMemoryFlag(false)
-    }
-
-    public render(): ReactElement {
-        return (
+    return (
+        <div>
             <div>
-                <div>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={this.state.flag.isChecked}
-                            onChange={() => this.state.flag.toggle()}/>
-                        {this.props.label}
-                    </label>
-                </div>
-                <div>
-                    {this.state.flag.isChecked ? this.props.children : null}
-                </div>
+                <Checkbox label={label} flag={flag}/>
             </div>
-        )
-    }
+            <div>
+                {flag.isChecked ? children : null}
+            </div>
+        </div>
+    )
 })
