@@ -52,7 +52,7 @@ function calculateLoadersAgo(repository: RepositoryState): EmptyCallback {
     const id = setInterval((): void => {
         repository.statusLoader.calculateAgo()
         repository.fetchLoader.calculateAgo()
-    }, 1000)
+    }, 60 * 1000)
 
     return (): void => clearInterval(id)
 }
