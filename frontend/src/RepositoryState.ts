@@ -126,8 +126,12 @@ export class RepositoryState {
         this.isDisabled.check()
         await this.request(Method.Put, '/branch/checkout', branch)
         await this.loadStatus()
-        this.branches?.addHistory(branch.name)
-        this.isDisabled.uncheck()
+                this.isDisabled.uncheck()
+        const current = this.status?.current
+
+        if (current){
+            this.branches?.addHistory(current)
+        }
     }
 
     public async mergeBranchIntoCurrent(branch: BranchSummaryBranch): Promise<void> {
