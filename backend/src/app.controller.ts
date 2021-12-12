@@ -166,25 +166,12 @@ export class AppController {
     }
 
     @Put('/fetch')
-    public async fetch(@Headers()
-                           {
-                               path
-                           }
-                           :
-                           PathHeaders
-    ):
-        Promise<void> {
+    public async fetch(@Headers() {path}: PathHeaders): Promise<void> {
         await git(path).fetch()
     }
 
     @Post('/commit')
-    public async commit(@Headers() {path}:
-                            PathHeaders, @Body() {
-                            message,
-                            stage,
-                            cleanAfterCommit,
-                            command
-                        }: {
+    public async commit(@Headers() {path}: PathHeaders, @Body() {message, stage, cleanAfterCommit, command}: {
                             message: string,
                             stage: boolean,
                             cleanAfterCommit: Boolean,
