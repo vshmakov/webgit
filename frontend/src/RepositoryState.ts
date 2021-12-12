@@ -22,6 +22,8 @@ export class RepositoryState {
     public readonly jiraTokenStorage = new LocalStorage<string>(LocalStorageKey.JiraToken, '', this.path)
     public readonly jiraIssueSummariesStorage = new LocalStorage<{ [key: string]: string | null }>(LocalStorageKey.JiraIssueSummaries, {}, this.path)
     public readonly useBranchAsCommitMessagePrefix = new LocalStorageFlag(new LocalStorage<boolean>(LocalStorageKey.UseBranchAsCommitMessagePrefix, false, this.path))
+    public readonly useSectionCommitMessagePrefix = new LocalStorageFlag(new LocalStorage<boolean>(LocalStorageKey.UseSectionCommitMessagePrefix, false, this.path))
+    public sectionCommitMessagePrefix: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.SectionCommitMessagePrefix, '', this.path)
     private readonly request = request.bind(null, this.path)
     public readonly statusLoader = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.path, this.requestStatus.bind(this))
     public readonly fetchLoader = new Loader<void>(LocalStorageKey.FetchCalledAt, this.path, this.requestFetch.bind(this))
@@ -92,8 +94,9 @@ export class RepositoryState {
 
     private setStatus(status: StatusResult): void {
         this.status = status
+        this.sectionCommitMessagePrefix = new LocalStorage(LocalStorageKey.SectionCommitMessagePrefix, '', JSON.stringify([this.path, status.current]))
         this.commitMessageStorage = new LocalStorage(LocalStorageKey.CommitMessage, '', JSON.stringify([this.path, status.current]))
-    }
+            }
 
     private async loadBranches(): Promise<void> {
         const status = this.loadStatus()
@@ -109,6 +112,10 @@ export class RepositoryState {
 
     public async commit(): Promise<void> {
         let message = this.commitMessageStorage.getValue()
+
+        if (this.useSectionCommitMessagePrefix.isChecked) {
+            message = `[${this.sectionCommitMessagePrefix.getValue()}] ${message}`
+        }
 
         if (this.useBranchAsCommitMessagePrefix.isChecked) {
             message = `${this.status?.current}: ${message}`
@@ -126,10 +133,10 @@ export class RepositoryState {
         this.isDisabled.check()
         await this.request(Method.Put, '/branch/checkout', branch)
         await this.loadStatus()
-                this.isDisabled.uncheck()
+        this.isDisabled.uncheck()
         const current = this.status?.current
 
-        if (current){
+        if (current) {
             this.branches?.addHistory(current)
         }
     }

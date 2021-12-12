@@ -9,6 +9,8 @@ export enum LocalStorageKey {
     RepositoryPaths = 'RepositoryPaths',
     BitbucketRepositoryPath = 'BitbucketRepositoryPath',
     UseBranchAsCommitMessagePrefix = 'UseBranchAsCommitMessagePrefix',
+    UseSectionCommitMessagePrefix = 'UseSectionCommitMessagePrefix',
+    SectionCommitMessagePrefix = 'SectionCommitMessagePrefix',
     JiraPath = 'JiraPath',
     JiraUser = 'JiraUser',
     JiraToken = 'JiraToken',

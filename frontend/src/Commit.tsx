@@ -6,6 +6,7 @@ import {withSound} from "./WithSound";
 import {LocalStorageInput} from "./LocalStorageInput";
 import {Toggle} from "./Toggle";
 import {Checkbox} from "./Checkbox";
+import {SectionCommitPrefix} from "./SectionCommitPrefix";
 
 export const Commit = observer(class extends React.Component<LoadedRepositoryProps> {
     public render(): ReactElement {
@@ -15,6 +16,7 @@ export const Commit = observer(class extends React.Component<LoadedRepositoryPro
             <form onSubmit={preventDefault(() => withSound(repository.commit()))}>
                 <h3>Commit</h3>
                 {repository.useBranchAsCommitMessagePrefix.isChecked ? `${status.current}:` : ''}
+                <SectionCommitPrefix repository={repository}/>
                 <LocalStorageInput title='' storage={repository.commitMessageStorage} required={true}/>
                 <button type='submit'>
                     Commit

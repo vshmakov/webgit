@@ -16,6 +16,9 @@ export const RepositorySettings = observer(({repository}: RepositoryProps): Reac
                 <Checkbox
                     label='Use branch name as commit message prefix'
                     flag={repository.useBranchAsCommitMessagePrefix}/>
+                <Checkbox
+                    label='Use section commit prefix'
+                    flag={repository.useSectionCommitMessagePrefix}/>
             </div>
         </Toggle>
     )
