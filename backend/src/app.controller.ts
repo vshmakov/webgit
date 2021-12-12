@@ -156,7 +156,7 @@ export class AppController {
     @Put('/file/stage')
     public async stageFile(@Headers() {path}: PathHeaders, @Body() file: FileStatusResult): Promise<void> {
         const client = git(path)
-        const status = await git(path).status()
+        const status = await client.status()
 
         if (!status.staged.includes(file.path)) {
             await client.add(file.path)
