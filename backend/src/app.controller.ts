@@ -182,27 +182,19 @@ export class AppController {
     }
 
     @Post('/commit')
-    public async commit(@Headers()
-                            {
-                                path
-                            }
-                            :
-                            PathHeaders, @Body()
-                            {
-                                message,
-                                stage,
-                                command
-                            }
-                            :
-                            {
-                                message: string, stage
-                                    :
-                                    boolean, command
-                                    :
-                                    string
-                            }
-    ):
-        Promise<void> {
+    public async commit(@Headers() {path}:
+                            PathHeaders, @Body() {
+                            message,
+                            stage,
+                            cleanAfterCommit,
+                            command
+                        }: {
+                            message: string,
+                            stage: boolean,
+                            cleanAfterCommit: Boolean,
+                            command: string
+                        }
+    ): Promise<void> {
         if (command) {
             if (!await this.execCommand(command)) {
                 return
@@ -216,6 +208,10 @@ export class AppController {
         }
 
         await client.commit(message)
+
+        if (stage&&cleanAfterCommit){
+           await client.clean()
+        }
     }
 
     private async execCommand(command: string): Promise<boolean> {

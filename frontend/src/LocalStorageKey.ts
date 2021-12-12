@@ -15,4 +15,5 @@ export enum LocalStorageKey {
     JiraUser = 'JiraUser',
     JiraToken = 'JiraToken',
     JiraIssueSummaries = 'JiraIssueSummaries',
+    CleanAfterCommit = 'CleanAfterCommit',
 }

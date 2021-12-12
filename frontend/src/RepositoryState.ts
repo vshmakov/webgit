@@ -31,6 +31,7 @@ export class RepositoryState {
     public readonly isBranchCreation = new InMemoryFlag(false)
     public readonly isDisabled = new InMemoryFlag(false)
     private readonly loadedIssueSummaries: string[] = []
+    public readonly cleanAfterCommit = new LocalStorageFlag(new LocalStorage<boolean>(LocalStorageKey.CleanAfterCommit, false, this.path))
 
     public constructor(public readonly path: string) {
         makeAutoObservable(this)
@@ -96,7 +97,7 @@ export class RepositoryState {
         this.status = status
         this.sectionCommitMessagePrefix = new LocalStorage(LocalStorageKey.SectionCommitMessagePrefix, '', JSON.stringify([this.path, status.current]))
         this.commitMessageStorage = new LocalStorage(LocalStorageKey.CommitMessage, '', JSON.stringify([this.path, status.current]))
-            }
+    }
 
     private async loadBranches(): Promise<void> {
         const status = this.loadStatus()
@@ -111,6 +112,16 @@ export class RepositoryState {
     }
 
     public async commit(): Promise<void> {
+        await this.request(Method.Post, '/commit', {
+            message: this.getCommitMessage(),
+            stage: this.stageAllFilesBeforeCommit.isChecked,
+            cleanAfterCommit: this.cleanAfterCommit.isChecked,
+            command: this.precommitCommandStorage.getValue(),
+        })
+        await this.loadStatus()
+    }
+
+    private getCommitMessage(): string {
         let message = this.commitMessageStorage.getValue()
 
         if (this.useSectionCommitMessagePrefix.isChecked) {
@@ -121,12 +132,7 @@ export class RepositoryState {
             message = `${this.status?.current}: ${message}`
         }
 
-        await this.request(Method.Post, '/commit', {
-            message: message,
-            stage: this.stageAllFilesBeforeCommit.isChecked,
-            command: this.precommitCommandStorage.getValue(),
-        })
-        await this.loadStatus()
+        return message
     }
 
     public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
