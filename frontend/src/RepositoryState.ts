@@ -38,7 +38,6 @@ export class RepositoryState {
         makeAutoObservable(this)
         this.loadStatus()
         this.loadBranches()
-        this.loadCommitHistory()
     }
 
     private async loadCommitHistory(): Promise<void> {
@@ -95,6 +94,7 @@ export class RepositoryState {
     }
 
     public async loadStatus(): Promise<void> {
+        this.loadCommitHistory()
         this.setStatus(await this.statusLoader.load())
     }
 
@@ -129,10 +129,7 @@ export class RepositoryState {
             cleanAfterCommit: this.cleanAfterCommit.isChecked,
             command: this.precommitCommandStorage.getValue(),
         })
-        const status = this.loadStatus()
-        const commitHistory = this.loadCommitHistory()
-        await status
-        await commitHistory
+        await this.loadStatus()
     }
 
     private getCommitMessage(): string {
