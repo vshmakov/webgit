@@ -157,6 +157,11 @@ export class RepositoryState {
         await this.loadStatus()
     }
 
+    public async stage(file: FileStatusResult): Promise<void> {
+        await this.request(Method.Put, '/file/stage', file)
+        await this.loadStatus()
+    }
+
     public async mergeTrackingBranch(): Promise<void> {
         await this.request(Method.Put, '/branch/merge-tracking')
         await this.loadStatus()

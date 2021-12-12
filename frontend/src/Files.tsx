@@ -4,7 +4,15 @@ import {LoadedRepositoryProps} from "./LoadedRepositoryProps";
 import {FileStatusResult} from "simple-git/typings/response";
 import {File} from "./File";
 
-export const Files = observer(({repository, status}: LoadedRepositoryProps): ReactElement => {
+export const Files = observer(({repository, status, branches}: LoadedRepositoryProps): ReactElement => {
+    const files = status.files
+        .map((file: FileStatusResult): ReactElement => <File
+            repository={repository}
+            status={status}
+            branches={branches}
+            file={file}
+            key={file.path}/>)
+
     return (
         <div>
             <h3>Files</h3>
@@ -18,8 +26,7 @@ export const Files = observer(({repository, status}: LoadedRepositoryProps): Rea
                 </tr>
                 </thead>
                 <tbody>
-                {status.files.map((file: FileStatusResult) => <File repository={repository} file={file}
-                                                                    key={file.path}/>)}
+                {files}
                 </tbody>
             </table>
         </div>

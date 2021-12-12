@@ -1,18 +1,26 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {FileStatus} from "./FileStatus";
-import {RepositoryProps} from "./RepositoryProps";
 import {FileStatusResult} from "simple-git/typings/response";
 import {getFilePathParts} from "./GetFilePathParts";
 import {withSound} from "./WithSound";
+import {LoadedRepositoryProps} from "./LoadedRepositoryProps";
+import {Checkbox} from "./Checkbox";
+import {Flag} from "./Flag";
 
-interface Props extends RepositoryProps {
+interface Props extends LoadedRepositoryProps {
     file: FileStatusResult
 }
 
-export const File = observer(({file, repository}: Props): ReactElement => {
+export const File = observer(({file, repository, status}: Props): ReactElement => {
     const workingDir = file.working_dir as keyof typeof FileStatus
     const {name, directory} = getFilePathParts(file.path)
+    const stagedFlag: Flag = {
+        isChecked: status.staged.includes(file.path),
+        toggle(): void {
+            withSound(repository.stage(file))
+        }
+    }
 
     return (
         <tr>
@@ -22,6 +30,7 @@ export const File = observer(({file, repository}: Props): ReactElement => {
                 {FileStatus[workingDir] || workingDir}
             </td>
             <td>
+                <Checkbox label='Staged' flag={stagedFlag}/>
                 <button
                     type="button"
                     onClick={() => withSound(repository.declineFile(file))}>

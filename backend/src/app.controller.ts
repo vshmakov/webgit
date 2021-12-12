@@ -136,37 +136,33 @@ export class AppController {
     }
 
     @Get('/status')
-    public async status(@Headers()
-                            {
-                                path
-                            }
-                            :
-                            PathHeaders
-    ):
-        Promise<StatusResult> {
+    public async status(@Headers() {path}: PathHeaders): Promise<StatusResult> {
         return git(path).status()
     }
 
     @Put('/file/decline')
-    public async declineFile(@Headers()
-                                 {
-                                     path
-                                 }
-                                 :
-                                 PathHeaders, @Body()
-                                 file: FileStatusResult
-    ):
-        Promise<void> {
+    public async declineFile(@Headers() {path}: PathHeaders, @Body() file: FileStatusResult): Promise<void> {
         const client = git(path)
 
-        if ('?' === file.working_dir
-        ) {
+        if ('?' === file.working_dir) {
             await client.clean(CleanOptions.FORCE, [file.path])
 
             return
         }
 
         await client.checkout(file.path)
+    }
+
+    @Put('/file/stage')
+    public async stageFile(@Headers() {path}: PathHeaders, @Body() file: FileStatusResult): Promise<void> {
+        const client = git(path)
+        const status = await git(path).status()
+
+        if (!status.staged.includes(file.path)) {
+            await client.add(file.path)
+        } else {
+            await client.reset([file.path])
+        }
     }
 
     @Put('/fetch')
@@ -209,8 +205,8 @@ export class AppController {
 
         await client.commit(message)
 
-        if (stage&&cleanAfterCommit){
-           await client.clean(CleanOptions.FORCE, ['-d'])
+        if (stage && cleanAfterCommit) {
+            await client.clean(CleanOptions.FORCE, ['-d'])
         }
     }
 
