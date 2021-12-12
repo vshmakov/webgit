@@ -1,4 +1,4 @@
-import {BranchSummary, BranchSummaryBranch, StatusResult} from "simple-git";
+import {BranchSummary, BranchSummaryBranch, LogResult, StatusResult} from "simple-git";
 import {BranchesState} from "./BranchesState";
 import {InMemoryFlag} from "./InMemoryFlag";
 import {LocalStorage} from "./LocalStorage";
@@ -13,6 +13,7 @@ import {LocalStorageFlag} from "./LocalStorageFlag";
 export class RepositoryState {
     public status: StatusResult | null = null
     public branches: BranchesState | null = null
+    public commitHistory: LogResult | null = null
     public readonly stageAllFilesBeforeCommit: InMemoryFlag = new InMemoryFlag(true)
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '', this.path)
@@ -37,6 +38,16 @@ export class RepositoryState {
         makeAutoObservable(this)
         this.loadStatus()
         this.loadBranches()
+        this.loadCommitHistory()
+    }
+
+    private async loadCommitHistory(): Promise<void> {
+        const response = await this.request(Method.Get, '/commit/history')
+        this.setCommitHistory(await response.json())
+    }
+
+    private setCommitHistory(commitHistory: LogResult): void {
+        this.commitHistory = commitHistory
     }
 
     public getBranchName(branch: BranchSummaryBranch): string {
@@ -118,7 +129,10 @@ export class RepositoryState {
             cleanAfterCommit: this.cleanAfterCommit.isChecked,
             command: this.precommitCommandStorage.getValue(),
         })
-        await this.loadStatus()
+        const status = this.loadStatus()
+        const commitHistory = this.loadCommitHistory()
+        await status
+        await commitHistory
     }
 
     private getCommitMessage(): string {

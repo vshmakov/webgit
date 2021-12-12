@@ -6,12 +6,11 @@ import {withSound} from "./WithSound";
 import {LocalStorageInput} from "./LocalStorageInput";
 import {SectionCommitPrefix} from "./SectionCommitPrefix";
 import {CommitSettings} from "./CommitSettings";
+import {Logs} from "./Logs";
 
-export const Commit = observer(class extends React.Component<LoadedRepositoryProps> {
-    public render(): ReactElement {
-        const {repository, status} = this.props;
-
-        return (
+export const Commit = observer(({repository, status}: LoadedRepositoryProps): ReactElement => {
+    return (
+        <div>
             <form onSubmit={preventDefault(() => withSound(repository.commit()))}>
                 <h3>Commit</h3>
                 {repository.useBranchAsCommitMessagePrefix.isChecked ? `${status.current}:` : ''}
@@ -22,6 +21,7 @@ export const Commit = observer(class extends React.Component<LoadedRepositoryPro
                 </button>
                 <CommitSettings repository={repository}/>
             </form>
-        );
-    }
+            <Logs repository={repository}/>
+        </div>
+    )
 })

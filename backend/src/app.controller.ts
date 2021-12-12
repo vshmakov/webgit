@@ -3,13 +3,14 @@ import simpleGit, {
     BranchSummary,
     BranchSummaryBranch,
     CleanOptions,
-    FileStatusResult,
+    FileStatusResult, LogResult,
     SimpleGit,
     StatusResult
 } from 'simple-git';
-import {Response as GitResponse} from "simple-git/typings/simple-git";
+import {Response, Response as GitResponse} from "simple-git/typings/simple-git";
 import {exec, ExecException} from 'child_process'
 import fetch from "node-fetch";
+import * as resp from "simple-git/typings/response";
 
 
 const clients: { [key: string]: SimpleGit } = {}
@@ -195,6 +196,11 @@ export class AppController {
         if (stage && cleanAfterCommit) {
             await client.clean(CleanOptions.FORCE, ['-d'])
         }
+    }
+
+    @Get('/commit/history')
+    public commitHistory(@Headers() {path}: PathHeaders): Response<LogResult> {
+        return git(path).log(['-n', '20'])
     }
 
     private async execCommand(command: string): Promise<boolean> {
