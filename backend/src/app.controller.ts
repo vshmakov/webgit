@@ -210,7 +210,7 @@ export class AppController {
         await client.commit(message)
 
         if (stage&&cleanAfterCommit){
-           await client.clean()
+           await client.clean(['-f', '-d'])
         }
     }
 
