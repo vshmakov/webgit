@@ -12,6 +12,7 @@ export const Log = observer(({log}: Props): ReactElement => {
             <td>{log.message}</td>
             <td>{log.author_name}</td>
             <td>{log.date}</td>
+            <td>{log.hash}</td>
         </tr>
     )
 })

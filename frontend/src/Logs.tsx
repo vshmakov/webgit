@@ -17,6 +17,7 @@ export const Logs = observer(({repository}: RepositoryProps): ReactElement => {
                     <th>Message</th>
                     <th>Author</th>
                     <th>Date</th>
+                    <th>Hash</th>
                 </tr>
                 </thead>
                 <tbody>{logs}</tbody>

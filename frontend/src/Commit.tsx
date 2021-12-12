@@ -13,7 +13,7 @@ export const Commit = observer(({repository, status}: LoadedRepositoryProps): Re
         <div>
             <form onSubmit={preventDefault(() => withSound(repository.commit()))}>
                 <h3>Commit</h3>
-                {repository.useBranchAsCommitMessagePrefix.isChecked ? `${status.current}:` : ''}
+                <span>{repository.useBranchAsCommitMessagePrefix.isChecked ? `${status.current}:` : ''}</span>
                 <SectionCommitPrefix repository={repository}/>
                 <LocalStorageInput title='' storage={repository.commitMessageStorage} required={true}/>
                 <button type='submit'>
