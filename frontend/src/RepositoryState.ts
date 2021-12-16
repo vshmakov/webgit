@@ -9,12 +9,12 @@ import {request} from "./Request";
 import {Method} from "./Method";
 import {FileStatusResult} from "simple-git/typings/response";
 import {LocalStorageFlag} from "./LocalStorageFlag";
+import {Flag} from "./Flag";
 
 export class RepositoryState {
     public status: StatusResult | null = null
     public branches: BranchesState | null = null
     public commitHistory: LogResult | null = null
-    public readonly stageAllFilesBeforeCommit: InMemoryFlag = new InMemoryFlag(true)
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '', this.path)
     public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '', this.path)
@@ -32,12 +32,33 @@ export class RepositoryState {
     public readonly isBranchCreation = new InMemoryFlag(false)
     public readonly isDisabled = new InMemoryFlag(false)
     private readonly loadedIssueSummaries: string[] = []
-    public readonly cleanAfterCommit = new LocalStorageFlag(new LocalStorage<boolean>(LocalStorageKey.CleanAfterCommit, false, this.path))
+    public readonly cleanAfterCommit = LocalStorageFlag.createByKey(LocalStorageKey.CleanAfterCommit, false, this.path)
 
     public constructor(public readonly path: string) {
         makeAutoObservable(this)
         this.loadStatus()
         this.loadBranches()
+    }
+
+    public get stageAllFilesBeforeCommit(): Flag {
+        const flag = LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path)
+
+        return {
+            isChecked: flag.isChecked && !this.hasStagedFiles,
+            toggle(): void {
+                flag.toggle()
+            }
+        }
+    }
+
+    public get hasStagedFiles(): boolean {
+        const status = this.status
+
+        if (null === status) {
+            return false
+        }
+
+        return 0 !== status.staged.length
     }
 
     private async loadCommitHistory(): Promise<void> {
