@@ -5,7 +5,7 @@ import {LocalStorageInput} from "./LocalStorageInput";
 import React, {ReactElement} from "react";
 import {LoadedRepositoryProps} from "./LoadedRepositoryProps";
 
-export const CommitSettings = observer(({repository, status}: LoadedRepositoryProps): ReactElement => {
+export const CommitSettings = observer(({repository}: LoadedRepositoryProps): ReactElement => {
     return (
         <Toggle label={"AdditionalSettings"}>
             <div>
