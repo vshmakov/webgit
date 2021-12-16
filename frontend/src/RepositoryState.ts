@@ -10,6 +10,7 @@ import {Method} from "./Method";
 import {FileStatusResult} from "simple-git/typings/response";
 import {LocalStorageFlag} from "./LocalStorageFlag";
 import {Flag} from "./Flag";
+import {BlockableFlag} from "./BlockableFlag";
 
 export class RepositoryState {
     public status: StatusResult | null = null
@@ -32,7 +33,14 @@ export class RepositoryState {
     public readonly isBranchCreation = new InMemoryFlag(false)
     public readonly isDisabled = new InMemoryFlag(false)
     private readonly loadedIssueSummaries: string[] = []
-    public readonly cleanAfterCommit = LocalStorageFlag.createByKey(LocalStorageKey.CleanAfterCommit, false, this.path)
+    public readonly cleanAfterCommit = new BlockableFlag(
+        LocalStorageFlag.createByKey(LocalStorageKey.CleanAfterCommit, false, this.path),
+        (): boolean => !this.stageAllFilesBeforeCommit.isChecked
+    )
+    public readonly stageAllFilesBeforeCommit = new BlockableFlag(
+        LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path),
+        (): boolean => this.hasStagedFiles
+    )
 
     public constructor(public readonly path: string) {
         makeAutoObservable(this)
@@ -40,18 +48,7 @@ export class RepositoryState {
         this.loadBranches()
     }
 
-    public get stageAllFilesBeforeCommit(): Flag {
-        const flag = LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path)
-
-        return {
-            isChecked: flag.isChecked && !this.hasStagedFiles,
-            toggle(): void {
-                flag.toggle()
-            }
-        }
-    }
-
-    public get hasStagedFiles(): boolean {
+    private get hasStagedFiles(): boolean {
         const status = this.status
 
         if (null === status) {

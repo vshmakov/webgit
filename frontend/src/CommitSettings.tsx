@@ -9,8 +9,8 @@ export const CommitSettings = observer(({repository, status}: LoadedRepositoryPr
     return (
         <Toggle label={"AdditionalSettings"}>
             <div>
-                <Checkbox label="Stage all files" flag={repository.stageAllFilesBeforeCommit} disabled={repository.hasStagedFiles}/>
-                <Checkbox label='Clean after commit' flag={repository.cleanAfterCommit}/>
+                <Checkbox label="Stage all files" flag={repository.stageAllFilesBeforeCommit} disabled={repository.stageAllFilesBeforeCommit.isBlocked()}/>
+                <Checkbox label='Clean after commit' flag={repository.cleanAfterCommit} disabled={repository.cleanAfterCommit.isBlocked()}/>
                 <LocalStorageInput title="Precommit command" storage={repository.precommitCommandStorage}/>
             </div>
         </Toggle>
