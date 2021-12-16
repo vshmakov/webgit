@@ -14,6 +14,7 @@ interface Props extends LoadedRepositoryProps {
 
 export const File = observer(({file, repository, status}: Props): ReactElement => {
     const workingDir = file.working_dir as keyof typeof FileStatus
+    const index = file.index as keyof typeof FileStatus
     const {name, directory} = getFilePathParts(file.path)
     const stagedFlag: Flag = {
         isChecked: status.staged.includes(file.path),
@@ -27,13 +28,14 @@ export const File = observer(({file, repository, status}: Props): ReactElement =
             <td>{name}</td>
             <td>{directory}</td>
             <td>
-                {FileStatus[workingDir] || workingDir}
+                {FileStatus[workingDir] || workingDir || FileStatus[index] || index}
             </td>
             <td>
                 <Checkbox label='Staged' flag={stagedFlag}/>
                 <button
                     type="button"
-                    onClick={() => withSound(repository.declineFile(file))}>
+                    onClick={() => withSound(repository.declineFile(file))}
+                    disabled={stagedFlag.isChecked}>
                     Decline
                 </button>
             </td>

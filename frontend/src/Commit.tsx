@@ -8,7 +8,7 @@ import {SectionCommitPrefix} from "./SectionCommitPrefix";
 import {CommitSettings} from "./CommitSettings";
 import {Logs} from "./Logs";
 
-export const Commit = observer(({repository, status}: LoadedRepositoryProps): ReactElement => {
+export const Commit = observer(({repository, status, branches}: LoadedRepositoryProps): ReactElement => {
     return (
         <div>
             <form onSubmit={preventDefault(() => withSound(repository.commit()))}>
@@ -19,7 +19,7 @@ export const Commit = observer(({repository, status}: LoadedRepositoryProps): Re
                 <button type='submit'>
                     Commit
                 </button>
-                <CommitSettings repository={repository}/>
+                <CommitSettings repository={repository} status={status} branches={branches}/>
             </form>
             <Logs repository={repository}/>
         </div>
