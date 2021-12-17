@@ -22,8 +22,8 @@ export class RepositoryState {
     public readonly jiraUserStorage = new LocalStorage<string>(LocalStorageKey.JiraUser, '', this.path)
     public readonly jiraTokenStorage = new LocalStorage<string>(LocalStorageKey.JiraToken, '', this.path)
     public readonly jiraIssueSummariesStorage = new LocalStorage<{ [key: string]: string | null }>(LocalStorageKey.JiraIssueSummaries, {}, this.path)
-    public readonly useBranchAsCommitMessagePrefix = new LocalStorageFlag(new LocalStorage<boolean>(LocalStorageKey.UseBranchAsCommitMessagePrefix, false, this.path))
-    public readonly useSectionCommitMessagePrefix = new LocalStorageFlag(new LocalStorage<boolean>(LocalStorageKey.UseSectionCommitMessagePrefix, false, this.path))
+    public readonly useBranchAsCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseBranchAsCommitMessagePrefix, false, this.path)
+    public readonly useSectionCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseSectionCommitMessagePrefix, false, this.path)
     public sectionCommitMessagePrefix: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.SectionCommitMessagePrefix, '', this.path)
     private readonly request = request.bind(null, this.path)
     public readonly statusLoader = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.path, this.requestStatus.bind(this))
@@ -52,7 +52,7 @@ export class RepositoryState {
     }
 
     private checkStatus(callback: (status: StatusResult) => boolean): () => boolean {
-                return (): boolean => null !== this.status ? callback(this.status) : false
+        return (): boolean => null !== this.status ? callback(this.status) : false
     }
 
     private async loadCommitHistory(): Promise<void> {
@@ -142,6 +142,7 @@ export class RepositoryState {
             message: this.getCommitMessage(),
             stage: this.stageAllFilesBeforeCommit.isChecked,
             cleanAfterCommit: this.cleanAfterCommit.isChecked,
+            allowEmpty: this.allowEmptyCommit.isChecked,
             command: this.precommitCommandStorage.getValue(),
         })
         await this.loadStatus()

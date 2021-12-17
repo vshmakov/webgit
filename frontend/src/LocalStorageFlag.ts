@@ -3,7 +3,7 @@ import {LocalStorage} from "./LocalStorage";
 import {LocalStorageKey} from "./LocalStorageKey";
 
 export class LocalStorageFlag implements Flag {
-    public constructor(private readonly localStorage: LocalStorage<boolean>) {
+    private constructor(private readonly localStorage: LocalStorage<boolean>) {
     }
 
     public static createByKey(key: LocalStorageKey, value: boolean, domain: string): LocalStorageFlag {
