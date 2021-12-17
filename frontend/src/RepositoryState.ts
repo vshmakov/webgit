@@ -38,7 +38,11 @@ export class RepositoryState {
     )
     public readonly stageAllFilesBeforeCommit = new BlockableFlag(
         LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path),
-        (): boolean => this.hasStagedFiles
+        this.checkStatus((status: StatusResult): boolean => 0 !== status.staged.length)
+    )
+    public readonly allowEmptyCommit = new BlockableFlag(
+        new InMemoryFlag(false),
+        this.checkStatus((status: StatusResult): boolean => 0 !== status.files.length)
     )
 
     public constructor(public readonly path: string) {
@@ -47,14 +51,8 @@ export class RepositoryState {
         this.loadBranches()
     }
 
-    private get hasStagedFiles(): boolean {
-        const status = this.status
-
-        if (null === status) {
-            return false
-        }
-
-        return 0 !== status.staged.length
+    private checkStatus(callback: (status: StatusResult) => boolean): () => boolean {
+                return (): boolean => null !== this.status ? callback(this.status) : false
     }
 
     private async loadCommitHistory(): Promise<void> {
