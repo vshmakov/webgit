@@ -11,6 +11,7 @@ import {FileStatusResult} from "simple-git/typings/response";
 import {LocalStorageFlag} from "./LocalStorageFlag";
 import {BlockableFlag} from "./BlockableFlag";
 import {disable} from "./Disable";
+import {EmptyCommitMessage} from "./EmptyCommitMessage";
 
 export class RepositoryState {
     public status: StatusResult | null = null
@@ -152,7 +153,7 @@ export class RepositoryState {
 
     private getCommitMessage(): string {
         if (this.allowEmptyCommit.isChecked){
-            return  'Empty commit'
+            return  EmptyCommitMessage
         }
 
         let message = this.commitMessageStorage.getValue()
