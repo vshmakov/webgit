@@ -151,6 +151,10 @@ export class RepositoryState {
     }
 
     private getCommitMessage(): string {
+        if (this.allowEmptyCommit.isChecked){
+            return  'Empty commit'
+        }
+
         let message = this.commitMessageStorage.getValue()
 
         if (this.useSectionCommitMessagePrefix.isChecked) {
