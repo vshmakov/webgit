@@ -38,13 +38,13 @@ export class RepositoryState {
         LocalStorageFlag.createByKey(LocalStorageKey.CleanAfterCommit, false, this.path),
         (): boolean => !this.stageAllFilesBeforeCommit.isChecked
     )
-    public readonly stageAllFilesBeforeCommit = new BlockableFlag(
-        LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path),
-        this.checkStatus((status: StatusResult): boolean => 0 !== status.staged.length)
-    )
     public readonly allowEmptyCommit = new BlockableFlag(
         new InMemoryFlag(false),
         this.checkStatus((status: StatusResult): boolean => 0 !== status.files.length)
+    )
+    public readonly stageAllFilesBeforeCommit = new BlockableFlag(
+        LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path),
+        this.checkStatus((status: StatusResult): boolean => 0 !== status.staged.length  || this.allowEmptyCommit.isChecked)
     )
 
     public constructor(public readonly path: string) {
@@ -152,8 +152,8 @@ export class RepositoryState {
     }
 
     private getCommitMessage(): string {
-        if (this.allowEmptyCommit.isChecked){
-            return  EmptyCommitMessage
+        if (this.allowEmptyCommit.isChecked) {
+            return EmptyCommitMessage
         }
 
         let message = this.commitMessageStorage.getValue()
