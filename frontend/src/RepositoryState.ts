@@ -10,6 +10,7 @@ import {Method} from "./Method";
 import {FileStatusResult} from "simple-git/typings/response";
 import {LocalStorageFlag} from "./LocalStorageFlag";
 import {BlockableFlag} from "./BlockableFlag";
+import {disable} from "./Disable";
 
 export class RepositoryState {
     public status: StatusResult | null = null
@@ -146,6 +147,7 @@ export class RepositoryState {
             command: this.precommitCommandStorage.getValue(),
         })
         await this.loadStatus()
+        disable(this.allowEmptyCommit)
     }
 
     private getCommitMessage(): string {

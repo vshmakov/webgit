@@ -172,10 +172,17 @@ export class AppController {
     }
 
     @Post('/commit')
-    public async commit(@Headers() {path}: PathHeaders, @Body() {message, stage, cleanAfterCommit, command}: {
+    public async commit(@Headers() {path}: PathHeaders, @Body() {
+                            message,
+                            stage,
+                            cleanAfterCommit,
+                            allowEmpty,
+                            command
+                        }: {
                             message: string,
                             stage: boolean,
                             cleanAfterCommit: Boolean,
+                            allowEmpty: boolean,
                             command: string
                         }
     ): Promise<void> {
@@ -191,7 +198,14 @@ export class AppController {
             await client.add('.')
         }
 
-        await client.commit(message)
+        const options = []
+        const status = await client.status()
+
+        if (allowEmpty && 0 === status.files.length) {
+            options.push(['--allow-empty'])
+        }
+
+        await client.commit(message, options)
 
         if (stage && cleanAfterCommit) {
             await client.clean(CleanOptions.FORCE, ['-d'])
