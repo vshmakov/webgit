@@ -9,7 +9,6 @@ import {request} from "./Request";
 import {Method} from "./Method";
 import {FileStatusResult} from "simple-git/typings/response";
 import {LocalStorageFlag} from "./LocalStorageFlag";
-import {Flag} from "./Flag";
 import {BlockableFlag} from "./BlockableFlag";
 
 export class RepositoryState {
