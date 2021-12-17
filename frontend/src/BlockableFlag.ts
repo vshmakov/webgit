@@ -8,11 +8,12 @@ export class BlockableFlag implements Flag {
     }
 
     public get isChecked(): boolean {
-        return this.flag.isChecked && !this.isBlocked()
+        return !this.isBlocked() && this.flag.isChecked
     }
 
     public toggle(): void {
-        this.flag.toggle()
+        if (!this.isBlocked()) {
+            this.flag.toggle()
+        }
     }
-
 }
