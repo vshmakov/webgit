@@ -202,7 +202,7 @@ export class AppController {
         const status = await client.status()
 
         if (allowEmpty && 0 === status.files.length) {
-            options.push(['--allow-empty'])
+            options.push('--allow-empty')
         }
 
         await client.commit(message, options)
