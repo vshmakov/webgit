@@ -5,6 +5,7 @@ import {makeAutoObservable} from "mobx";
 import {not} from "./Not";
 import {sameWith} from "./SameWith";
 import {InMemoryFlag} from "./InMemoryFlag";
+import {disable} from "./Disable";
 
 export class State {
     public readonly currentRepositoryPathStorage = new LocalStorage<string | null>(LocalStorageKey.CurrentRepositoryPath, null)
@@ -33,7 +34,7 @@ export class State {
 
     private checkRepository(path: string): void {
         this.repository = new RepositoryState(path)
-        this.switchingRepository.uncheck()
+        disable(this.switchingRepository)
     }
 
     public addRepositoryPath(path: string): void {

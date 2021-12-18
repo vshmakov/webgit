@@ -13,12 +13,4 @@ export class InMemoryFlag implements Flag {
     public toggle(): void {
         this.flag = !this.flag
     }
-
-    public check(): void {
-        this.flag = true
-    }
-
-    public uncheck(): void {
-        this.flag = false
-    }
 }

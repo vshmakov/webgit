@@ -12,6 +12,7 @@ import {LocalStorageFlag} from "./LocalStorageFlag";
 import {BlockableFlag} from "./BlockableFlag";
 import {disable} from "./Disable";
 import {EmptyCommitMessage} from "./EmptyCommitMessage";
+import {enable} from "./Enable";
 
 export class RepositoryState {
     public status: StatusResult | null = null
@@ -170,10 +171,10 @@ export class RepositoryState {
     }
 
     public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
-        this.isDisabled.check()
+        enable(this.isDisabled)
         await this.request(Method.Put, '/branch/checkout', branch)
         await this.loadStatus()
-        this.isDisabled.uncheck()
+        disable(this.isDisabled)
         const current = this.status?.current
 
         if (current) {
@@ -217,7 +218,7 @@ export class RepositoryState {
 
     private cleanBranchCreation() {
         this.newBranchName = ''
-        this.isBranchCreation.uncheck()
+        disable(this.isBranchCreation)
     }
 
     public async fetch(): Promise<void> {
