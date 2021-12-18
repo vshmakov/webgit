@@ -11,7 +11,7 @@ import {FileStatusResult} from "simple-git/typings/response";
 import {LocalStorageFlag} from "./Flag/LocalStorageFlag";
 import {BlockableFlag} from "./Flag/BlockableFlag";
 import {disable} from "./Flag/Disable";
-import {EmptyCommitMessage} from "./EmptyCommitMessage";
+import {EmptyCommitMessage} from "./Commit/EmptyCommitMessage";
 import {enable} from "./Flag/Enable";
 
 export class RepositoryState {

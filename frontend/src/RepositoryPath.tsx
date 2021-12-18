@@ -4,7 +4,7 @@ import React, {ReactElement} from "react";
 import {useNavigate} from "react-router-dom";
 import {getPathUrl} from "./GetPathUrl";
 import {getFilePathParts} from "./GetFilePathParts";
-import {capitalizeFirstLetter} from "./CapitalizeFirstLetter";
+import {capitalizeFirstLetter} from "./String/CapitalizeFirstLetter";
 
 export const RepositoryPath = observer(({path, state}: { path: string, state: State }): ReactElement => {
     const navigate = useNavigate()

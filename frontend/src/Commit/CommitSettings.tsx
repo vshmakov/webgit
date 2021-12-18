@@ -1,9 +1,9 @@
 import {observer} from "mobx-react";
-import {Toggle} from "./Toggle";
-import {Checkbox} from "./Flag/Checkbox";
-import {LocalStorageInput} from "./LocalStorage/LocalStorageInput";
+import {Toggle} from "../Toggle";
+import {Checkbox} from "../Flag/Checkbox";
+import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
 import React, {ReactElement} from "react";
-import {LoadedRepositoryProps} from "./LoadedRepositoryProps";
+import {LoadedRepositoryProps} from "../LoadedRepositoryProps";
 
 export const CommitSettings = observer(({repository}: LoadedRepositoryProps): ReactElement => {
     return (
