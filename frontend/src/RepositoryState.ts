@@ -1,5 +1,5 @@
 import {BranchSummary, BranchSummaryBranch, LogResult, StatusResult} from "simple-git";
-import {BranchesState} from "./BranchesState";
+import {BranchesState} from "./Branch/BranchesState";
 import {InMemoryFlag} from "./Flag/InMemoryFlag";
 import {LocalStorage} from "./LocalStorage/LocalStorage";
 import {LocalStorageKey} from "./LocalStorage/LocalStorageKey";

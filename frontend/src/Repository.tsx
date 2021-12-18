@@ -3,7 +3,7 @@ import {RepositoryState} from "./RepositoryState";
 import React, {ReactElement, useEffect} from "react";
 import {withSound} from "./WithSound";
 import {getCalledAgo} from "./GetCalledAgo";
-import {Branches} from "./Branches";
+import {Branches} from "./Branch/Branches";
 import {Commit} from "./Commit";
 import {Files} from "./Files";
 import {getFilePathParts} from "./GetFilePathParts";

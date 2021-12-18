@@ -1,11 +1,11 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {LoadedRepositoryProps} from "./LoadedRepositoryProps";
-import {Toggle} from "./Toggle";
-import {preventDefault} from "./PreventDefault";
-import {withSound} from "./WithSound";
+import {LoadedRepositoryProps} from "../LoadedRepositoryProps";
+import {Toggle} from "../Toggle";
+import {preventDefault} from "../PreventDefault";
+import {withSound} from "../WithSound";
 import {BranchSummaryBranch} from "simple-git";
-import {Checkbox} from "./Flag/Checkbox";
+import {Checkbox} from "../Flag/Checkbox";
 import {Branch} from "./Branch";
 
 export const Branches = observer(({repository, branches, status}: LoadedRepositoryProps): ReactElement => {

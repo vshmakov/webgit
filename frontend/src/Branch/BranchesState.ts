@@ -1,12 +1,12 @@
-import {LocalStorage} from "./LocalStorage/LocalStorage";
-import {LocalStorageKey} from "./LocalStorage/LocalStorageKey";
-import {InMemoryFlag} from "./Flag/InMemoryFlag";
+import {LocalStorage} from "../LocalStorage/LocalStorage";
+import {LocalStorageKey} from "../LocalStorage/LocalStorageKey";
+import {InMemoryFlag} from "../Flag/InMemoryFlag";
 import {BranchSummary, BranchSummaryBranch} from "simple-git";
 import {makeAutoObservable} from "mobx";
-import {sameWith} from "./SameWith";
-import {not} from "./Not";
-import {compareAlphabetically} from "./CompareAlphabetically";
-import {compare} from "./Compare";
+import {sameWith} from "../SameWith";
+import {not} from "../Not";
+import {compareAlphabetically} from "../CompareAlphabetically";
+import {compare} from "../Compare";
 
 export class BranchesState {
     public readonly hiddenStorage = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [], this.path)
