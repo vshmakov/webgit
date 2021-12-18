@@ -3,7 +3,7 @@ import {Toggle} from "../Toggle";
 import {Checkbox} from "../Flag/Checkbox";
 import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
 import React, {ReactElement} from "react";
-import {LoadedRepositoryProps} from "../LoadedRepositoryProps";
+import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 
 export const CommitSettings = observer(({repository}: LoadedRepositoryProps): ReactElement => {
     return (

@@ -1,5 +1,5 @@
 import {observer} from "mobx-react";
-import {LoadedRepositoryProps} from "../LoadedRepositoryProps";
+import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {SectionCommitPrefix} from "../SectionCommitPrefix";
 import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
 import React, {ReactElement} from "react";

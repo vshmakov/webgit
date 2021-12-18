@@ -1,9 +1,9 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {RepositoryProps} from "./RepositoryProps";
-import {Toggle} from './Toggle'
-import {LocalStorageInput} from "./LocalStorage/LocalStorageInput";
-import {Checkbox} from "./Flag/Checkbox";
+import {Toggle} from '../Toggle'
+import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
+import {Checkbox} from "../Flag/Checkbox";
 
 export const RepositorySettings = observer(({repository}: RepositoryProps): ReactElement => {
     return (

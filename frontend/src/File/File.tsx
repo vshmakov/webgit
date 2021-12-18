@@ -4,7 +4,7 @@ import {FileStatus} from "./FileStatus";
 import {FileStatusResult} from "simple-git/typings/response";
 import {getFilePathParts} from "./GetFilePathParts";
 import {withSound} from "../WithSound";
-import {LoadedRepositoryProps} from "../LoadedRepositoryProps";
+import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {Checkbox} from "../Flag/Checkbox";
 import {Flag} from "../Flag/Flag";
 

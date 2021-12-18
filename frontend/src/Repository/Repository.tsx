@@ -1,15 +1,15 @@
 import {observer} from "mobx-react";
 import {RepositoryState} from "./RepositoryState";
 import React, {ReactElement, useEffect} from "react";
-import {withSound} from "./WithSound";
-import {getCalledAgo} from "./GetCalledAgo";
-import {Branches} from "./Branch/Branches";
-import {Commit} from "./Commit/Commit";
-import {Files} from "./File/Files";
-import {getFilePathParts} from "./File/GetFilePathParts";
-import {capitalizeFirstLetter} from "./String/CapitalizeFirstLetter";
+import {withSound} from "../WithSound";
+import {getCalledAgo} from "../Util/GetCalledAgo";
+import {Branches} from "../Branch/Branches";
+import {Commit} from "../Commit/Commit";
+import {Files} from "../File/Files";
+import {getFilePathParts} from "../File/GetFilePathParts";
+import {capitalizeFirstLetter} from "../String/CapitalizeFirstLetter";
 import {RepositorySettings} from "./RepositorySettings";
-import {EmptyCallback} from "./Util/EmptyCallback";
+import {EmptyCallback} from "../Util/EmptyCallback";
 import {RepositoryProps} from "./RepositoryProps";
 
 export const Repository = observer(({repository}: RepositoryProps): ReactElement => {

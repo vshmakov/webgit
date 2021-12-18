@@ -1,8 +1,8 @@
 import React, {ReactElement, useEffect} from 'react';
 import {observer} from "mobx-react"
-import {Repository} from "./Repository";
+import {Repository} from "./Repository/Repository";
 import {State} from "./State";
-import {SwitchRepository} from "./SwitchRepository";
+import {SwitchRepository} from "./Repository/SwitchRepository";
 import {NavigateFunction, useLocation, useNavigate} from "react-router-dom";
 import {getPathUrl} from "./Util/GetPathUrl";
 

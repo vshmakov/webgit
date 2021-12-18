@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {LoadedRepositoryProps} from "../LoadedRepositoryProps";
+import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {Toggle} from "../Toggle";
 import {preventDefault} from "../PreventDefault";
 import {withSound} from "../WithSound";

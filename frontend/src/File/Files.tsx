@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {LoadedRepositoryProps} from "../LoadedRepositoryProps";
+import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {FileStatusResult} from "simple-git/typings/response";
 import {File} from "./File";
 

@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {RepositoryProps} from "./RepositoryProps";
+import {RepositoryProps} from "./Repository/RepositoryProps";
 import {LocalStorageInput} from "./LocalStorage/LocalStorageInput";
 
 export const SectionCommitPrefix = observer(({repository}: RepositoryProps): ReactElement => {

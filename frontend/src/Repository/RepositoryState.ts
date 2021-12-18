@@ -1,18 +1,18 @@
 import {BranchSummary, BranchSummaryBranch, LogResult, StatusResult} from "simple-git";
-import {BranchesState} from "./Branch/BranchesState";
-import {InMemoryFlag} from "./Flag/InMemoryFlag";
-import {LocalStorage} from "./LocalStorage/LocalStorage";
-import {LocalStorageKey} from "./LocalStorage/LocalStorageKey";
-import {Loader} from "./Loader";
+import {BranchesState} from "../Branch/BranchesState";
+import {InMemoryFlag} from "../Flag/InMemoryFlag";
+import {LocalStorage} from "../LocalStorage/LocalStorage";
+import {LocalStorageKey} from "../LocalStorage/LocalStorageKey";
+import {Loader} from "../Loader";
 import {makeAutoObservable} from "mobx";
-import {request} from "./Request";
-import {Method} from "./Method";
+import {request} from "../Request";
+import {Method} from "../Method";
 import {FileStatusResult} from "simple-git/typings/response";
-import {LocalStorageFlag} from "./Flag/LocalStorageFlag";
-import {BlockableFlag} from "./Flag/BlockableFlag";
-import {disable} from "./Flag/Disable";
-import {EmptyCommitMessage} from "./Commit/EmptyCommitMessage";
-import {enable} from "./Flag/Enable";
+import {LocalStorageFlag} from "../Flag/LocalStorageFlag";
+import {BlockableFlag} from "../Flag/BlockableFlag";
+import {disable} from "../Flag/Disable";
+import {EmptyCommitMessage} from "../Commit/EmptyCommitMessage";
+import {enable} from "../Flag/Enable";
 
 export class RepositoryState {
     public status: StatusResult | null = null
