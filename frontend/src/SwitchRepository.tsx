@@ -1,7 +1,7 @@
 import {observer} from "mobx-react";
 import {State} from "./State";
 import React, {ReactElement, useState} from "react";
-import {compareAlphabetically} from "./CompareAlphabetically";
+import {compareAlphabetically} from "./Util/CompareAlphabetically";
 import {RepositoryPath} from "./RepositoryPath";
 import {Toggle} from "./Toggle";
 import {preventDefault} from "./PreventDefault";

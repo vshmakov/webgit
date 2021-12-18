@@ -9,7 +9,7 @@ import {Files} from "./Files";
 import {getFilePathParts} from "./GetFilePathParts";
 import {capitalizeFirstLetter} from "./String/CapitalizeFirstLetter";
 import {RepositorySettings} from "./RepositorySettings";
-import {EmptyCallback} from "./EmptyCallback";
+import {EmptyCallback} from "./Util/EmptyCallback";
 import {RepositoryProps} from "./RepositoryProps";
 
 export const Repository = observer(({repository}: RepositoryProps): ReactElement => {

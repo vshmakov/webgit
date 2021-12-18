@@ -5,8 +5,8 @@ import {BranchSummary, BranchSummaryBranch} from "simple-git";
 import {makeAutoObservable} from "mobx";
 import {sameWith} from "../SameWith";
 import {not} from "../Not";
-import {compareAlphabetically} from "../CompareAlphabetically";
-import {compare} from "../Compare";
+import {compareAlphabetically} from "../Util/CompareAlphabetically";
+import {compare} from "../Util/Compare";
 
 export class BranchesState {
     public readonly hiddenStorage = new LocalStorage<string[]>(LocalStorageKey.HiddenBranches, [], this.path)
