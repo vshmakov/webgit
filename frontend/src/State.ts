@@ -4,8 +4,8 @@ import {RepositoryState} from "./RepositoryState";
 import {makeAutoObservable} from "mobx";
 import {not} from "./Not";
 import {sameWith} from "./SameWith";
-import {InMemoryFlag} from "./InMemoryFlag";
-import {disable} from "./Disable";
+import {InMemoryFlag} from "./Flag/InMemoryFlag";
+import {disable} from "./Flag/Disable";
 
 export class State {
     public readonly currentRepositoryPathStorage = new LocalStorage<string | null>(LocalStorageKey.CurrentRepositoryPath, null)

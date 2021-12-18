@@ -5,8 +5,8 @@ import {FileStatusResult} from "simple-git/typings/response";
 import {getFilePathParts} from "./GetFilePathParts";
 import {withSound} from "./WithSound";
 import {LoadedRepositoryProps} from "./LoadedRepositoryProps";
-import {Checkbox} from "./Checkbox";
-import {Flag} from "./Flag";
+import {Checkbox} from "./Flag/Checkbox";
+import {Flag} from "./Flag/Flag";
 
 interface Props extends LoadedRepositoryProps {
     file: FileStatusResult

@@ -1,6 +1,6 @@
 import {LocalStorage} from "./LocalStorage";
 import {LocalStorageKey} from "./LocalStorageKey";
-import {InMemoryFlag} from "./InMemoryFlag";
+import {InMemoryFlag} from "./Flag/InMemoryFlag";
 import {BranchSummary, BranchSummaryBranch} from "simple-git";
 import {makeAutoObservable} from "mobx";
 import {sameWith} from "./SameWith";

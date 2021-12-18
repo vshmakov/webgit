@@ -1,6 +1,6 @@
 import {BranchSummary, BranchSummaryBranch, LogResult, StatusResult} from "simple-git";
 import {BranchesState} from "./BranchesState";
-import {InMemoryFlag} from "./InMemoryFlag";
+import {InMemoryFlag} from "./Flag/InMemoryFlag";
 import {LocalStorage} from "./LocalStorage";
 import {LocalStorageKey} from "./LocalStorageKey";
 import {Loader} from "./Loader";
@@ -8,11 +8,11 @@ import {makeAutoObservable} from "mobx";
 import {request} from "./Request";
 import {Method} from "./Method";
 import {FileStatusResult} from "simple-git/typings/response";
-import {LocalStorageFlag} from "./LocalStorageFlag";
-import {BlockableFlag} from "./BlockableFlag";
-import {disable} from "./Disable";
+import {LocalStorageFlag} from "./Flag/LocalStorageFlag";
+import {BlockableFlag} from "./Flag/BlockableFlag";
+import {disable} from "./Flag/Disable";
 import {EmptyCommitMessage} from "./EmptyCommitMessage";
-import {enable} from "./Enable";
+import {enable} from "./Flag/Enable";
 
 export class RepositoryState {
     public status: StatusResult | null = null

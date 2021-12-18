@@ -5,7 +5,7 @@ import {Toggle} from "./Toggle";
 import {preventDefault} from "./PreventDefault";
 import {withSound} from "./WithSound";
 import {BranchSummaryBranch} from "simple-git";
-import {Checkbox} from "./Checkbox";
+import {Checkbox} from "./Flag/Checkbox";
 import {Branch} from "./Branch";
 
 export const Branches = observer(({repository, branches, status}: LoadedRepositoryProps): ReactElement => {

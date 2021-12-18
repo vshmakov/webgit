@@ -1,8 +1,8 @@
-import {InMemoryFlag} from "./InMemoryFlag";
+import {InMemoryFlag} from "./Flag/InMemoryFlag";
 import React, {ReactElement, useState} from "react";
 import {observer} from "mobx-react";
-import {Flag} from "./Flag";
-import {Checkbox} from "./Checkbox";
+import {Flag} from "./Flag/Flag";
+import {Checkbox} from "./Flag/Checkbox";
 
 interface Props {
     label: string

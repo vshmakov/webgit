@@ -3,7 +3,7 @@ import React, {ReactElement} from "react";
 import {RepositoryProps} from "./RepositoryProps";
 import {Toggle} from './Toggle'
 import {LocalStorageInput} from "./LocalStorageInput";
-import {Checkbox} from "./Checkbox";
+import {Checkbox} from "./Flag/Checkbox";
 
 export const RepositorySettings = observer(({repository}: RepositoryProps): ReactElement => {
     return (
