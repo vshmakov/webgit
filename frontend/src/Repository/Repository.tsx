@@ -7,7 +7,7 @@ import {Branches} from "../Branch/Branches";
 import {Commit} from "../Commit/Commit";
 import {Files} from "../File/Files";
 import {getFilePathParts} from "../File/GetFilePathParts";
-import {capitalizeFirstLetter} from "../String/CapitalizeFirstLetter";
+import {capitalizeFirstLetter} from "../Util/CapitalizeFirstLetter";
 import {RepositorySettings} from "./RepositorySettings";
 import {EmptyCallback} from "../Util/EmptyCallback";
 import {RepositoryProps} from "./RepositoryProps";
