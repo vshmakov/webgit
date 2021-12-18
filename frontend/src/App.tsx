@@ -1,5 +1,4 @@
 import React, {ReactElement, useEffect} from 'react';
-import './App.css';
 import {observer} from "mobx-react"
 import {Repository} from "./Repository";
 import {State} from "./State";
