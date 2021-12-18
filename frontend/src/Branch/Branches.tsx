@@ -1,9 +1,9 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
-import {Toggle} from "../Toggle";
-import {preventDefault} from "../PreventDefault";
-import {withSound} from "../WithSound";
+import {Toggle} from "../Util/Toggle";
+import {preventDefault} from "../Util/PreventDefault";
+import {withSound} from "../Util/WithSound";
 import {BranchSummaryBranch} from "simple-git";
 import {Checkbox} from "../Flag/Checkbox";
 import {Branch} from "./Branch";

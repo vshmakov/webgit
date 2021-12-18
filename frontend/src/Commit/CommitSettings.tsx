@@ -1,5 +1,5 @@
 import {observer} from "mobx-react";
-import {Toggle} from "../Toggle";
+import {Toggle} from "../Util/Toggle";
 import {Checkbox} from "../Flag/Checkbox";
 import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
 import React, {ReactElement} from "react";

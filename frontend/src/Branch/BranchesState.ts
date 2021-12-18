@@ -3,8 +3,8 @@ import {LocalStorageKey} from "../LocalStorage/LocalStorageKey";
 import {InMemoryFlag} from "../Flag/InMemoryFlag";
 import {BranchSummary, BranchSummaryBranch} from "simple-git";
 import {makeAutoObservable} from "mobx";
-import {sameWith} from "../SameWith";
-import {not} from "../Not";
+import {sameWith} from "../Util/SameWith";
+import {not} from "../Util/Not";
 import {compareAlphabetically} from "../Util/CompareAlphabetically";
 import {compare} from "../Util/Compare";
 

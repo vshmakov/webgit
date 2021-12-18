@@ -1,7 +1,7 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
-import {withSound} from "../WithSound";
+import {withSound} from "../Util/WithSound";
 import {BranchSummaryBranch} from "simple-git";
 
 interface Props extends LoadedRepositoryProps {

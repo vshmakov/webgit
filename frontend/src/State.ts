@@ -2,8 +2,8 @@ import {LocalStorage} from "./LocalStorage/LocalStorage";
 import {LocalStorageKey} from "./LocalStorage/LocalStorageKey";
 import {RepositoryState} from "./Repository/RepositoryState";
 import {makeAutoObservable} from "mobx";
-import {not} from "./Not";
-import {sameWith} from "./SameWith";
+import {not} from "./Util/Not";
+import {sameWith} from "./Util/SameWith";
 import {InMemoryFlag} from "./Flag/InMemoryFlag";
 import {disable} from "./Flag/Disable";
 

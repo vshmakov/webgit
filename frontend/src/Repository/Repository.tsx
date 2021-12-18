@@ -1,7 +1,7 @@
 import {observer} from "mobx-react";
 import {RepositoryState} from "./RepositoryState";
 import React, {ReactElement, useEffect} from "react";
-import {withSound} from "../WithSound";
+import {withSound} from "../Util/WithSound";
 import {getCalledAgo} from "../Util/GetCalledAgo";
 import {Branches} from "../Branch/Branches";
 import {Commit} from "../Commit/Commit";

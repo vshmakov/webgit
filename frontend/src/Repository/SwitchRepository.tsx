@@ -3,9 +3,9 @@ import {State} from "../State";
 import React, {ReactElement, useState} from "react";
 import {compareAlphabetically} from "../Util/CompareAlphabetically";
 import {RepositoryPath} from "./RepositoryPath";
-import {Toggle} from "../Toggle";
-import {preventDefault} from "../PreventDefault";
-import {setInputValue} from "../SetInputValue";
+import {Toggle} from "../Util/Toggle";
+import {preventDefault} from "../Util/PreventDefault";
+import {setInputValue} from "../Util/SetInputValue";
 import {getFilePathParts} from "../File/GetFilePathParts";
 
 export const SwitchRepository = observer(({state}: { state: State }): ReactElement => {
