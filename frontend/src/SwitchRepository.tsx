@@ -6,7 +6,7 @@ import {RepositoryPath} from "./RepositoryPath";
 import {Toggle} from "./Toggle";
 import {preventDefault} from "./PreventDefault";
 import {setInputValue} from "./SetInputValue";
-import {getFilePathParts} from "./GetFilePathParts";
+import {getFilePathParts} from "./File/GetFilePathParts";
 
 export const SwitchRepository = observer(({state}: { state: State }): ReactElement => {
     const [path, setPath] = useState('')

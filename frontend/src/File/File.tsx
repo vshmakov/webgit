@@ -3,10 +3,10 @@ import React, {ReactElement} from "react";
 import {FileStatus} from "./FileStatus";
 import {FileStatusResult} from "simple-git/typings/response";
 import {getFilePathParts} from "./GetFilePathParts";
-import {withSound} from "./WithSound";
-import {LoadedRepositoryProps} from "./LoadedRepositoryProps";
-import {Checkbox} from "./Flag/Checkbox";
-import {Flag} from "./Flag/Flag";
+import {withSound} from "../WithSound";
+import {LoadedRepositoryProps} from "../LoadedRepositoryProps";
+import {Checkbox} from "../Flag/Checkbox";
+import {Flag} from "../Flag/Flag";
 
 interface Props extends LoadedRepositoryProps {
     file: FileStatusResult

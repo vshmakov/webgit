@@ -2,8 +2,8 @@ import {observer} from "mobx-react";
 import {State} from "./State";
 import React, {ReactElement} from "react";
 import {useNavigate} from "react-router-dom";
-import {getPathUrl} from "./GetPathUrl";
-import {getFilePathParts} from "./GetFilePathParts";
+import {getPathUrl} from "./Util/GetPathUrl";
+import {getFilePathParts} from "./File/GetFilePathParts";
 import {capitalizeFirstLetter} from "./String/CapitalizeFirstLetter";
 
 export const RepositoryPath = observer(({path, state}: { path: string, state: State }): ReactElement => {

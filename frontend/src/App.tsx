@@ -4,7 +4,7 @@ import {Repository} from "./Repository";
 import {State} from "./State";
 import {SwitchRepository} from "./SwitchRepository";
 import {NavigateFunction, useLocation, useNavigate} from "react-router-dom";
-import {getPathUrl} from "./GetPathUrl";
+import {getPathUrl} from "./Util/GetPathUrl";
 
 export const App = observer(({state}: { state: State }): ReactElement => {
     const navigate = useNavigate()
