@@ -1,5 +1,5 @@
-import {LocalStorage} from "./LocalStorage";
-import {LocalStorageKey} from "./LocalStorageKey";
+import {LocalStorage} from "./LocalStorage/LocalStorage";
+import {LocalStorageKey} from "./LocalStorage/LocalStorageKey";
 import {makeAutoObservable} from "mobx";
 
 export class Loader<T> {

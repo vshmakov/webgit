@@ -1,7 +1,7 @@
 import {observer} from "mobx-react";
 import {LocalStorage} from "./LocalStorage";
 import React, {ReactElement} from "react";
-import {setInputValue} from "./SetInputValue";
+import {setInputValue} from "../SetInputValue";
 
 interface Props {
     storage: LocalStorage<string>,

@@ -1,6 +1,6 @@
 import {Flag} from "./Flag";
-import {LocalStorage} from "../LocalStorage";
-import {LocalStorageKey} from "../LocalStorageKey";
+import {LocalStorage} from "../LocalStorage/LocalStorage";
+import {LocalStorageKey} from "../LocalStorage/LocalStorageKey";
 
 export class LocalStorageFlag implements Flag {
     private constructor(private readonly localStorage: LocalStorage<boolean>) {

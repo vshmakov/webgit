@@ -1,8 +1,8 @@
 import {BranchSummary, BranchSummaryBranch, LogResult, StatusResult} from "simple-git";
 import {BranchesState} from "./BranchesState";
 import {InMemoryFlag} from "./Flag/InMemoryFlag";
-import {LocalStorage} from "./LocalStorage";
-import {LocalStorageKey} from "./LocalStorageKey";
+import {LocalStorage} from "./LocalStorage/LocalStorage";
+import {LocalStorageKey} from "./LocalStorage/LocalStorageKey";
 import {Loader} from "./Loader";
 import {makeAutoObservable} from "mobx";
 import {request} from "./Request";
