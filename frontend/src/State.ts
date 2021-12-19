@@ -36,7 +36,7 @@ export class State {
     private checkRepository(path: string): void {
         this.repository = new RepositoryState(path)
         disable(this.switchingRepository)
-        document.title = `${getRepositoryName(path)} - Webgit`
+        document.title = `${getRepositoryName(path)}`
     }
 
     public addRepositoryPath(path: string): void {
