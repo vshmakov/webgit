@@ -7,6 +7,7 @@ import {withSound} from "../Util/WithSound";
 import {BranchSummaryBranch} from "simple-git";
 import {Checkbox} from "../Flag/Checkbox";
 import {Branch} from "./Branch";
+import {setInputValue} from "../Util/SetInputValue";
 
 export const Branches = observer(({repository, branches, status}: LoadedRepositoryProps): ReactElement => {
     const rows = branches.sorted
@@ -42,7 +43,9 @@ export const Branches = observer(({repository, branches, status}: LoadedReposito
                     <input
                         type="text"
                         value={repository.newBranchName}
-                        onChange={(event) => repository.newBranchName = event.target.value}
+                        onChange={setInputValue((value: string): void => {
+                            repository.newBranchName = value
+                        })}
                         required={true}/>
                     <button type="submit">
                         Create

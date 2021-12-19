@@ -12,6 +12,7 @@ interface Props extends LoadedRepositoryProps {
 export const Branch = observer(class extends React.Component<Props> {
     public render(): ReactElement {
         const {repository, branch, index} = this.props
+        const branchNumber = index + 1
 
         return (
             <tr>
@@ -21,7 +22,7 @@ export const Branch = observer(class extends React.Component<Props> {
                         name='current-branch'
                         checked={this.isCurrentBranch()}
                         onChange={() => withSound(repository.checkoutBranch(branch))}
-                        accessKey={(index + 1).toString()}
+                        accessKey={branchNumber <= 9 ? branchNumber.toString() : undefined}
                         disabled={repository.isDisabled.isChecked}/>
                 </td>
                 <td>
