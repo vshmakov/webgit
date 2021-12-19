@@ -14,7 +14,6 @@ export class BranchesState {
     public showHidden: InMemoryFlag = new InMemoryFlag(false)
 
     public constructor(private readonly path: string, private readonly summary: BranchSummary) {
-
         makeAutoObservable(this)
     }
 

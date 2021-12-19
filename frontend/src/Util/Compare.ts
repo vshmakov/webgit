@@ -4,5 +4,4 @@ export function compare<T>(value1: T, value2: T): number {
     }
 
     return value1 < value2 ? -1 : 1
-
 }
