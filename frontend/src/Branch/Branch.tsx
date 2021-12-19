@@ -7,8 +7,10 @@ import {HideButton} from "./HideButton";
 import {MergeBranchIntoCurrentButton} from "./MergeBranchIntoCurrentButton";
 import {getTracking} from "./GetTracking";
 import {BranchProps} from "./BranchProps";
-import {canMergeTrackingBranch} from "./CanMergeTrackingBranch";
+import {canMergeTracking} from "./CanMergeTracking";
 import {MergeTrackingButton} from "./MergeTrackingButton";
+import {canPush} from "./CanPush";
+import {PushButton} from "./PushButton";
 
 interface Props extends BranchProps, LoadedRepositoryProps {
     index: number
@@ -39,8 +41,8 @@ export const Branch = observer(class extends React.Component<Props> {
                         ? < MergeBranchIntoCurrentButton branch={branch} repository={repository} branches={branches}
                                                          status={status}/>
                         : null}
-                    {canMergeTrackingBranch(branch, status) ? <MergeTrackingButton repository={repository}/> : null}
-                    {this.getPushButton()}
+                    {canMergeTracking(branch, status) ? <MergeTrackingButton repository={repository}/> : null}
+                    {canPush(branch, status) ? <PushButton repository={repository} status={status}/> : null}
                     {this.getCreateBitbucketPullRequestLink()}
                 </td>
             </tr>
@@ -65,29 +67,5 @@ export const Branch = observer(class extends React.Component<Props> {
                 Create bitbucket pull request
             </a>
         )
-    }
-
-    private getPushButton(): ReactElement | null {
-        if (!this.canPush()) {
-            return null
-        }
-
-        const {repository, status} = this.props
-
-        return (
-            <button type='button' onClick={() => withSound(repository.push())} accessKey='p'>
-                Push {null === status.tracking ? 'with upstream' : null}
-            </button>
-        )
-    }
-
-    private canPush(): boolean {
-        const {branch, status} = this.props
-
-        const hasAheadCommits = null !== status.tracking
-            && 0 !== status.ahead
-
-        return isCurrent(branch, status)
-            && (null === status.tracking || hasAheadCommits)
     }
 })
