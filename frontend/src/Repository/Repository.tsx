@@ -6,18 +6,16 @@ import {getCalledAgo} from "../Util/GetCalledAgo";
 import {Branches} from "../Branch/Branches";
 import {Commit} from "../Commit/Commit";
 import {Files} from "../File/Files";
-import {getFilePathParts} from "../File/GetFilePathParts";
-import {capitalizeFirstLetter} from "../Util/CapitalizeFirstLetter";
 import {RepositorySettings} from "./RepositorySettings";
 import {EmptyCallback} from "../Util/EmptyCallback";
 import {RepositoryProps} from "./RepositoryProps";
+import {getRepositoryName} from "./GetRepositoryName";
 
 export const Repository = observer(({repository}: RepositoryProps): ReactElement => {
     useEffect((): EmptyCallback => calculateLoadersAgo(repository))
     const {status, branches} = repository
 
-    if (null === status || null === branches
-    ) {
+    if (null === status || null === branches) {
         return (
             <div>
                 Loading...
@@ -28,7 +26,7 @@ export const Repository = observer(({repository}: RepositoryProps): ReactElement
     return (
         <div>
             <div>
-                <h2>{capitalizeFirstLetter(getFilePathParts(repository.path).name)} repository</h2>
+                <h2>{getRepositoryName(repository.path)} repository</h2>
                 <div>
                     <button onClick={() => withSound(repository.fetch())} accessKey='t'>
                         Fetch {getCalledAgo(repository.fetchLoader.ago)}

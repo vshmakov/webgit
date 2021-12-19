@@ -6,6 +6,7 @@ import {not} from "./Util/Not";
 import {sameWith} from "./Util/SameWith";
 import {InMemoryFlag} from "./Flag/InMemoryFlag";
 import {disable} from "./Flag/Disable";
+import {getRepositoryName} from "./Repository/GetRepositoryName";
 
 export class State {
     public readonly currentRepositoryPathStorage = new LocalStorage<string | null>(LocalStorageKey.CurrentRepositoryPath, null)
@@ -35,6 +36,7 @@ export class State {
     private checkRepository(path: string): void {
         this.repository = new RepositoryState(path)
         disable(this.switchingRepository)
+        document.title = `${getRepositoryName(path)} - Webgit`
     }
 
     public addRepositoryPath(path: string): void {
