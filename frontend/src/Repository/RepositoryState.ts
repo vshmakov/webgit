@@ -41,11 +41,11 @@ export class RepositoryState {
     )
     public readonly allowEmptyCommit = new BlockableFlag(
         new InMemoryFlag(false),
-        this.checkStatus((status: StatusResult): boolean => 0 !== status.files.length)
+        this.withStatus((status: StatusResult): boolean => 0 !== status.files.length)
     )
     public readonly stageAllFilesBeforeCommit = new BlockableFlag(
         LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path),
-        this.checkStatus((status: StatusResult): boolean => 0 !== status.staged.length  || this.allowEmptyCommit.isChecked)
+        this.withStatus((status: StatusResult): boolean => 0 !== status.staged.length  || this.allowEmptyCommit.isChecked)
     )
 
     public constructor(public readonly path: string) {
@@ -54,7 +54,7 @@ export class RepositoryState {
         this.loadBranches()
     }
 
-    private checkStatus(callback: (status: StatusResult) => boolean): () => boolean {
+    private withStatus(callback: (status: StatusResult) => boolean): () => boolean {
         return (): boolean => null !== this.status ? callback(this.status) : false
     }
 
