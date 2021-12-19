@@ -11,61 +11,45 @@ import {canMergeTracking} from "./CanMergeTracking";
 import {MergeTrackingButton} from "./MergeTrackingButton";
 import {canPush} from "./CanPush";
 import {PushButton} from "./PushButton";
+import {CreateBitbucketPullRequestLink} from "./CreateBitbucketPullRequestLink";
+import {IndexProps} from "./IndexProps";
 
-interface Props extends BranchProps, LoadedRepositoryProps {
-    index: number
-}
+export const Branch = observer(({
+                                    branch,
+                                    index,
+                                    repository,
+                                    branches,
+                                    status
+                                }: BranchProps & IndexProps & LoadedRepositoryProps): ReactElement => {
+    const branchNumber = index + 1
+    const path = repository.bitbucketRepositoryPathStorage.getValue()
 
-export const Branch = observer(class extends React.Component<Props> {
-    public render(): ReactElement {
-        const {repository, branches, branch, status, index} = this.props
-        const branchNumber = index + 1
-
-        return (
-            <tr>
-                <td>
-                    <input
-                        type='radio'
-                        name='current-branch'
-                        checked={isCurrent(branch, status)}
-                        onChange={() => withSound(repository.checkoutBranch(branch))}
-                        accessKey={branchNumber <= 9 ? branchNumber.toString() : undefined}
-                        disabled={repository.isDisabled.isChecked}/>
-                </td>
-                <td>
-                    {repository.getBranchName(branch)} {getTracking(branch, status)}
-                </td>
-                <td>
-                    {branches.showHidden.isChecked ? <HideButton branch={branch} branches={branches}/> : null}
-                    {!isCurrent(branch, status)
-                        ? < MergeBranchIntoCurrentButton branch={branch} repository={repository} branches={branches}
-                                                         status={status}/>
-                        : null}
-                    {canMergeTracking(branch, status) ? <MergeTrackingButton repository={repository}/> : null}
-                    {canPush(branch, status) ? <PushButton repository={repository} status={status}/> : null}
-                    {this.getCreateBitbucketPullRequestLink()}
-                </td>
-            </tr>
-        )
-    }
-
-    private getCreateBitbucketPullRequestLink(): ReactElement | null {
-        const {branch, status, repository} = this.props
-
-        if (branch.name !== status.current) {
-            return null
-        }
-
-        const path = repository.bitbucketRepositoryPathStorage.getValue()
-
-        if ('' === path) {
-            return null
-        }
-
-        return (
-            <a href={`${path}/pull-requests/new?source=${branch.name}&t=1`} role='button'>
-                Create bitbucket pull request
-            </a>
-        )
-    }
+    return (
+        <tr>
+            <td>
+                <input
+                    type='radio'
+                    name='current-branch'
+                    checked={isCurrent(branch, status)}
+                    onChange={() => withSound(repository.checkoutBranch(branch))}
+                    accessKey={branchNumber <= 9 ? branchNumber.toString() : undefined}
+                    disabled={repository.isDisabled.isChecked}/>
+            </td>
+            <td>
+                {repository.getBranchName(branch)} {getTracking(branch, status)}
+            </td>
+            <td>
+                {branches.showHidden.isChecked ? <HideButton branch={branch} branches={branches}/> : null}
+                {!isCurrent(branch, status)
+                    ? < MergeBranchIntoCurrentButton branch={branch} repository={repository} branches={branches}
+                                                     status={status}/>
+                    : null}
+                {canMergeTracking(branch, status) ? <MergeTrackingButton repository={repository}/> : null}
+                {canPush(branch, status) ? <PushButton repository={repository} status={status}/> : null}
+                {isCurrent(branch, status) && '' !== path
+                    ? <CreateBitbucketPullRequestLink bitbucketRepositoryPath={path} branch={branch}/>
+                    : null}
+            </td>
+        </tr>
+    )
 })
