@@ -2,14 +2,15 @@ import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {withSound} from "../Util/WithSound";
-import {BranchSummaryBranch} from "simple-git";
 import {isCurrent} from "./IsCurrent";
 import {HideButton} from "./HideButton";
 import {MergeBranchIntoCurrentButton} from "./MergeBranchIntoCurrentButton";
 import {getTracking} from "./GetTracking";
+import {BranchProps} from "./BranchProps";
+import {canMergeTrackingBranch} from "./CanMergeTrackingBranch";
+import {MergeTrackingButton} from "./MergeTrackingButton";
 
-interface Props extends LoadedRepositoryProps {
-    branch: BranchSummaryBranch
+interface Props extends BranchProps, LoadedRepositoryProps {
     index: number
 }
 
@@ -38,7 +39,7 @@ export const Branch = observer(class extends React.Component<Props> {
                         ? < MergeBranchIntoCurrentButton branch={branch} repository={repository} branches={branches}
                                                          status={status}/>
                         : null}
-                    {this.getMergeTrackingButton()}
+                    {canMergeTrackingBranch(branch, status) ? <MergeTrackingButton repository={repository}/> : null}
                     {this.getPushButton()}
                     {this.getCreateBitbucketPullRequestLink()}
                 </td>
@@ -88,27 +89,5 @@ export const Branch = observer(class extends React.Component<Props> {
 
         return isCurrent(branch, status)
             && (null === status.tracking || hasAheadCommits)
-    }
-
-    private getMergeTrackingButton(): ReactElement | null {
-        if (!this.canMergeTrackingBranch()) {
-            return null
-        }
-
-        const {repository} = this.props
-
-        return (
-            <button type='button' onClick={() => withSound(repository.mergeTrackingBranch())} accessKey='l'>
-                Merge tracking
-            </button>
-        )
-    }
-
-    private canMergeTrackingBranch(): boolean {
-        const {branch, status} = this.props
-
-        return isCurrent(branch, status)
-            && null !== status.tracking
-            && 0 !== status.behind
     }
 })
