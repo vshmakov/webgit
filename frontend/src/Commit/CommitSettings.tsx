@@ -3,9 +3,9 @@ import {Toggle} from "../Util/Toggle";
 import {Checkbox} from "../Flag/Checkbox";
 import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
 import React, {ReactElement} from "react";
-import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
+import {RepositoryProps} from "../Repository/RepositoryProps";
 
-export const CommitSettings = observer(({repository}: LoadedRepositoryProps): ReactElement => {
+export const CommitSettings = observer(({repository}: RepositoryProps): ReactElement => {
     return (
         <Toggle label={"AdditionalSettings"}>
             <div>

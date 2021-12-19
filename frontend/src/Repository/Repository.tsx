@@ -40,8 +40,8 @@ export const Repository = observer(({repository}: RepositoryProps): ReactElement
                 </div>
             </div>
             <Branches repository={repository} status={status} branches={branches}/>
-            <Commit repository={repository} status={status} branches={branches}/>
-            <Files repository={repository} status={status} branches={branches}/>
+            <Commit repository={repository} status={status}/>
+            <Files repository={repository} status={status}/>
         </div>
     )
 })

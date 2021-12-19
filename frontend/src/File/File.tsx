@@ -1,18 +1,15 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {FileStatus} from "./FileStatus";
-import {FileStatusResult} from "simple-git/typings/response";
 import {getFilePathParts} from "./GetFilePathParts";
 import {withSound} from "../Util/WithSound";
-import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {Checkbox} from "../Flag/Checkbox";
 import {Flag} from "../Flag/Flag";
+import {FileProps} from "./FileProps";
+import {RepositoryProps} from "../Repository/RepositoryProps";
+import {StatusProps} from "../Repository/StatusProps";
 
-interface Props extends LoadedRepositoryProps {
-    file: FileStatusResult
-}
-
-export const File = observer(({file, repository, status}: Props): ReactElement => {
+export const File = observer(({file, repository, status}: FileProps & RepositoryProps & StatusProps): ReactElement => {
     const workingDir = file.working_dir as keyof typeof FileStatus
     const index = file.index as keyof typeof FileStatus
     const {name, directory} = getFilePathParts(file.path)

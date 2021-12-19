@@ -1,15 +1,15 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {FileStatusResult} from "simple-git/typings/response";
 import {File} from "./File";
+import {RepositoryProps} from "../Repository/RepositoryProps";
+import {StatusProps} from "../Repository/StatusProps";
 
-export const Files = observer(({repository, status, branches}: LoadedRepositoryProps): ReactElement => {
+export const Files = observer(({repository, status}: RepositoryProps & StatusProps): ReactElement => {
     const files = status.files
         .map((file: FileStatusResult): ReactElement => <File
             repository={repository}
             status={status}
-            branches={branches}
             file={file}
             key={file.path}/>)
 

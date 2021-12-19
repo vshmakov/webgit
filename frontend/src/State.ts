@@ -20,16 +20,6 @@ export class State {
 
     public setCurrentRepositoryPathFromParameter(path: string): void {
         this.currentRepositoryPathStorage.setValue(path)
-        this.checkCurrentPath()
-    }
-
-    private checkCurrentPath(): void {
-        const path = this.currentRepositoryPathStorage.getValue()
-
-        if (null === path) {
-            return;
-        }
-
         this.checkRepository(path)
     }
 
