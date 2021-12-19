@@ -1,15 +1,16 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {isPrevious} from "./IsPrevious";
-import {BranchSummaryBranch} from "simple-git";
-import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {withSound} from "../Util/WithSound";
+import {BranchProps} from "./BranchProps";
+import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 
-interface Props extends LoadedRepositoryProps {
-    branch: BranchSummaryBranch
-}
-
-export const MergeBranchIntoCurrentButton = observer(({branch, repository, branches, status}: Props): ReactElement => {
+export const MergeBranchIntoCurrentButton = observer(({
+                                                          branch,
+                                                          repository,
+                                                          branches,
+                                                          status
+                                                      }: BranchProps & LoadedRepositoryProps): ReactElement => {
     return (
         <button
             type="button"
