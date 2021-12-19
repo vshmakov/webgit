@@ -8,7 +8,7 @@ interface Props extends BranchProps {
 
 export const CreateBitbucketPullRequestLink = observer(({bitbucketRepositoryPath, branch}: Props): ReactElement => {
     return (
-        <a href={`${bitbucketRepositoryPath}/pull-requests/new?source=${branch.name}&t=1`} role="button">
+        <a href={`${bitbucketRepositoryPath}/pull-requests/new?source=${branch.name}&t=1`}>
             Create bitbucket pull request
         </a>
     )

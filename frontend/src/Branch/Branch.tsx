@@ -39,6 +39,9 @@ export const Branch = observer(({
                 {repository.getBranchName(branch)} {getTracking(branch, status)}
             </td>
             <td>
+                {isCurrent(branch, status) && '' !== path && branches.showHidden.isChecked
+                    ? <CreateBitbucketPullRequestLink bitbucketRepositoryPath={path} branch={branch}/>
+                    : null}
                 {branches.showHidden.isChecked ? <HideButton branch={branch} branches={branches}/> : null}
                 {!isCurrent(branch, status)
                     ? < MergeBranchIntoCurrentButton branch={branch} repository={repository} branches={branches}
@@ -46,9 +49,6 @@ export const Branch = observer(({
                     : null}
                 {canMergeTracking(branch, status) ? <MergeTrackingButton repository={repository}/> : null}
                 {canPush(branch, status) ? <PushButton repository={repository} status={status}/> : null}
-                {isCurrent(branch, status) && '' !== path
-                    ? <CreateBitbucketPullRequestLink bitbucketRepositoryPath={path} branch={branch}/>
-                    : null}
             </td>
         </tr>
     )
