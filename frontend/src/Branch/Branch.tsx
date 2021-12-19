@@ -3,6 +3,10 @@ import React, {ReactElement} from "react";
 import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {withSound} from "../Util/WithSound";
 import {BranchSummaryBranch} from "simple-git";
+import {isCurrent} from "./IsCurrent";
+import {HideButton} from "./HideButton";
+import {MergeBranchIntoCurrentButton} from "./MergeBranchIntoCurrentButton";
+import {getTracking} from "./GetTracking";
 
 interface Props extends LoadedRepositoryProps {
     branch: BranchSummaryBranch
@@ -11,7 +15,7 @@ interface Props extends LoadedRepositoryProps {
 
 export const Branch = observer(class extends React.Component<Props> {
     public render(): ReactElement {
-        const {repository, branch, index} = this.props
+        const {repository, branches, branch, status, index} = this.props
         const branchNumber = index + 1
 
         return (
@@ -20,17 +24,20 @@ export const Branch = observer(class extends React.Component<Props> {
                     <input
                         type='radio'
                         name='current-branch'
-                        checked={this.isCurrentBranch()}
+                        checked={isCurrent(branch, status)}
                         onChange={() => withSound(repository.checkoutBranch(branch))}
                         accessKey={branchNumber <= 9 ? branchNumber.toString() : undefined}
                         disabled={repository.isDisabled.isChecked}/>
                 </td>
                 <td>
-                    {repository.getBranchName(branch)} {this.getTracking()}
+                    {repository.getBranchName(branch)} {getTracking(branch, status)}
                 </td>
                 <td>
-                    {this.getHideButton()}
-                    {this.getMergeIntoCurrentButton()}
+                    {branches.showHidden.isChecked ? <HideButton branch={branch} branches={branches}/> : null}
+                    {!isCurrent(branch, status)
+                        ? < MergeBranchIntoCurrentButton branch={branch} repository={repository} branches={branches}
+                                                         status={status}/>
+                        : null}
                     {this.getMergeTrackingButton()}
                     {this.getPushButton()}
                     {this.getCreateBitbucketPullRequestLink()}
@@ -59,49 +66,6 @@ export const Branch = observer(class extends React.Component<Props> {
         )
     }
 
-    private getHideButton(): ReactElement | null {
-        const {branch, branches} = this.props
-
-        if (!branches.showHidden.isChecked) {
-            return null
-        }
-
-        return (
-            <button type='button' onClick={(): void => branches.toggleHide(branch.name)}>
-                {!branches.hiddenStorage.getValue().includes(branch.name) ? 'Hide' : 'Show'}
-            </button>
-        )
-    }
-
-    private getMergeIntoCurrentButton(): ReactElement | null {
-        if (this.isCurrentBranch()) {
-            return null
-        }
-
-        const {branch, repository, status} = this.props
-
-        return (
-            <button
-                type='button'
-                onClick={() => withSound(repository.mergeBranchIntoCurrent(branch))}
-                accessKey={this.isPreviousBranch() ? 'm' : undefined}>
-                Merge into {status.current}
-            </button>
-        )
-    }
-
-    private isPreviousBranch(): boolean {
-        const {branch, branches} = this.props
-        const history = branches.historyStorage.getValue();
-        const index = history.indexOf(branch.name)
-
-        if (-1 === index) {
-            return false
-        }
-
-        return index === history.length - 2
-    }
-
     private getPushButton(): ReactElement | null {
         if (!this.canPush()) {
             return null
@@ -117,12 +81,12 @@ export const Branch = observer(class extends React.Component<Props> {
     }
 
     private canPush(): boolean {
-        const {status} = this.props
+        const {branch, status} = this.props
 
         const hasAheadCommits = null !== status.tracking
             && 0 !== status.ahead
 
-        return this.isCurrentBranch()
+        return isCurrent(branch, status)
             && (null === status.tracking || hasAheadCommits)
     }
 
@@ -141,40 +105,10 @@ export const Branch = observer(class extends React.Component<Props> {
     }
 
     private canMergeTrackingBranch(): boolean {
-        const {status} = this.props
-
-        return this.isCurrentBranch()
-            && null !== status.tracking
-            && 0 !== status.behind
-    }
-
-    private isCurrentBranch(): boolean {
         const {branch, status} = this.props
 
-        return branch.name === status.current
-    }
-
-    private getTracking(): string {
-        const {status} = this.props
-
-        if (!this.isCurrentBranch()) {
-            return ''
-        }
-
-        const parts = []
-
-        if (0 !== status.ahead) {
-            parts.push(`${status.ahead} ->`)
-        }
-
-        if (0 !== status.behind) {
-            parts.push(`<- ${status.behind}`)
-        }
-
-        if (null !== status.tracking) {
-            parts.push(`(${status.tracking})`)
-        }
-
-        return parts.join(' ')
+        return isCurrent(branch, status)
+            && null !== status.tracking
+            && 0 !== status.behind
     }
 })
