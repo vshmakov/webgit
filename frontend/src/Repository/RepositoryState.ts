@@ -40,11 +40,11 @@ export class RepositoryState {
     )
     public readonly allowEmptyCommit = new BlockableFlag(
         new InMemoryFlag(false),
-        this.withStatus((status: StatusResult): boolean => 0 !== status.files.length)
+        (): boolean => 0 !== this.status.files.length
     )
     public readonly stageAllFilesBeforeCommit = new BlockableFlag(
         LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path),
-        this.withStatus((status: StatusResult): boolean => 0 !== status.staged.length || this.allowEmptyCommit.isChecked)
+        (): boolean => 0 !== this.status.staged.length || this.allowEmptyCommit.isChecked
     )
 
     private constructor(
@@ -71,10 +71,6 @@ export class RepositoryState {
             statusLoader,
             requestRepositoryBranches
         )
-    }
-
-    private withStatus(callback: (status: StatusResult) => boolean): () => boolean {
-        return (): boolean => null !== this.status ? callback(this.status) : false
     }
 
     private async loadCommitHistory(): Promise<void> {

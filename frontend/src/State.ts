@@ -24,9 +24,13 @@ export class State {
     }
 
     private async checkRepository(path: string): Promise<void> {
-        this.repository = await RepositoryState.create(path)
+        this.setRepository(await RepositoryState.create(path))
         disable(this.switchingRepository)
         document.title = getRepositoryName(path)
+    }
+
+    private setRepository(repository: RepositoryState): void {
+        this.repository = repository
     }
 
     public addRepositoryPath(path: string): void {
