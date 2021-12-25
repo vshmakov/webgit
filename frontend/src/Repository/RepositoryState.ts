@@ -1,4 +1,4 @@
-import {BranchSummary, BranchSummaryBranch, LogResult, StatusResult} from "simple-git";
+import {BranchSummaryBranch, LogResult, StatusResult} from "simple-git";
 import {BranchesState} from "../Branch/BranchesState";
 import {InMemoryFlag} from "../Flag/InMemoryFlag";
 import {LocalStorage} from "../LocalStorage/LocalStorage";
@@ -13,10 +13,11 @@ import {BlockableFlag} from "../Flag/BlockableFlag";
 import {disable} from "../Flag/Disable";
 import {EmptyCommitMessage} from "../Commit/EmptyCommitMessage";
 import {enable} from "../Flag/Enable";
+import {RequestRepository} from "./RequestRepository";
+import {requestStatus} from "./RequestStatus";
+import {requestBranches} from "./RequestBranches";
 
 export class RepositoryState {
-    public status: StatusResult | null = null
-    public branches: BranchesState | null = null
     public commitHistory: LogResult | null = null
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '', this.path)
@@ -28,8 +29,6 @@ export class RepositoryState {
     public readonly useBranchAsCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseBranchAsCommitMessagePrefix, false, this.path)
     public readonly useSectionCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseSectionCommitMessagePrefix, false, this.path)
     public sectionCommitMessagePrefix: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.SectionCommitMessagePrefix, '', this.path)
-    private readonly request = request.bind(null, this.path)
-    public readonly statusLoader = new Loader<StatusResult>(LocalStorageKey.StatusCalledAt, this.path, this.requestStatus.bind(this))
     public readonly fetchLoader = new Loader<void>(LocalStorageKey.FetchCalledAt, this.path, this.requestFetch.bind(this))
     public newBranchName: string = ''
     public readonly isBranchCreation = new InMemoryFlag(false)
@@ -48,14 +47,30 @@ export class RepositoryState {
         this.withStatus((status: StatusResult): boolean => 0 !== status.staged.length || this.allowEmptyCommit.isChecked)
     )
 
-    private constructor(public readonly path: string) {
+    private constructor(
+        public readonly path: string,
+        public status: StatusResult,
+        public branches: BranchesState,
+        private readonly request: RequestRepository,
+        public readonly statusLoader: Loader<StatusResult>,
+        private readonly requestBranches: () => Promise<BranchesState>,
+    ) {
         makeAutoObservable(this)
-        this.loadStatus()
-        this.loadBranches()
     }
 
     public static async create(path: string): Promise<RepositoryState> {
-        return new RepositoryState(path)
+        const requestRepository = request.bind(null, path)
+        const statusLoader = new Loader(LocalStorageKey.StatusCalledAt, path, requestStatus.bind(null, requestRepository))
+        const requestRepositoryBranches = requestBranches.bind(null, requestRepository, path)
+
+        return new RepositoryState(
+            path,
+            await statusLoader.load(),
+            await requestRepositoryBranches(),
+            requestRepository,
+            statusLoader,
+            requestRepositoryBranches
+        )
     }
 
     private withStatus(callback: (status: StatusResult) => boolean): () => boolean {
@@ -120,12 +135,6 @@ export class RepositoryState {
         this.setStatus(await this.statusLoader.load())
     }
 
-    private async requestStatus(): Promise<StatusResult> {
-        const response = await this.request(Method.Get, '/status')
-
-        return await response.json()
-    }
-
     private setStatus(status: StatusResult): void {
         this.status = status
         this.sectionCommitMessagePrefix = new LocalStorage(LocalStorageKey.SectionCommitMessagePrefix, '', JSON.stringify([this.path, status.current]))
@@ -134,14 +143,12 @@ export class RepositoryState {
 
     private async loadBranches(): Promise<void> {
         const status = this.loadStatus()
-        const response = await this.request(Method.Get, '/branches')
-        const branchSummary = response.json()
-        this.setBranchs(await branchSummary)
+        this.setBranchs(await this.requestBranches())
         await status
     }
 
-    private setBranchs(branchSummary: BranchSummary): void {
-        this.branches = new BranchesState(this.path, branchSummary)
+    private setBranchs(branchesState: BranchesState): void {
+        this.branches = branchesState
     }
 
     public async commit(): Promise<void> {
