@@ -18,13 +18,13 @@ export class State {
         makeAutoObservable(this)
     }
 
-    public setCurrentRepositoryPathFromParameter(path: string): void {
+    public async setCurrentRepositoryPathFromParameter(path: string): Promise<void> {
         this.currentRepositoryPathStorage.setValue(path)
-        this.checkRepository(path)
+        await this.checkRepository(path)
     }
 
-    private checkRepository(path: string): void {
-        this.repository = new RepositoryState(path)
+    private async checkRepository(path: string): Promise<void> {
+        this.repository = await RepositoryState.create(path)
         disable(this.switchingRepository)
         document.title = getRepositoryName(path)
     }

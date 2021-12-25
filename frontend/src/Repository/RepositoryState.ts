@@ -45,13 +45,17 @@ export class RepositoryState {
     )
     public readonly stageAllFilesBeforeCommit = new BlockableFlag(
         LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path),
-        this.withStatus((status: StatusResult): boolean => 0 !== status.staged.length  || this.allowEmptyCommit.isChecked)
+        this.withStatus((status: StatusResult): boolean => 0 !== status.staged.length || this.allowEmptyCommit.isChecked)
     )
 
-    public constructor(public readonly path: string) {
+    private constructor(public readonly path: string) {
         makeAutoObservable(this)
         this.loadStatus()
         this.loadBranches()
+    }
+
+    public static async create(path: string): Promise<RepositoryState> {
+        return new RepositoryState(path)
     }
 
     private withStatus(callback: (status: StatusResult) => boolean): () => boolean {
