@@ -6,14 +6,13 @@ import {CommitSettings} from "./CommitSettings";
 import {Logs} from "./Log/Logs";
 import {CommitMessage} from "./CommitMessage";
 import {RepositoryProps} from "../Repository/RepositoryProps";
-import {StatusProps} from "../Repository/StatusProps";
 
-export const Commit = observer(({repository, status}: RepositoryProps & StatusProps): ReactElement => {
+export const Commit = observer(({repository}: RepositoryProps): ReactElement => {
     return (
         <div>
             <form onSubmit={preventDefault(() => withSound(repository.commit()))}>
                 <h3>Commit</h3>
-                <CommitMessage repository={repository} status={status}/>
+                <CommitMessage repository={repository}/>
                 <button type='submit'>
                     Commit
                 </button>

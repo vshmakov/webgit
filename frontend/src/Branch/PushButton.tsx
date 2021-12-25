@@ -1,10 +1,11 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {RepositoryProps} from "../Repository/RepositoryProps";
-import {StatusProps} from "../Repository/StatusProps";
 import {withSound} from "../Util/WithSound";
 
-export const PushButton = observer(({repository, status}: RepositoryProps & StatusProps): ReactElement => {
+export const PushButton = observer(({repository}: RepositoryProps): ReactElement => {
+    const {status} = repository
+
     return (
         <button
             type="button"

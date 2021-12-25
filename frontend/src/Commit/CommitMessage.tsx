@@ -4,14 +4,15 @@ import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
 import React, {ReactElement} from "react";
 import {EmptyCommitMessage} from "./EmptyCommitMessage";
 import {RepositoryProps} from "../Repository/RepositoryProps";
-import {StatusProps} from "../Repository/StatusProps";
 
-export const CommitMessage = observer(({repository, status}: RepositoryProps & StatusProps): ReactElement => {
+export const CommitMessage = observer(({repository}: RepositoryProps): ReactElement => {
     if (repository.allowEmptyCommit.isChecked) {
         return (
             <div>{EmptyCommitMessage}</div>
         )
     }
+
+    const {status} = repository
 
     return (
         <div>

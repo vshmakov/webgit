@@ -7,12 +7,12 @@ import {Checkbox} from "../Flag/Checkbox";
 import {Flag} from "../Flag/Flag";
 import {FileProps} from "./FileProps";
 import {RepositoryProps} from "../Repository/RepositoryProps";
-import {StatusProps} from "../Repository/StatusProps";
 
-export const File = observer(({file, repository, status}: FileProps & RepositoryProps & StatusProps): ReactElement => {
+export const File = observer(({file, repository}: FileProps & RepositoryProps): ReactElement => {
     const workingDir = file.working_dir as keyof typeof FileStatus
     const index = file.index as keyof typeof FileStatus
     const {name, directory} = getFilePathParts(file.path)
+    const {status} = repository
     const stagedFlag: Flag = {
         isChecked: status.staged.includes(file.path),
         toggle(): void {

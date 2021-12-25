@@ -13,17 +13,8 @@ import {getRepositoryName} from "./GetRepositoryName";
 
 export const Repository = observer(({repository}: RepositoryProps): ReactElement => {
     useEffect((): EmptyCallback => calculateLoadersAgo(repository))
-    const {status, branches} = repository
 
-    if (null === status || null === branches) {
         return (
-            <div>
-                Loading...
-            </div>
-        )
-    }
-
-    return (
         <div>
             <div>
                 <h2>{getRepositoryName(repository.path)} repository</h2>
@@ -39,9 +30,9 @@ export const Repository = observer(({repository}: RepositoryProps): ReactElement
                     <RepositorySettings repository={repository}/>
                 </div>
             </div>
-            <Branches repository={repository} status={status} branches={branches}/>
-            <Commit repository={repository} status={status}/>
-            <Files repository={repository} status={status}/>
+            <Branches repository={repository}/>
+            <Commit repository={repository}/>
+            <Files repository={repository}/>
         </div>
     )
 })

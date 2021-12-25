@@ -56,6 +56,7 @@ export class RepositoryState {
         private readonly requestBranches: () => Promise<BranchesState>,
     ) {
         makeAutoObservable(this)
+        this.loadCommitHistory()
     }
 
     public static async create(path: string): Promise<RepositoryState> {

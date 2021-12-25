@@ -3,14 +3,14 @@ import React, {ReactElement} from "react";
 import {isPrevious} from "./IsPrevious";
 import {withSound} from "../Util/WithSound";
 import {BranchProps} from "./BranchProps";
-import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
+import {RepositoryProps} from "../Repository/RepositoryProps";
 
 export const MergeBranchIntoCurrentButton = observer(({
                                                           branch,
                                                           repository,
-                                                          branches,
-                                                          status
-                                                      }: BranchProps & LoadedRepositoryProps): ReactElement => {
+                                                      }: BranchProps & RepositoryProps): ReactElement => {
+    const {status, branches} = repository
+
     return (
         <button
             type="button"

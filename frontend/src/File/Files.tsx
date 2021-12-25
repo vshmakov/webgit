@@ -3,13 +3,12 @@ import React, {ReactElement} from "react";
 import {FileStatusResult} from "simple-git/typings/response";
 import {File} from "./File";
 import {RepositoryProps} from "../Repository/RepositoryProps";
-import {StatusProps} from "../Repository/StatusProps";
 
-export const Files = observer(({repository, status}: RepositoryProps & StatusProps): ReactElement => {
+export const Files = observer(({repository}: RepositoryProps): ReactElement => {
+    const {status} = repository
     const files = status.files
         .map((file: FileStatusResult): ReactElement => <File
             repository={repository}
-            status={status}
             file={file}
             key={file.path}/>)
 

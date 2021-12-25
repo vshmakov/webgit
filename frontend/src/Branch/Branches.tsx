@@ -1,6 +1,5 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {LoadedRepositoryProps} from "../Repository/LoadedRepositoryProps";
 import {Toggle} from "../Util/Toggle";
 import {preventDefault} from "../Util/PreventDefault";
 import {withSound} from "../Util/WithSound";
@@ -8,15 +7,15 @@ import {BranchSummaryBranch} from "simple-git";
 import {Checkbox} from "../Flag/Checkbox";
 import {Branch} from "./Branch";
 import {setInputValue} from "../Util/SetInputValue";
+import {RepositoryProps} from "../Repository/RepositoryProps";
 
-export const Branches = observer(({repository, branches, status}: LoadedRepositoryProps): ReactElement => {
+export const Branches = observer(({repository}: RepositoryProps): ReactElement => {
+    const {branches} = repository
     const rows = branches.sorted
         .map((branch: BranchSummaryBranch, index: number): ReactElement => <Branch
             branch={branch}
             index={index}
             repository={repository}
-            branches={branches}
-            status={status}
             key={branch.name}/>)
 
     return (
