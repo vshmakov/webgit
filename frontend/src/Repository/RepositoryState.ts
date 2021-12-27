@@ -63,11 +63,12 @@ export class RepositoryState {
         const requestRepository = request.bind(null, path)
         const statusLoader = new Loader(LocalStorageKey.StatusCalledAt, path, requestStatus.bind(null, requestRepository))
         const requestRepositoryBranches = requestBranches.bind(null, requestRepository, path)
+        const branches = requestRepositoryBranches()
 
         return new RepositoryState(
             path,
             await statusLoader.load(),
-            await requestRepositoryBranches(),
+            await branches,
             requestRepository,
             statusLoader,
             requestRepositoryBranches
