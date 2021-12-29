@@ -13,6 +13,7 @@ import {CreateBitbucketPullRequestLink} from "./CreateBitbucketPullRequestLink";
 import {IndexProps} from "./IndexProps";
 import {CheckoutRadio} from "./CheckoutRadio";
 import {RepositoryProps} from "../Repository/RepositoryProps";
+import {isPrevious} from "./IsPrevious";
 
 export const Branch = observer(({
                                     branch,
@@ -35,7 +36,7 @@ export const Branch = observer(({
                     ? <CreateBitbucketPullRequestLink bitbucketRepositoryPath={path} branch={branch}/>
                     : null}
                 {branches.showHidden.isChecked ? <HideButton branch={branch} repository={repository}/> : null}
-                {!isCurrent(branch, status) ?
+                {isPrevious(branch, branches) ?
                     <MergeBranchIntoCurrentButton branch={branch} repository={repository}/>
                     : null}
                 {canMergeTracking(branch, status) ? <MergeTrackingButton repository={repository}/> : null}
