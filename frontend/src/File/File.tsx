@@ -1,16 +1,14 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {FileStatus} from "./FileStatus";
 import {getFilePathParts} from "./GetFilePathParts";
 import {withSound} from "../Util/WithSound";
 import {Checkbox} from "../Flag/Checkbox";
 import {Flag} from "../Flag/Flag";
 import {FileProps} from "./FileProps";
 import {RepositoryProps} from "../Repository/RepositoryProps";
+import {getStatusName} from "./GetStatusName";
 
 export const File = observer(({file, repository}: FileProps & RepositoryProps): ReactElement => {
-    const workingDir = file.working_dir as keyof typeof FileStatus
-    const index = file.index as keyof typeof FileStatus
     const {name, directory} = getFilePathParts(file.path)
     const {status} = repository
     const stagedFlag: Flag = {
@@ -25,7 +23,7 @@ export const File = observer(({file, repository}: FileProps & RepositoryProps): 
             <td>{name}</td>
             <td>{directory}</td>
             <td>
-                {FileStatus[workingDir] || workingDir || FileStatus[index] || index}
+                {getStatusName(file)}
             </td>
             <td>
                 <Checkbox label='Staged' flag={stagedFlag}/>
