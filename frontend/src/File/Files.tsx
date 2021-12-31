@@ -3,10 +3,14 @@ import React, {ReactElement} from "react";
 import {FileStatusResult} from "simple-git/typings/response";
 import {File} from "./File";
 import {RepositoryProps} from "../Repository/RepositoryProps";
+import {compareAlphabetically} from "../Util/CompareAlphabetically";
+import {getActualPath} from "./GetActualPath";
 
 export const Files = observer(({repository}: RepositoryProps): ReactElement => {
     const {status} = repository
     const files = status.files
+        .slice()
+        .sort((file1: FileStatusResult, file2: FileStatusResult): number => compareAlphabetically(getActualPath(file1), getActualPath(file2)))
         .map((file: FileStatusResult): ReactElement => <File
             repository={repository}
             file={file}

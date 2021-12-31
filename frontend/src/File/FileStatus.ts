@@ -1,5 +1,5 @@
 export const FileStatus = {
-    A: 'Added',
+    A: 'New',
     D: 'Deleted',
     M: 'Modified',
     R: 'Renamed',
