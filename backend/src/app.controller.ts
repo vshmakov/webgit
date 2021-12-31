@@ -11,7 +11,7 @@ import {Response, Response as GitResponse} from "simple-git/typings/simple-git";
 import {exec, ExecException} from 'child_process'
 import fetch from "node-fetch";
 import * as resp from "simple-git/typings/response";
-
+import {isFileStaged} from "../../frontend/src/Shared/IsFileStaged";
 
 const clients: { [key: string]: SimpleGit } = {}
 
@@ -20,9 +20,9 @@ function git(path: string): SimpleGit {
         const client = simpleGit({
             baseDir: path
         });
-        client.outputHandler(function (command, stdout, stderr): void {
+        /*client.outputHandler(function (command, stdout, stderr): void {
             stdout.pipe(process.stdout);
-        })
+        })*/
         clients[path] = client
     }
 
@@ -155,14 +155,14 @@ export class AppController {
     }
 
     @Put('/file/stage')
-    public async stageFile(@Headers() {path}: PathHeaders, @Body() file: FileStatusResult): Promise<void> {
+    public async stageFile(@Headers() {path}: PathHeaders, @Body() {filePath}: { filePath: string }): Promise<void> {
         const client = git(path)
         const status = await client.status()
 
-        if (!status.staged.includes(file.path)) {
-            await client.add(file.path)
+        if (!isFileStaged(filePath, status)) {
+            await client.add(filePath)
         } else {
-            await client.reset([file.path])
+            await client.raw(['restore', '--staged', filePath])
         }
     }
 

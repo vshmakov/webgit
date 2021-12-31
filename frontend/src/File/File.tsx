@@ -7,14 +7,17 @@ import {Flag} from "../Flag/Flag";
 import {FileProps} from "./FileProps";
 import {RepositoryProps} from "../Repository/RepositoryProps";
 import {getStatusName} from "./GetStatusName";
+import {getActualPath} from "./GetActualPath";
+import {isFileStaged} from "../Shared/IsFileStaged";
 
 export const File = observer(({file, repository}: FileProps & RepositoryProps): ReactElement => {
-    const {name, directory} = getFilePathParts(file.path)
+    const path = getActualPath(file)
+    const {name, directory} = getFilePathParts(path)
     const {status} = repository
     const stagedFlag: Flag = {
-        isChecked: status.staged.includes(file.path),
+        isChecked: isFileStaged(path, status),
         toggle(): void {
-            withSound(repository.stage(file))
+            withSound(repository.stage(path))
         }
     }
 

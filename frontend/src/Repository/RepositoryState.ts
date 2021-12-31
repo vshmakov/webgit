@@ -202,8 +202,10 @@ export class RepositoryState {
         await this.loadStatus()
     }
 
-    public async stage(file: FileStatusResult): Promise<void> {
-        await this.request(Method.Put, '/file/stage', file)
+    public async stage(path: string): Promise<void> {
+        await this.request(Method.Put, '/file/stage', {
+            filePath: path
+        })
         await this.loadStatus()
     }
 
