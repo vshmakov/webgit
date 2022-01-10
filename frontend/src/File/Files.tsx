@@ -5,12 +5,18 @@ import {File} from "./File";
 import {RepositoryProps} from "../Repository/RepositoryProps";
 import {compareAlphabetically} from "../Util/CompareAlphabetically";
 import {getActualPath} from "./GetActualPath";
+import {compare} from "../Util/Compare";
 
 export const Files = observer(({repository}: RepositoryProps): ReactElement => {
     const {status} = repository
     const files = status.files
         .slice()
-        .sort((file1: FileStatusResult, file2: FileStatusResult): number => compareAlphabetically(getActualPath(file1), getActualPath(file2)))
+        .sort((file1: FileStatusResult, file2: FileStatusResult): number => {
+            const path1 = getActualPath(file1);
+            const path2 = getActualPath(file2);
+
+            return           -compare(status.conflicted.indexOf(path1), status.conflicted.indexOf(path2)) || compareAlphabetically(path1, path2)
+        })
         .map((file: FileStatusResult): ReactElement => <File
             repository={repository}
             file={file}

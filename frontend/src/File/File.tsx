@@ -26,7 +26,7 @@ export const File = observer(({file, repository}: FileProps & RepositoryProps): 
             <td>{name}</td>
             <td>{directory}</td>
             <td>
-                {getStatusName(file)}
+                {getStatusName(file, status)}
             </td>
             <td>
                 <Checkbox label='Staged' flag={stagedFlag}/>
