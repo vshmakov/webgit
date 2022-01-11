@@ -6,7 +6,7 @@ export async function request(path: string, method: Method, url: string, body: a
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            path: path,
+            path: encodeURIComponent(path),
         },
         body: null !== body ? JSON.stringify(body) : null,
     })
