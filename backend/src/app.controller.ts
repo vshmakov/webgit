@@ -54,9 +54,9 @@ export class AppController {
         return git(headers).branchLocal()
     }
 
-    @Put('/branch/checkout')
-    public async checkoutBranch(@Headers() headers: PathHeaders, @Body() branch: BranchSummaryBranch): Promise<void> {
-        await git(headers).checkout(branch.name)
+    @Put('/checkout')
+    public async checkout(@Headers() headers: PathHeaders, @Body() {reference}: { reference: string }): Promise<void> {
+        await git(headers).checkout(reference)
     }
 
     @Put('/branch/merge-tracking')

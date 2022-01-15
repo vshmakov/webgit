@@ -18,7 +18,7 @@ import {requestStatus} from "./RequestStatus";
 import {requestBranches} from "./RequestBranches";
 
 export class RepositoryState {
-        public commitHistory: LogResult | null = null
+    public commitHistory: LogResult | null = null
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '', this.path)
     public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '', this.path)
@@ -49,7 +49,7 @@ export class RepositoryState {
 
     private constructor(
         public readonly path: string,
-       public status: StatusResult,
+        public status: StatusResult,
         public branches: BranchesState,
         private readonly request: RequestRepository,
         public readonly statusLoader: Loader<StatusResult>,
@@ -138,7 +138,7 @@ export class RepositoryState {
         this.status = status
         this.sectionCommitMessagePrefix = new LocalStorage(LocalStorageKey.SectionCommitMessagePrefix, '', JSON.stringify([this.path, status.current]))
         this.commitMessageStorage = new LocalStorage(LocalStorageKey.CommitMessage, '', JSON.stringify([this.path, status.current]))
-            }
+    }
 
     private async loadBranches(): Promise<void> {
         const status = this.loadStatus()
@@ -180,14 +180,16 @@ export class RepositoryState {
         return message
     }
 
-    public async checkoutBranch(branch: BranchSummaryBranch): Promise<void> {
+    public async checkout(reference: string): Promise<void> {
         enable(this.isDisabled)
-        await this.request(Method.Put, '/branch/checkout', branch)
+        await this.request(Method.Put, '/checkout', {
+            reference: reference
+        })
         await this.loadStatus()
         disable(this.isDisabled)
-        const current = this.status?.current
+        const current = this.status.current
 
-        if (current) {
+        if (null !== current) {
             this.branches?.addHistory(current)
         }
     }

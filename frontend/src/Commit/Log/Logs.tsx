@@ -7,7 +7,8 @@ import {Log} from "./Log";
 
 export const Logs = observer(({repository}: RepositoryProps): ReactElement => {
     const commits = repository.commitHistory?.all || []
-    const logs = commits.map((log: DefaultLogFields): ReactElement => <Log log={log} key={log.hash}/>)
+    const logs = commits.map((log: DefaultLogFields): ReactElement => <Log log={log} repository={repository}
+                                                                           key={log.hash}/>)
 
     return (
         <Toggle label='History'>
@@ -18,6 +19,7 @@ export const Logs = observer(({repository}: RepositoryProps): ReactElement => {
                     <th>Author</th>
                     <th>Date</th>
                     <th>Hash</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>{logs}</tbody>
