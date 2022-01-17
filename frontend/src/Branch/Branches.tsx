@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {Toggle} from "../Flag/Toggle";
+import {Hidden} from "../Flag/Hidden";
 import {preventDefault} from "../Util/PreventDefault";
 import {withSound} from "../Util/WithSound";
 import {BranchSummaryBranch} from "simple-git";
@@ -37,7 +37,7 @@ export const Branches = observer(({repository}: RepositoryProps): ReactElement =
                     </tbody>
                 </table>
             </form>
-            <Toggle label='Create' flag={repository.isBranchCreation}>
+            <Hidden label='Create' flag={repository.isBranchCreation}>
                 <form onSubmit={preventDefault(() => withSound(repository.createBranch()))}>
                     <input
                         type="text"
@@ -50,7 +50,7 @@ export const Branches = observer(({repository}: RepositoryProps): ReactElement =
                         Create
                     </button>
                 </form>
-            </Toggle>
+            </Hidden>
         </div>
     )
         ;

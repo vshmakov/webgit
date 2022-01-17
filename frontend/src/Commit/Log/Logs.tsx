@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {Toggle} from "../../Flag/Toggle";
+import {Hidden} from "../../Flag/Hidden";
 import {RepositoryProps} from "../../Repository/RepositoryProps";
 import {DefaultLogFields} from "simple-git";
 import {Log} from "./Log";
@@ -11,7 +11,7 @@ export const Logs = observer(({repository}: RepositoryProps): ReactElement => {
                                                                            key={log.hash}/>)
 
     return (
-        <Toggle label='History'>
+        <Hidden label='History'>
             <table>
                 <thead>
                 <tr>
@@ -24,6 +24,6 @@ export const Logs = observer(({repository}: RepositoryProps): ReactElement => {
                 </thead>
                 <tbody>{logs}</tbody>
             </table>
-        </Toggle>
+        </Hidden>
     )
 })

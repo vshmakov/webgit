@@ -1,13 +1,13 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
 import {RepositoryProps} from "./RepositoryProps";
-import {Toggle} from '../Flag/Toggle'
+import {Hidden} from '../Flag/Hidden'
 import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
 import {Checkbox} from "../Flag/Checkbox";
 
 export const RepositorySettings = observer(({repository}: RepositoryProps): ReactElement => {
     return (
-        <Toggle label='Settings'>
+        <Hidden label='Settings'>
             <div>
                 <LocalStorageInput title='Bitbucket repository path' storage={repository.bitbucketRepositoryPathStorage}/>
                 <LocalStorageInput title='Jira path' storage={repository.jiraPathStorage}/>
@@ -20,6 +20,6 @@ export const RepositorySettings = observer(({repository}: RepositoryProps): Reac
                     label='Use section commit prefix'
                     flag={repository.useSectionCommitMessagePrefix}/>
             </div>
-        </Toggle>
+        </Hidden>
     )
 })

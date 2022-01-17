@@ -3,7 +3,7 @@ import {State} from "../State";
 import React, {ReactElement, useState} from "react";
 import {compareAlphabetically} from "../Util/CompareAlphabetically";
 import {RepositoryPath} from "./RepositoryPath";
-import {Toggle} from "../Flag/Toggle";
+import {Hidden} from "../Flag/Hidden";
 import {preventDefault} from "../Util/PreventDefault";
 import {setInputValue} from "../Util/SetInputValue";
 import {getFilePathParts} from "../File/GetFilePathParts";
@@ -17,7 +17,7 @@ export const SwitchRepository = observer(({state}: { state: State }): ReactEleme
         .map((path: string): ReactElement => <RepositoryPath path={path} state={state} key={path}/>)
 
     return (
-        <Toggle label='Switch repository' flag={state.switchingRepository}>
+        <Hidden label='Switch repository' flag={state.switchingRepository}>
             <div>
                 <form onSubmit={preventDefault(() => {
                     state.addRepositoryPath(path);
@@ -46,6 +46,6 @@ export const SwitchRepository = observer(({state}: { state: State }): ReactEleme
                     </tbody>
                 </table>
             </div>
-        </Toggle>
+        </Hidden>
     )
 })

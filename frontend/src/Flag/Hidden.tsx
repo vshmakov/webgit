@@ -10,7 +10,7 @@ interface Props {
     children: ReactElement
 }
 
-export const Toggle = observer((props: Props): ReactElement => {
+export const Hidden = observer((props: Props): ReactElement => {
     const {label, children} = props
     const [flag] = useState(props.flag || new InMemoryFlag(false))
 
