@@ -126,19 +126,18 @@ export class AppController {
 
     @Post('/commit')
     public async commit(@Headers() headers: PathHeaders, @Body() {
-                            message,
-                            stage,
-                            cleanAfterCommit,
-                            allowEmpty,
-                            command
-                        }: {
-                            message: string,
-                            stage: boolean,
-                            cleanAfterCommit: Boolean,
-                            allowEmpty: boolean,
-                            command: string
-                        }
-    ): Promise<void> {
+        message,
+        stage,
+        cleanAfterCommit,
+        allowEmpty,
+        command
+    }: {
+        message: string,
+        stage: boolean,
+        cleanAfterCommit: Boolean,
+        allowEmpty: boolean,
+        command: string
+    }): Promise<void> {
         if (command) {
             if (!await this.execCommand(command)) {
                 return
@@ -163,6 +162,13 @@ export class AppController {
         if (stage && cleanAfterCommit) {
             await client.clean(CleanOptions.FORCE, ['-d'])
         }
+    }
+
+    @Put('/commit/change-message')
+    public async changeCommitMessage(@Headers() headers: PathHeaders, @Body() {
+        hash,
+        message
+    }: { hash: string, message: string }): Promise<void> {
     }
 
     @Get('/commit/history')

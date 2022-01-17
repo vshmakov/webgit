@@ -1,7 +1,9 @@
-import {FormEvent} from "react";
+interface Preventable {
+    preventDefault(): void
+}
 
-export function preventDefault(callback: () => void): (event: FormEvent<HTMLFormElement>) => void {
-    return (event: FormEvent<HTMLFormElement>): void => {
+export function preventDefault(callback: () => void): (event: Preventable) => void {
+    return (event: Preventable): void => {
         event.preventDefault()
         callback()
     }

@@ -180,6 +180,14 @@ export class RepositoryState {
         return message
     }
 
+    public async changeCommitMessage(hash: string, message: string): Promise<void> {
+        await this.request(Method.Put, '/commit/change-message', {
+            hash: hash,
+            message: message,
+        })
+        await  this.loadCommitHistory()
+    }
+
     public async checkout(reference: string): Promise<void> {
         enable(this.isDisabled)
         await this.request(Method.Put, '/checkout', {

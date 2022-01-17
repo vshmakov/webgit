@@ -6,12 +6,10 @@ import {LogProps} from "./LogProps";
 import {Message} from "./Message";
 
 export const Log = observer(({log, repository}: LogProps & RepositoryProps): ReactElement => {
-    const {status} = repository
-
     return (
         <tr>
             <td>
-                <Message log={log}/>
+                <Message log={log} repository={repository}/>
             </td>
             <td>{log.author_name}</td>
             <td>{log.date}</td>
