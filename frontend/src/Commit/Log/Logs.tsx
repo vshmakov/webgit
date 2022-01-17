@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {Toggle} from "../../Util/Toggle";
+import {Toggle} from "../../Flag/Toggle";
 import {RepositoryProps} from "../../Repository/RepositoryProps";
 import {DefaultLogFields} from "simple-git";
 import {Log} from "./Log";

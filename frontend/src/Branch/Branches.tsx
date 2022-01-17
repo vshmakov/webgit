@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import React, {ReactElement} from "react";
-import {Toggle} from "../Util/Toggle";
+import {Toggle} from "../Flag/Toggle";
 import {preventDefault} from "../Util/PreventDefault";
 import {withSound} from "../Util/WithSound";
 import {BranchSummaryBranch} from "simple-git";

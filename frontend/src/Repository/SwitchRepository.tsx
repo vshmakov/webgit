@@ -3,7 +3,7 @@ import {State} from "../State";
 import React, {ReactElement, useState} from "react";
 import {compareAlphabetically} from "../Util/CompareAlphabetically";
 import {RepositoryPath} from "./RepositoryPath";
-import {Toggle} from "../Util/Toggle";
+import {Toggle} from "../Flag/Toggle";
 import {preventDefault} from "../Util/PreventDefault";
 import {setInputValue} from "../Util/SetInputValue";
 import {getFilePathParts} from "../File/GetFilePathParts";
