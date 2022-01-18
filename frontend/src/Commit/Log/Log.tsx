@@ -9,8 +9,6 @@ interface Props {
 }
 
 export const Log = observer(({log, repository}: Props & RepositoryProps): ReactElement => {
-    const {status} = repository
-
     return (
         <tr>
             <td>{log.message}</td>
