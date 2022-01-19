@@ -16,6 +16,7 @@ import {enable} from "../Flag/Enable";
 import {RequestRepository} from "./RequestRepository";
 import {requestStatus} from "./RequestStatus";
 import {requestBranches} from "./RequestBranches";
+import {getIssueId} from "../Branch/getIssueId";
 
 export class RepositoryState {
     public commitHistory: LogResult | null = null
@@ -86,16 +87,22 @@ export class RepositoryState {
     }
 
     public getBranchName(branch: BranchSummaryBranch): string {
-        const name = branch.name;
+        const name = branch.name
+        const issueId = getIssueId(name)
+
+        if (null === issueId) {
+            return name
+        }
+
         const summaries = this.jiraIssueSummariesStorage.getValue()
-        const summary = summaries[name]
+        const summary = summaries[issueId]
 
         if (summary) {
             return `${name}: ${summary}`
         }
 
         if (undefined === summary) {
-            this.loadIssueSummary(name)
+            this.loadIssueSummary(issueId)
         }
 
         return name
