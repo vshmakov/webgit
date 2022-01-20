@@ -180,8 +180,10 @@ export class RepositoryState {
             message = `[${this.sectionCommitMessagePrefix.getValue()}] ${message}`
         }
 
-        if (this.useBranchAsCommitMessagePrefix.isChecked) {
-            message = `${this.status?.current}: ${message}`
+        const issueId = getIssueId("" + this.status?.current)
+
+        if (this.useBranchAsCommitMessagePrefix.isChecked && null !== issueId) {
+            message = `${issueId}: ${message}`
         }
 
         return message
