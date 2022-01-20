@@ -5,6 +5,7 @@ export async function watchRepository(path: string, handler: () => void): Promis
         '.git',
         'node_modules',
         'vendor',
+        '.idea',
     ]
 
     watch(path, {
