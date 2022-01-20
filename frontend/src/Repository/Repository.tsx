@@ -16,7 +16,7 @@ export const Repository = observer(({repository}: RepositoryProps): ReactElement
     useEffect((): EmptyCallback => setIntervalEffect(calculateAgo.bind(null, repository), 60 * 1000))
     useEffect((): EmptyCallback => setIntervalEffect((): void => {
         repository.checkChangedStatus()
-    }, 1000))
+    }, 500))
 
     return (
         <div>
