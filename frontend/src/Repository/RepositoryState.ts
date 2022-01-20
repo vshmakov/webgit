@@ -17,13 +17,7 @@ import {RequestRepository} from "./RequestRepository";
 import {requestStatus} from "./RequestStatus";
 import {requestBranches} from "./RequestBranches";
 import {getIssueId} from "../Branch/getIssueId";
-import {withSound} from "../Util/WithSound";
-
-async function loadWachIndex(request: RequestRepository):Promise<number> {
-    const response = await request(Method.Get, '/repository/watch-index')
-    const index = await response.json()
-    return index;
-}
+import {loadWachIndex} from "./LoadWachIndex";
 
 export class RepositoryState {
     public commitHistory: LogResult | null = null
@@ -74,7 +68,7 @@ export class RepositoryState {
         const statusLoader = new Loader(LocalStorageKey.StatusCalledAt, path, requestStatus.bind(null, requestRepository))
         const requestRepositoryBranches = requestBranches.bind(null, requestRepository, path)
         const branches = requestRepositoryBranches()
-const watchIndex=loadWachIndex(requestRepository)
+        const watchIndex = loadWachIndex(requestRepository)
 
         return new RepositoryState(
             path,
@@ -147,14 +141,14 @@ const watchIndex=loadWachIndex(requestRepository)
     }
 
     public async checkChangedStatus(): Promise<void> {
-                const index = await loadWachIndex(this.request)
+        const index = await loadWachIndex(this.request)
 
         if (index <= this.watchIndex) {
             return;
         }
 
         this.watchIndex = index
-        withSound(this.loadStatus())
+        this.loadStatus()
     }
 
     public async loadStatus(): Promise<void> {
