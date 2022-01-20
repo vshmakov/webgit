@@ -1,32 +1,22 @@
-import {readFile} from 'fs/promises';
-import {SimpleGit} from "simple-git";
-
 const watch = require('node-watch')
 
-export async function watchRepository(path: string, git: SimpleGit): Promise<void> {
-    const ignoredPaths = await getIgnored()
+export async function watchRepository(path: string, handler: () => void): Promise<void> {
+    const ignoredPaths = [
+        '.git',
+        'node_modules',
+        'vendor',
+    ]
 
     watch(path, {
         recursive: true,
         filter(file: string, skip: symbol): boolean | symbol {
-            const isIgnored = ignoredPaths.some(((path: string): boolean => file.startsWith(path)))
+            const isIgnored = file.split('/')
+                .some((path: string): boolean => ignoredPaths.includes(path))
 
-            if (isIgnored) {
-                return skip
-            }
-
-            console.log(file)
-
-            return true
+            return !isIgnored ? true : skip;
         }
     }, function (evt, name) {
-        console.log('%s changed.', name);
+        console.log('%s changed.', name)
+        handler()
     });
-}
-
-async function getIgnored(): Promise<string[]> {
-    return [
-        '.git',
-        'node_modules',
-    ]
 }

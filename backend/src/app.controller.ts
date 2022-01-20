@@ -16,10 +16,8 @@ import {IssueQuery} from "./IssueQuery";
 import {PathHeaders} from "./PathHeaders";
 import {watchRepository} from "./WatchRepository";
 
-const path = '/home/vadim/projects/my/webgit/backend'
-// watchRepository(path, git({path:path}))
-
 const clients: { [key: string]: SimpleGit } = {}
+const watchIndexes: { [key: string]: number } = {}
 
 function git(headers: PathHeaders): SimpleGit {
     const path = decodeURIComponent(headers.path)
@@ -32,6 +30,12 @@ function git(headers: PathHeaders): SimpleGit {
     stdout.pipe(process.stdout);
 })*/
         clients[path] = client
+
+        watchIndexes[path] = 0
+        watchRepository(path, (): void => {
+            watchIndexes[path]++
+            console.log(watchIndexes[path])
+        })
     }
 
     return clients[path]
@@ -39,6 +43,11 @@ function git(headers: PathHeaders): SimpleGit {
 
 @Controller()
 export class AppController {
+    @Get('/repository/watch-index')
+    public watchIndex(@Headers() headers: PathHeaders): number {
+        return watchIndexes[headers.path] || 0
+    }
+
     @Get('/jira/issue-summary')
     public async issueSummary(@Query() query: IssueQuery): Promise<string> {
         const response = await fetch(`${query.path}/rest/api/latest/issue/${query.key}`, {
