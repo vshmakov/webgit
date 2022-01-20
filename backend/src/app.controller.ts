@@ -14,6 +14,10 @@ import fetch from "node-fetch";
 import {isFileStaged} from "../../frontend/src/Shared/IsFileStaged";
 import {IssueQuery} from "./IssueQuery";
 import {PathHeaders} from "./PathHeaders";
+import {watchRepository} from "./WatchRepository";
+
+const path = '/home/vadim/projects/my/webgit/backend'
+// watchRepository(path, git({path:path}))
 
 const clients: { [key: string]: SimpleGit } = {}
 
@@ -25,8 +29,8 @@ function git(headers: PathHeaders): SimpleGit {
             baseDir: path
         });
         /*client.outputHandler(function (command, stdout, stderr): void {
-            stdout.pipe(process.stdout);
-        })*/
+    stdout.pipe(process.stdout);
+})*/
         clients[path] = client
     }
 
