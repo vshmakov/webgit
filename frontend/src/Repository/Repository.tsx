@@ -10,11 +10,15 @@ import {RepositorySettings} from "./RepositorySettings";
 import {EmptyCallback} from "../Util/EmptyCallback";
 import {RepositoryProps} from "./RepositoryProps";
 import {getRepositoryName} from "./GetRepositoryName";
+import {setIntervalEffect} from "../Util/SetIntervalEffect";
 
 export const Repository = observer(({repository}: RepositoryProps): ReactElement => {
-    useEffect((): EmptyCallback => calculateLoadersAgo(repository))
+    useEffect((): EmptyCallback => setIntervalEffect(calculateAgo.bind(null, repository), 60 * 1000))
+    useEffect((): EmptyCallback => setIntervalEffect((): void => {
+        repository.checkChangedStatus()
+    }, 1000))
 
-        return (
+    return (
         <div>
             <div>
                 <h2>{getRepositoryName(repository.path)} repository</h2>
@@ -37,11 +41,7 @@ export const Repository = observer(({repository}: RepositoryProps): ReactElement
     )
 })
 
-function calculateLoadersAgo(repository: RepositoryState): EmptyCallback {
-    const id = setInterval((): void => {
-        repository.statusLoader.calculateAgo()
-        repository.fetchLoader.calculateAgo()
-    }, 60 * 1000)
-
-    return (): void => clearInterval(id)
+function calculateAgo(repository: RepositoryState): void {
+    repository.statusLoader.calculateAgo()
+    repository.fetchLoader.calculateAgo()
 }

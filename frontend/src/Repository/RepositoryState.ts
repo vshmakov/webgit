@@ -17,6 +17,13 @@ import {RequestRepository} from "./RequestRepository";
 import {requestStatus} from "./RequestStatus";
 import {requestBranches} from "./RequestBranches";
 import {getIssueId} from "../Branch/getIssueId";
+import {withSound} from "../Util/WithSound";
+
+async function loadWachIndex(request: RequestRepository):Promise<number> {
+    const response = await request(Method.Get, '/repository/watch-index')
+    const index = await response.json()
+    return index;
+}
 
 export class RepositoryState {
     public commitHistory: LogResult | null = null
@@ -55,6 +62,7 @@ export class RepositoryState {
         private readonly request: RequestRepository,
         public readonly statusLoader: Loader<StatusResult>,
         private readonly requestBranches: () => Promise<BranchesState>,
+        private watchIndex: number
     ) {
         this.setStatus(this.status)
         makeAutoObservable(this)
@@ -66,6 +74,7 @@ export class RepositoryState {
         const statusLoader = new Loader(LocalStorageKey.StatusCalledAt, path, requestStatus.bind(null, requestRepository))
         const requestRepositoryBranches = requestBranches.bind(null, requestRepository, path)
         const branches = requestRepositoryBranches()
+const watchIndex=loadWachIndex(requestRepository)
 
         return new RepositoryState(
             path,
@@ -73,7 +82,8 @@ export class RepositoryState {
             await branches,
             requestRepository,
             statusLoader,
-            requestRepositoryBranches
+            requestRepositoryBranches,
+            await watchIndex
         )
     }
 
@@ -134,6 +144,17 @@ export class RepositoryState {
 
     private addLoadedIssueSummary(key: string): void {
         this.loadedIssueSummaries.push(key)
+    }
+
+    public async checkChangedStatus(): Promise<void> {
+                const index = await loadWachIndex(this.request)
+
+        if (index <= this.watchIndex) {
+            return;
+        }
+
+        this.watchIndex = index
+        withSound(this.loadStatus())
     }
 
     public async loadStatus(): Promise<void> {

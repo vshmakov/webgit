@@ -19,8 +19,12 @@ import {watchRepository} from "./WatchRepository";
 const clients: { [key: string]: SimpleGit } = {}
 const watchIndexes: { [key: string]: number } = {}
 
+function getPath(headers: PathHeaders) {
+    return decodeURIComponent(headers.path);
+}
+
 function git(headers: PathHeaders): SimpleGit {
-    const path = decodeURIComponent(headers.path)
+    const path = getPath(headers)
 
     if (undefined === clients[path]) {
         const client = simpleGit({
@@ -45,7 +49,7 @@ function git(headers: PathHeaders): SimpleGit {
 export class AppController {
     @Get('/repository/watch-index')
     public watchIndex(@Headers() headers: PathHeaders): number {
-        return watchIndexes[headers.path] || 0
+        return watchIndexes[getPath(headers)] || 0
     }
 
     @Get('/jira/issue-summary')
