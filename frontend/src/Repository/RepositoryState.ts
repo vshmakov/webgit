@@ -153,7 +153,10 @@ export class RepositoryState {
 
     public async loadStatus(): Promise<void> {
         this.loadCommitHistory()
-        this.setStatus(await this.statusLoader.load())
+        const index = loadWachIndex(this.request)
+        const status = this.statusLoader.load()
+        this.watchIndex = await index
+        this.setStatus(await status)
     }
 
     private setStatus(status: StatusResult): void {
