@@ -23,25 +23,12 @@ export async function watchRepository(directory: string, handler: () => void, gi
 }
 
 async function getExcludedSubdirectories(directory: string, ignored: string[], git: SimpleGit): Promise<string[]> {
-    const files: { [key: string]: Promise<Stats> } = {}
-
-    for (const fileName of await fs.readdir(directory)) {
-        const file = getFilePath(directory, fileName)
-
-        if (!ignored.includes(file)) {
-            files[file] = fs.lstat(file)
-        }
-    }
-
-    const directories: string[] = []
-
-    for (const file in files) {
-        const status = await files[file]
-
-        if (status.isDirectory()) {
-            directories.push(file)
-        }
-    }
+    const files = (await fs.readdir(directory))
+        .map((file: string): string => getFilePath(directory, file))
+        .filter((file: string): boolean => !ignored.includes(file))
+    const statuses = await  waitAll(createObjectByKeys(files, fs.lstat))
+    const directories = Object.keys(statuses)
+        .filter((file: string): boolean => statuses[file].isDirectory())
 
     const excluded = 0 !== directories.length ? await git.checkIgnore(directories) : []
     const watchedDirectories = directories.filter((directory: string): boolean => !excluded.includes(directory))
@@ -52,6 +39,25 @@ async function getExcludedSubdirectories(directory: string, ignored: string[], g
     }
 
     return Array.prototype.concat.apply(ignored, excludedSubdirectories).concat(excluded)
+}
+
+async function waitAll<T>(object: { [key: string]: Promise<T> }): Promise<{ [key: string]: T }> {
+    const waited = {}
+
+    for (const key in object) {
+        waited[key] = await object[key]
+    }
+
+    return waited
+}
+
+function createObjectByKeys<T>(keys: string[], callback: (key: string) => T): { [key: string]: T } {
+    const object = {}
+
+    for (const key of keys)
+        object[key] = callback(key)
+
+    return object
 }
 
 function getFilePath(directory: string, file: string): string {
