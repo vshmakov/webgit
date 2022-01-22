@@ -8,24 +8,13 @@ export async function watchRepository(directory: string, handler: () => void, gi
     const ignored = [
         '.git',
     ].map((path: string): string => getFilePath(directory, path))
-    console.log(await getWatchedSubdirectories(directory, git, ignored))
-
-    return
-    const ignoredPaths = [
-        '.git',
-        'node_modules',
-        'vendor',
-        '.idea',
-        'var',
-    ]
-
-    watch(directory, {
+    const excluded = await getExcludedSubdirectories(directory, ignored, git)
+            watch(directory, {
         recursive: true,
         filter(file: string, skip: symbol): boolean | symbol {
-            const isIgnored = file.split('/')
-                .some((path: string): boolean => ignoredPaths.includes(path))
+            const isExcluded = excluded.includes(file)
 
-            return !isIgnored ? true : skip;
+            return !isExcluded ? true : skip;
         }
     }, function (evt, name) {
         console.log('%s changed.', name)
@@ -33,11 +22,7 @@ export async function watchRepository(directory: string, handler: () => void, gi
     });
 }
 
-function getFilePath(directory: string, file: string): string {
-    return [directory, file].join('/');
-}
-
-async function getWatchedSubdirectories(directory: string, git: SimpleGit, ignored: string[]): Promise<string[]> {
+async function getExcludedSubdirectories(directory: string, ignored: string[], git: SimpleGit): Promise<string[]> {
     const files: { [key: string]: Promise<Stats> } = {}
 
     for (const fileName of await fs.readdir(directory)) {
@@ -60,11 +45,15 @@ async function getWatchedSubdirectories(directory: string, git: SimpleGit, ignor
 
     const excluded = 0 !== directories.length ? await git.checkIgnore(directories) : []
     const watchedDirectories = directories.filter((directory: string): boolean => !excluded.includes(directory))
-    const subdirectories: string[][] = []
+    const excludedSubdirectories: string[][] = []
 
     for (const directory of watchedDirectories) {
-        subdirectories.push(await getWatchedSubdirectories(directory, git, ignored))
+        excludedSubdirectories.push(await getExcludedSubdirectories(directory, [], git))
     }
 
-    return Array.prototype.concat.apply(watchedDirectories, subdirectories)
+    return Array.prototype.concat.apply(ignored, excludedSubdirectories).concat(excluded)
+}
+
+function getFilePath(directory: string, file: string): string {
+    return [directory, file].join('/');
 }
