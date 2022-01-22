@@ -1,6 +1,5 @@
 import * as fs from 'fs/promises';
 import {SimpleGit} from "simple-git";
-import {Stats} from "node:fs";
 
 const watch = require('node-watch')
 
@@ -26,17 +25,13 @@ async function getExcludedSubdirectories(directory: string, ignored: string[], g
     const files = (await fs.readdir(directory))
         .map((file: string): string => getFilePath(directory, file))
         .filter((file: string): boolean => !ignored.includes(file))
-    const statuses = await  waitAll(createObjectByKeys(files, fs.lstat))
+    const statuses = await waitAll(createObjectByKeys(files, fs.lstat))
     const directories = Object.keys(statuses)
         .filter((file: string): boolean => statuses[file].isDirectory())
-
     const excluded = 0 !== directories.length ? await git.checkIgnore(directories) : []
-    const watchedDirectories = directories.filter((directory: string): boolean => !excluded.includes(directory))
-    const excludedSubdirectories: string[][] = []
-
-    for (const directory of watchedDirectories) {
-        excludedSubdirectories.push(await getExcludedSubdirectories(directory, [], git))
-    }
+    const excludedSubdirectories: string[][] = await Promise.all(directories
+        .filter((directory: string): boolean => !excluded.includes(directory))
+        .map((directory: string): Promise<string[]> => getExcludedSubdirectories(directory, [], git)))
 
     return Array.prototype.concat.apply(ignored, excludedSubdirectories).concat(excluded)
 }
