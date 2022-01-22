@@ -39,7 +39,7 @@ function git(headers: PathHeaders): SimpleGit {
         watchRepository(path, (): void => {
             watchIndexes[path]++
             console.log(watchIndexes[path])
-        })
+        }, client)
     }
 
     return clients[path]
