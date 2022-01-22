@@ -49,8 +49,9 @@ async function waitAll<T>(object: { [key: string]: Promise<T> }): Promise<{ [key
 function createObjectByKeys<T>(keys: string[], callback: (key: string) => T): { [key: string]: T } {
     const object = {}
 
-    for (const key of keys)
+    for (const key of keys) {
         object[key] = callback(key)
+    }
 
     return object
 }
