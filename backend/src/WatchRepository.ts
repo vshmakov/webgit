@@ -9,7 +9,7 @@ export async function watchRepository(directory: string, handler: () => void, gi
         '.git',
     ].map((path: string): string => getFilePath(directory, path))
     const excluded = await getExcludedSubdirectories(directory, ignored, git)
-            watch(directory, {
+    watch(directory, {
         recursive: true,
         filter(file: string, skip: symbol): boolean | symbol {
             const isExcluded = excluded.includes(file)
@@ -28,7 +28,7 @@ async function getExcludedSubdirectories(directory: string, ignored: string[], g
     for (const fileName of await fs.readdir(directory)) {
         const file = getFilePath(directory, fileName)
 
-        if (!ignored.includes(file)){
+        if (!ignored.includes(file)) {
             files[file] = fs.lstat(file)
         }
     }
