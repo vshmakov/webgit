@@ -3,5 +3,7 @@ export function getIssueId(branch: string): string | null {
     const prefix = parts.shift()
     const number = parts.shift()
 
-    return prefix && number ? [prefix, number].join('-') : null
+    return prefix && number && /^\d+$/.test(number)
+        ? [prefix, number].join('-')
+        : null
 }

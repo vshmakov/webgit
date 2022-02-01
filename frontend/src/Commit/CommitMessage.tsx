@@ -14,10 +14,11 @@ export const CommitMessage = observer(({repository}: RepositoryProps): ReactElem
     }
 
     const {status} = repository
+    const issueId = getIssueId("" + status.current)
 
     return (
         <div>
-            <span>{repository.useBranchAsCommitMessagePrefix.isChecked ? `${getIssueId("" + status.current)}:` : ""}</span>
+            <span>{repository.useBranchAsCommitMessagePrefix.isChecked && null !== issueId ? `${issueId}:` : ""}</span>
             <SectionCommitPrefix repository={repository}/>
             <LocalStorageInput title="" storage={repository.commitMessageStorage} required={true}/>
         </div>
