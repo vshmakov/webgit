@@ -12,6 +12,11 @@ export async function watchRepository(directory: string, handler: () => void, gi
         recursive: true,
         filter(file: string, skip: symbol): boolean | symbol {
             const isExcluded = excluded.includes(file)
+                || [
+                    'var',
+                    'vendor',
+                    '.git',
+                ].some((name: string): boolean => file.split('/').includes(name))
 
             return !isExcluded ? true : skip;
         }
