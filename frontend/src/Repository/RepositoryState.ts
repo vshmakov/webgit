@@ -161,8 +161,13 @@ export class RepositoryState {
 
     private setStatus(status: StatusResult): void {
         this.status = status
-        this.sectionCommitMessagePrefix = new LocalStorage(LocalStorageKey.SectionCommitMessagePrefix, '', JSON.stringify([this.path, status.current]))
-        this.commitMessageStorage = new LocalStorage(LocalStorageKey.CommitMessage, '', JSON.stringify([this.path, status.current]))
+        const current = status.current
+        this.sectionCommitMessagePrefix = new LocalStorage(LocalStorageKey.SectionCommitMessagePrefix, '', JSON.stringify([this.path, current]))
+        this.commitMessageStorage = new LocalStorage(LocalStorageKey.CommitMessage, '', JSON.stringify([this.path, current]))
+
+        if (null !== current) {
+            this.branches.addHistory(current)
+        }
     }
 
     private async loadBranches(): Promise<void> {
