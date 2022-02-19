@@ -34,7 +34,7 @@ export class BranchesState {
             .filter((branch: BranchSummaryBranch): boolean => hiddenBranches.includes(branch.name))
     }
 
-    private get branches(): BranchSummaryBranch[] {
+    public get branches(): BranchSummaryBranch[] {
         return Object.values(this.summary.branches)
     }
 
