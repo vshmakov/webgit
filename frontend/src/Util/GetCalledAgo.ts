@@ -14,17 +14,17 @@ export function getCalledAgo(ago: number | null): string {
     const timeParts = []
 
     if (0 !== days) {
-        timeParts.push(`${days}d`)
+        timeParts.push(`${days}D`)
     }
 
     if (0 !== hours) {
-        timeParts.push(`${hours % 24}h`)
+        timeParts.push(`${hours % 24}H`)
     }
 
     const minutes = totalMinutes % 60;
 
     if (0 === days) {
-        timeParts.push(`${minutes}m`)
+        timeParts.push(`${minutes}M`)
     }
 
     return `(${timeParts.join(' ')} ago)`
