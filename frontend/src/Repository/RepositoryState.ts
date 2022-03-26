@@ -77,7 +77,7 @@ export class RepositoryState {
             requestRepository,
             statusLoader,
             requestRepositoryBranches,
-            await watchIndex
+            (await watchIndex) || 0
         )
     }
 
@@ -143,7 +143,7 @@ export class RepositoryState {
     public async checkChangedStatus(): Promise<void> {
         const index = await loadWachIndex(this.request)
 
-        if (index <= this.watchIndex) {
+        if (null === index || index <= this.watchIndex) {
             return;
         }
 
@@ -155,7 +155,7 @@ export class RepositoryState {
         this.loadCommitHistory()
         const index = loadWachIndex(this.request)
         const status = this.statusLoader.load()
-        this.watchIndex = await index
+        this.watchIndex = (await index) || this.watchIndex
         this.setStatus(await status)
     }
 
