@@ -40,6 +40,7 @@ export class RepositoryState {
         LocalStorageFlag.createByKey(LocalStorageKey.CleanAfterCommit, false, this.path),
         (): boolean => !this.stageAllFilesBeforeCommit.isChecked
     )
+    public readonly openCommitSettings = new InMemoryFlag(false)
     public readonly allowEmptyCommit = new BlockableFlag(
         new InMemoryFlag(false),
         (): boolean => 0 !== this.status.files.length
@@ -200,6 +201,7 @@ export class RepositoryState {
         })
         await this.loadStatus()
         disable(this.allowEmptyCommit)
+        disable(this.openCommitSettings)
     }
 
     private getCommitMessage(): string {

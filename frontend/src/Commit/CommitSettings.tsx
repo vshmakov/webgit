@@ -7,7 +7,7 @@ import {RepositoryProps} from "../Repository/RepositoryProps";
 
 export const CommitSettings = observer(({repository}: RepositoryProps): ReactElement => {
     return (
-        <Hidden label={"AdditionalSettings"}>
+        <Hidden label={"AdditionalSettings"} flag={repository.openCommitSettings}>
             <div>
                 <Checkbox label="Allow empty" flag={repository.allowEmptyCommit}/>
                 <Checkbox label="Stage all files" flag={repository.stageAllFilesBeforeCommit}/>
