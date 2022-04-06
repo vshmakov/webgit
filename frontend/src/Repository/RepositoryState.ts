@@ -103,7 +103,7 @@ export class RepositoryState {
         const summary = summaries[issueId]
 
         if (summary) {
-            return `${name}: ${summary}`
+            return summary
         }
 
         if (undefined === summary) {
