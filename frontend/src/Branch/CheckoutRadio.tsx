@@ -25,7 +25,7 @@ export const CheckoutRadio = observer(({
 
 function getAccessKey(branch: BranchSummaryBranch, index: number): string | undefined {
     if (['development'].includes(branch.name)) {
-        return 'd'
+        return 'v'
     }
 
     const branchNumber = index + 1
