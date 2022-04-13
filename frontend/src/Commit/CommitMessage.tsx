@@ -4,7 +4,7 @@ import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
 import React, {ReactElement} from "react";
 import {EmptyCommitMessage} from "./EmptyCommitMessage";
 import {RepositoryProps} from "../Repository/RepositoryProps";
-import {getIssueId} from "../Branch/getIssueId";
+import {getBranchNameParts} from "../Branch/getBranchNameParts";
 
 export const CommitMessage = observer(({repository}: RepositoryProps): ReactElement => {
     if (repository.allowEmptyCommit.isChecked) {
@@ -14,7 +14,7 @@ export const CommitMessage = observer(({repository}: RepositoryProps): ReactElem
     }
 
     const {status} = repository
-    const issueId = getIssueId("" + status.current)
+    const issueId = getBranchNameParts("" + status.current).issueId
 
     return (
         <div>

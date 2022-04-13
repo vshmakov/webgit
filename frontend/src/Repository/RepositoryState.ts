@@ -16,7 +16,7 @@ import {enable} from "../Flag/Enable";
 import {RequestRepository} from "./RequestRepository";
 import {requestStatus} from "./RequestStatus";
 import {requestBranches} from "./RequestBranches";
-import {getIssueId} from "../Branch/getIssueId";
+import {getBranchNameParts} from "../Branch/getBranchNameParts";
 import {loadWachIndex} from "./LoadWachIndex";
 
 export class RepositoryState {
@@ -93,21 +93,25 @@ export class RepositoryState {
 
     public getBranchName(branch: BranchSummaryBranch): string {
         const name = branch.name
-        const issueId = getIssueId(name)
+        const parts = getBranchNameParts(name)
 
-        if (null === issueId) {
+        if (null === parts.issueId) {
             return name
         }
 
         const summaries = this.jiraIssueSummariesStorage.getValue()
-        const summary = summaries[issueId]
+        const summary = summaries[parts.issueId]
 
         if (summary) {
+            if (parts.issueId !== name) {
+                return `${parts.suffix}: ${summary}`
+            }
+
             return summary
         }
 
         if (undefined === summary) {
-            this.loadIssueSummary(issueId)
+            this.loadIssueSummary(parts.issueId)
         }
 
         return name
@@ -215,7 +219,7 @@ export class RepositoryState {
             message = `[${this.sectionCommitMessagePrefix.getValue()}] ${message}`
         }
 
-        const issueId = getIssueId("" + this.status?.current)
+        const issueId = getBranchNameParts("" + this.status?.current).issueId
 
         if (this.useBranchAsCommitMessagePrefix.isChecked && null !== issueId) {
             message = `${issueId}: ${message}`
