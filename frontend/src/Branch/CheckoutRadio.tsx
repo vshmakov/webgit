@@ -19,7 +19,8 @@ export const CheckoutRadio = observer(({
             checked={isCurrent(branch, repository.status)}
             onChange={() => withSound(repository.checkout(branch.name))}
             accessKey={getAccessKey(branch, index)}
-            disabled={repository.isDisabled.isChecked}/>
+            disabled={repository.isDisabled.isChecked}
+        aria-label={repository.getBranchName(branch)}/>
     )
 })
 

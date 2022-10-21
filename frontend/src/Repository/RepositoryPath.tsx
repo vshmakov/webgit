@@ -16,7 +16,8 @@ export const RepositoryPath = observer(({path, state}: { path: string, state: St
                 <input
                     type="radio"
                     checked={path === state.currentRepositoryPathStorage.getValue()}
-                    onChange={() => navigate(getPathUrl(path))}/>
+                    onChange={() => navigate(getPathUrl(path))}
+                aria-label={capitalizeFirstLetter(name)}/>
             </td>
             <td>{capitalizeFirstLetter(name)}</td>
             <td>{directory}</td>
