@@ -9,7 +9,6 @@ export const CommitSettings = observer(({repository}: RepositoryProps): ReactEle
     return (
         <Hidden label={"AdditionalSettings"} flag={repository.openCommitSettings}>
             <div>
-                <Checkbox label="Allow empty" flag={repository.allowEmptyCommit}/>
                 <Checkbox label="Stage all files" flag={repository.stageAllFilesBeforeCommit}/>
                 <Checkbox label='Clean after commit' flag={repository.cleanAfterCommit}/>
                 <LocalStorageInput title="Precommit command" storage={repository.precommitCommandStorage}/>
