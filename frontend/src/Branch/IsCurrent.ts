@@ -1,6 +1,5 @@
-import {BranchSummaryBranch} from "simple-git";
-import {StatusSummary} from "simple-git/src/lib/responses/StatusSummary";
+import {BranchSummaryBranch, StatusResult} from "simple-git";
 
-export function isCurrent(branch: BranchSummaryBranch, status: StatusSummary): boolean {
+export function isCurrent(branch: BranchSummaryBranch, status: StatusResult): boolean {
     return branch.name === status.current
 }

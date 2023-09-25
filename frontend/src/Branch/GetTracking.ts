@@ -1,8 +1,7 @@
-import {BranchSummaryBranch} from "simple-git";
-import {StatusSummary} from "simple-git/src/lib/responses/StatusSummary";
+import {BranchSummaryBranch, StatusResult} from "simple-git";
 import {isCurrent} from "./IsCurrent";
 
-export function getTracking(branch: BranchSummaryBranch, status: StatusSummary): string {
+export function getTracking(branch: BranchSummaryBranch, status: StatusResult): string {
     if (!isCurrent(branch, status)) {
         return ''
     }

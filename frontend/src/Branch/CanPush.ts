@@ -1,8 +1,7 @@
-import {BranchSummaryBranch} from "simple-git";
-import {StatusSummary} from "simple-git/src/lib/responses/StatusSummary";
+import {BranchSummaryBranch, StatusResult} from "simple-git";
 import {isCurrent} from "./IsCurrent";
 
-export function canPush(branch: BranchSummaryBranch, status: StatusSummary): boolean {
+export function canPush(branch: BranchSummaryBranch, status: StatusResult): boolean {
     const hasAheadCommits = null !== status.tracking
         && 0 !== status.ahead
 
