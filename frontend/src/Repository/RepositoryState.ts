@@ -19,16 +19,14 @@ import {requestBranches} from "./RequestBranches";
 import {getBranchNameParts} from "../Branch/getBranchNameParts";
 import {loadWachIndex} from "./LoadWachIndex";
 import {RemoteState} from "./RemoteState";
+import {TimeTrackerState} from "./TimeTrackerState";
 
 export class RepositoryState {
     public commitHistory: LogResult | null = null
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '', this.path)
     public readonly remoteState = new RemoteState(this.path)
-    public readonly jiraPathStorage = new LocalStorage<string>(LocalStorageKey.JiraPath, '', this.path)
-    public readonly jiraUserStorage = new LocalStorage<string>(LocalStorageKey.JiraUser, '', this.path)
-    public readonly jiraTokenStorage = new LocalStorage<string>(LocalStorageKey.JiraToken, '', this.path)
-    public readonly jiraIssueSummariesStorage = new LocalStorage<{ [key: string]: string | null }>(LocalStorageKey.JiraIssueSummaries, {}, this.path)
+    public readonly timeTrackerState = new TimeTrackerState(this.path)
     public readonly useBranchAsCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseBranchAsCommitMessagePrefix, false, this.path)
     public readonly useSectionCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseSectionCommitMessagePrefix, false, this.path)
     public sectionCommitMessagePrefix: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.SectionCommitMessagePrefix, '', this.path)
@@ -100,7 +98,9 @@ export class RepositoryState {
             return name
         }
 
-        const summaries = this.jiraIssueSummariesStorage.getValue()
+        const summaries = this.timeTrackerState
+            .jiraIssueSummariesStorage
+            .getValue()
         const summary = summaries[parts.issueId]
 
         if (summary) {
@@ -119,9 +119,15 @@ export class RepositoryState {
     }
 
     private async loadIssueSummary(key: string): Promise<void> {
-        const path = this.jiraPathStorage.getValue()
-        const user = this.jiraUserStorage.getValue()
-        const token = this.jiraTokenStorage.getValue()
+        const path = this.timeTrackerState
+            .jiraPathStorage
+            .getValue()
+        const user = this.timeTrackerState
+            .jiraUserStorage
+            .getValue()
+        const token = this.timeTrackerState
+            .jiraTokenStorage
+            .getValue()
 
         if ('' === path || '' === user || '' === token || this.loadedIssueSummaries.includes(key)) {
             return
@@ -137,9 +143,13 @@ export class RepositoryState {
         const search = new URLSearchParams(params).toString()
         const response = await this.request(Method.Get, `/jira/issue-summary?${search}`)
         const summary = await response.json()
-        const summaries = this.jiraIssueSummariesStorage.getValue()
+        const summaries = this.timeTrackerState
+            .jiraIssueSummariesStorage
+            .getValue()
         summaries[key] = summary
-        this.jiraIssueSummariesStorage.setValue(summaries)
+        this.timeTrackerState
+            .jiraIssueSummariesStorage
+            .setValue(summaries)
     }
 
     private addLoadedIssueSummary(key: string): void {

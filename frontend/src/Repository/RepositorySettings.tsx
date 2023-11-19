@@ -11,9 +11,9 @@ export const RepositorySettings = observer(({repository}: RepositoryProps): Reac
             <div>
                 <LocalStorageInput title='Create pull request url template'
                                    storage={repository.remoteState.createPullRequestUrlTemplate}/>
-                <LocalStorageInput title='Jira path' storage={repository.jiraPathStorage}/>
-                <LocalStorageInput title='Jira user' storage={repository.jiraUserStorage}/>
-                <LocalStorageInput title='Jira token' storage={repository.jiraTokenStorage}/>
+                <LocalStorageInput title='Jira path' storage={repository.timeTrackerState.jiraPathStorage}/>
+                <LocalStorageInput title='Jira user' storage={repository.timeTrackerState.jiraUserStorage}/>
+                <LocalStorageInput title='Jira token' storage={repository.timeTrackerState.jiraTokenStorage}/>
                 <Checkbox
                     label='Use branch name as commit message prefix'
                     flag={repository.useBranchAsCommitMessagePrefix}/>
