@@ -14,6 +14,7 @@ import {IndexProps} from "./IndexProps";
 import {CheckoutRadio} from "./CheckoutRadio";
 import {RepositoryProps} from "../Repository/RepositoryProps";
 import {isPrevious} from "./IsPrevious";
+import {RebaseTrackingButton} from "./RebaseTrackingButton";
 
 export const Branch = observer(({
                                     branch,
@@ -39,6 +40,7 @@ export const Branch = observer(({
                 {isPrevious(branch, branches) ?
                     <MergeBranchIntoCurrentButton branch={branch} repository={repository}/>
                     : null}
+                {canMergeTracking(branch, status) ? <RebaseTrackingButton repository={repository}/> : null}
                 {canMergeTracking(branch, status) ? <MergeTrackingButton repository={repository}/> : null}
                 {canPush(branch, status) ? <PushButton repository={repository}/> : null}
             </td>

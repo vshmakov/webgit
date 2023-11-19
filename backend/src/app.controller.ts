@@ -76,6 +76,19 @@ export class AppController {
         await git(headers).checkout(reference)
     }
 
+    @Put('/branch/rebase-tracking')
+    public async rebaseTracking(@Headers() headers: PathHeaders): Promise<void> {
+        const client = git(headers)
+        const status = await client.status()
+
+        if (null === status.tracking
+        ) {
+            return
+        }
+
+        await client.rebase([status.tracking])
+    }
+
     @Put('/branch/merge-tracking')
     public async mergeTracking(@Headers() headers: PathHeaders): Promise<void> {
         const client = git(headers)

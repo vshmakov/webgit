@@ -259,6 +259,11 @@ export class RepositoryState {
         await this.loadStatus()
     }
 
+    public async rebaseTrackingBranch(): Promise<void> {
+        await this.request(Method.Put, '/branch/rebase-tracking')
+        await this.loadStatus()
+    }
+
     public async mergeTrackingBranch(): Promise<void> {
         await this.request(Method.Put, '/branch/merge-tracking')
         await this.loadStatus()
