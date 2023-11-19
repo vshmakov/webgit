@@ -8,7 +8,6 @@ export enum LocalStorageKey {
     CurrentRepositoryPath = 'CurrentRepositoryPath',
     RepositoryPaths = 'RepositoryPaths',
     CreatePullRequestUrlTemplate = 'CreatePullRequestUrlTemplate',
-    GitlabRepositoryPath = 'GitlabRepositoryPath',
     UseBranchAsCommitMessagePrefix = 'UseBranchAsCommitMessagePrefix',
     UseSectionCommitMessagePrefix = 'UseSectionCommitMessagePrefix',
     SectionCommitMessagePrefix = 'SectionCommitMessagePrefix',

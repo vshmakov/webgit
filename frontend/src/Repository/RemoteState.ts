@@ -16,6 +16,5 @@ export class RemoteState {
         return '' !== template
             ? template.replace('{{source}}', branch.name)
             : null;
-
     }
 }
