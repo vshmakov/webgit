@@ -242,6 +242,11 @@ export class RepositoryState {
         }
     }
 
+    public async rebaseCurrentToBranch(branch: BranchSummaryBranch): Promise<void> {
+        await this.request(Method.Put, '/branch/rebase-current-to-branch', branch)
+        await this.loadStatus()
+    }
+
     public async mergeBranchIntoCurrent(branch: BranchSummaryBranch): Promise<void> {
         await this.request(Method.Put, '/branch/merge-into-current', branch)
         await this.loadStatus()

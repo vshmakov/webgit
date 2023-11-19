@@ -15,6 +15,7 @@ import {CheckoutRadio} from "./CheckoutRadio";
 import {RepositoryProps} from "../Repository/RepositoryProps";
 import {isPrevious} from "./IsPrevious";
 import {RebaseTrackingButton} from "./RebaseTrackingButton";
+import {RebaseCurrentToBranch} from "./RebaseCurrentToBranch";
 
 export const Branch = observer(({
                                     branch,
@@ -37,11 +38,14 @@ export const Branch = observer(({
                     ? <CreateBitbucketPullRequestLink bitbucketRepositoryPath={path} branch={branch}/>
                     : null}
                 {branches.showHidden.isChecked ? <HideButton branch={branch} repository={repository}/> : null}
-                {isPrevious(branch, branches) ?
-                    <MergeBranchIntoCurrentButton branch={branch} repository={repository}/>
-                    : null}
-                {canMergeTracking(branch, status) ? <RebaseTrackingButton repository={repository}/> : null}
-                {canMergeTracking(branch, status) ? <MergeTrackingButton repository={repository}/> : null}
+                {isPrevious(branch, branches) ? [
+                    <RebaseCurrentToBranch branch={branch} repository={repository}/>,
+                    <MergeBranchIntoCurrentButton branch={branch} repository={repository}/>,
+                ] : null}
+                {canMergeTracking(branch, status) ? [
+                    <RebaseTrackingButton repository={repository}/>,
+                    <MergeTrackingButton repository={repository}/>,
+                ] : null}
                 {canPush(branch, status) ? <PushButton repository={repository}/> : null}
             </td>
         </tr>

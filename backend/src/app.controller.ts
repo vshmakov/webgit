@@ -109,6 +109,11 @@ export class AppController {
         await client.push(['-u', 'origin', status.current])
     }
 
+    @Put('/branch/rebase-current-to-branch')
+    public async rebaseCurrentToBranch(@Headers() headers: PathHeaders, @Body() branch: BranchSummaryBranch): Promise<void> {
+        await git(headers).rebase([branch.name])
+    }
+
     @Put('/branch/merge-into-current')
     public async mergeBranchIntoCurrent(@Headers() headers: PathHeaders, @Body() branch: BranchSummaryBranch): Promise<void> {
         await git(headers).merge([branch.name])
