@@ -46,7 +46,7 @@ export class RepositoryState {
         (): boolean => 0 !== this.status.files.length
     )
     public readonly stageAllFilesBeforeCommit = new BlockableFlag(
-        LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, false, this.path),
+        LocalStorageFlag.createByKey(LocalStorageKey.StageAllFilesBeforeCommit, true, this.path),
         (): boolean => this.allowEmptyCommit.isChecked
     )
 
