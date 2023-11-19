@@ -15,6 +15,11 @@ export enum LocalStorageKey {
     JiraUser = 'JiraUser',
     JiraToken = 'JiraToken',
     JiraIssueSummaries = 'JiraIssueSummaries',
+
+    YoutrackPath = 'YoutrackPath',
+    YoutrackToken = 'YoutrackToken',
+    YoutrackIssueSummaries = 'YoutrackIssueSummaries',
+
     StageAllFilesBeforeCommit = 'StageAllFilesBeforeCommit',
     CleanAfterCommit = 'CleanAfterCommit',
 }

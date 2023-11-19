@@ -19,7 +19,8 @@ import {requestBranches} from "./RequestBranches";
 import {getBranchNameParts} from "../Branch/getBranchNameParts";
 import {loadWachIndex} from "./LoadWachIndex";
 import {RemoteState} from "./RemoteState";
-import {TimeTrackerState} from "./TimeTrackerState";
+
+import {TimeTrackerState} from "./TimeTracker/TimeTrackerState";
 
 export class RepositoryState {
     public commitHistory: LogResult | null = null
@@ -93,14 +94,13 @@ export class RepositoryState {
     public getBranchName(branch: BranchSummaryBranch): string {
         const name = branch.name
         const parts = getBranchNameParts(name)
+        const provider = this.timeTrackerState.configuredProvider
 
-        if (null === parts.issueId) {
+        if (null === parts.issueId || null === provider) {
             return name
         }
 
-        const summaries = this.timeTrackerState
-            .jiraIssueSummariesStorage
-            .getValue()
+        const summaries = provider.summariesStorage.getValue()
         const summary = summaries[parts.issueId]
 
         if (summary) {
@@ -118,38 +118,23 @@ export class RepositoryState {
         return name
     }
 
-    private async loadIssueSummary(key: string): Promise<void> {
-        const path = this.timeTrackerState
-            .jiraPathStorage
-            .getValue()
-        const user = this.timeTrackerState
-            .jiraUserStorage
-            .getValue()
-        const token = this.timeTrackerState
-            .jiraTokenStorage
-            .getValue()
+    private async loadIssueSummary(issueId: string): Promise<void> {
+        const provider = this.timeTrackerState.configuredProvider
 
-        if ('' === path || '' === user || '' === token || this.loadedIssueSummaries.includes(key)) {
+        if (this.loadedIssueSummaries.includes(issueId) || null === provider) {
             return
         }
 
-        this.addLoadedIssueSummary(key);
-        const params = {
-            path: path,
-            user: user,
-            token: token,
-            key: key,
-        }
+        const params = provider.getParameters() || {}
+        params['key'] = issueId
+
+        this.addLoadedIssueSummary(issueId);
         const search = new URLSearchParams(params).toString()
-        const response = await this.request(Method.Get, `/jira/issue-summary?${search}`)
+        const response = await this.request(Method.Get, `${provider.url}?${search}`)
         const summary = await response.json()
-        const summaries = this.timeTrackerState
-            .jiraIssueSummariesStorage
-            .getValue()
-        summaries[key] = summary
-        this.timeTrackerState
-            .jiraIssueSummariesStorage
-            .setValue(summaries)
+        const summaries = provider.summariesStorage.getValue()
+        summaries[issueId] = summary
+        provider.summariesStorage.setValue(summaries)
     }
 
     private addLoadedIssueSummary(key: string): void {

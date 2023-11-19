@@ -53,7 +53,7 @@ export class AppController {
     }
 
     @Get('/jira/issue-summary')
-    public async issueSummary(@Query() query: IssueQuery): Promise<string> {
+    public async jiraIssueSummary(@Query() query: IssueQuery): Promise<string> {
         const response = await fetch(`${query.path}/rest/api/latest/issue/${query.key}`, {
             headers: {
                 'Authorization': 'Basic ' + Buffer.from(`${query.user}:${query.token}`).toString('base64'),
@@ -64,6 +64,20 @@ export class AppController {
         const data = await response.json()
 
         return JSON.stringify(data?.fields?.summary || null)
+    }
+
+    @Get('/youtrack/issue-summary')
+    public async youtrackIssueSummary(@Query() query: IssueQuery): Promise<string> {
+        const response = await fetch(`${query.path}/api/issues/${query.key}?fields=summary`, {
+            headers: {
+                'Authorization': `Bearer ${query.token}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+        const data = await response.json()
+
+        return JSON.stringify(data?.summary || null)
     }
 
     @Get('/branches')
