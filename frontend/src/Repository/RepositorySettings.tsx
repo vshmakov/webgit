@@ -9,7 +9,8 @@ export const RepositorySettings = observer(({repository}: RepositoryProps): Reac
     return (
         <Hidden label='Settings'>
             <div>
-                <LocalStorageInput title='Bitbucket repository path' storage={repository.bitbucketRepositoryPathStorage}/>
+                <LocalStorageInput title='Create pull request url template'
+                                   storage={repository.remoteState.createPullRequestUrlTemplate}/>
                 <LocalStorageInput title='Jira path' storage={repository.jiraPathStorage}/>
                 <LocalStorageInput title='Jira user' storage={repository.jiraUserStorage}/>
                 <LocalStorageInput title='Jira token' storage={repository.jiraTokenStorage}/>

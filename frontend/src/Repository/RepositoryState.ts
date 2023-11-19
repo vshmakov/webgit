@@ -18,12 +18,13 @@ import {requestStatus} from "./RequestStatus";
 import {requestBranches} from "./RequestBranches";
 import {getBranchNameParts} from "../Branch/getBranchNameParts";
 import {loadWachIndex} from "./LoadWachIndex";
+import {RemoteState} from "./RemoteState";
 
 export class RepositoryState {
     public commitHistory: LogResult | null = null
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '', this.path)
-    public readonly bitbucketRepositoryPathStorage = new LocalStorage<string>(LocalStorageKey.BitbucketRepositoryPath, '', this.path)
+    public readonly remoteState = new RemoteState(this.path)
     public readonly jiraPathStorage = new LocalStorage<string>(LocalStorageKey.JiraPath, '', this.path)
     public readonly jiraUserStorage = new LocalStorage<string>(LocalStorageKey.JiraUser, '', this.path)
     public readonly jiraTokenStorage = new LocalStorage<string>(LocalStorageKey.JiraToken, '', this.path)

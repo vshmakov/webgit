@@ -9,7 +9,7 @@ import {canMergeTracking} from "./CanMergeTracking";
 import {MergeTrackingButton} from "./MergeTrackingButton";
 import {canPush} from "./CanPush";
 import {PushButton} from "./PushButton";
-import {CreateBitbucketPullRequestLink} from "./CreateBitbucketPullRequestLink";
+import {CreatePullRequestLink} from "./CreatePullRequestLink";
 import {IndexProps} from "./IndexProps";
 import {CheckoutRadio} from "./CheckoutRadio";
 import {RepositoryProps} from "../Repository/RepositoryProps";
@@ -23,7 +23,7 @@ export const Branch = observer(({
                                     repository
                                 }: BranchProps & IndexProps & RepositoryProps): ReactElement => {
     const {status, branches} = repository
-    const path = repository.bitbucketRepositoryPathStorage.getValue()
+    const url = repository.remoteState.getCreatePullRequestUrl(branch)
 
     return (
         <tr>
@@ -34,8 +34,8 @@ export const Branch = observer(({
                 {repository.getBranchName(branch)} {getTracking(branch, status)}
             </td>
             <td>
-                {isCurrent(branch, status) && '' !== path && branches.showHidden.isChecked
-                    ? <CreateBitbucketPullRequestLink bitbucketRepositoryPath={path} branch={branch}/>
+                {isCurrent(branch, status) && null !== url     && branches.showHidden.isChecked
+                    ? <CreatePullRequestLink url={url} branch={branch}/>
                     : null}
                 {branches.showHidden.isChecked ? <HideButton branch={branch} repository={repository}/> : null}
                 {isPrevious(branch, branches) ? [
