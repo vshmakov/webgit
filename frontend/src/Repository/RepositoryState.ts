@@ -104,11 +104,7 @@ export class RepositoryState {
         const summary = summaries[parts.issueId]
 
         if (summary) {
-            if (parts.issueId !== name) {
-                return `${parts.suffix}: ${summary}`
-            }
-
-            return summary
+            return `${branch.name}: ${summary}`
         }
 
         if (undefined === summary) {
