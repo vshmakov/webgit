@@ -4,7 +4,7 @@ import {withSound} from "../Util/WithSound";
 import {BranchProps} from "./BranchProps";
 import {RepositoryProps} from "../Repository/RepositoryProps";
 
-export const RebaseCurrentToBranch = observer(({
+export const RebaseCurrentWithBranch = observer(({
                                                           branch,
                                                           repository,
                                                       }: BranchProps & RepositoryProps): ReactElement => {
@@ -15,7 +15,7 @@ export const RebaseCurrentToBranch = observer(({
             type="button"
             onClick={() => withSound(repository.rebaseCurrentToBranch(branch))}
             accessKey="b">
-            Rebase {status.current} to
+            Rebase {status.current} with
         </button>
     )
 })

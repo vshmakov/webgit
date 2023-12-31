@@ -14,8 +14,8 @@ import {IndexProps} from "./IndexProps";
 import {CheckoutRadio} from "./CheckoutRadio";
 import {RepositoryProps} from "../Repository/RepositoryProps";
 import {isPrevious} from "./IsPrevious";
-import {RebaseTrackingButton} from "./RebaseTrackingButton";
-import {RebaseCurrentToBranch} from "./RebaseCurrentToBranch";
+import {RebaseWithTrackingButton} from "./RebaseWithTrackingButton";
+import {RebaseCurrentWithBranch} from "./RebaseCurrentWithBranch";
 
 export const Branch = observer(({
                                     branch,
@@ -40,11 +40,11 @@ export const Branch = observer(({
                     : null}
                 {branches.showHidden.isChecked ? <HideButton branch={branch} repository={repository}/> : null}
                 {isPrevious(branch, branches) ? [
-                    <RebaseCurrentToBranch branch={branch} repository={repository}/>,
+                    <RebaseCurrentWithBranch branch={branch} repository={repository}/>,
                     <MergeBranchIntoCurrentButton branch={branch} repository={repository}/>,
                 ] : null}
                 {canMergeTracking(branch, status) ? [
-                    <RebaseTrackingButton repository={repository}/>,
+                    <RebaseWithTrackingButton repository={repository}/>,
                     <MergeTrackingButton repository={repository}/>,
                 ] : null}
                 {canPush(branch, status) ? <PushButton repository={repository}/> : null}
