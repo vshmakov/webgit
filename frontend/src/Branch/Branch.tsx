@@ -31,10 +31,11 @@ export const Branch = observer(({
                 <CheckoutRadio branch={branch} index={index} repository={repository}/>
             </td>
             <td>
-                {repository.getBranchName(branch)} {getTracking(branch, status)}
+                {repository.getBranchName(branch)}
+                {' ' + getTracking(branch, status)}
             </td>
             <td>
-                {isCurrent(branch, status) && null !== url     && branches.showHidden.isChecked
+                {isCurrent(branch, status) && null !== url && branches.showHidden.isChecked
                     ? <CreatePullRequestLink url={url} branch={branch}/>
                     : null}
                 {branches.showHidden.isChecked ? <HideButton branch={branch} repository={repository}/> : null}
