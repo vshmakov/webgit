@@ -10,6 +10,7 @@ export enum LocalStorageKey {
     CreatePullRequestUrlTemplate = 'CreatePullRequestUrlTemplate',
     UseBranchAsCommitMessagePrefix = 'UseBranchAsCommitMessagePrefix',
     UseSectionCommitMessagePrefix = 'UseSectionCommitMessagePrefix',
+    PushOnCommit = 'PushOnCommit',
     SectionCommitMessagePrefix = 'SectionCommitMessagePrefix',
     JiraPath = 'JiraPath',
     JiraUser = 'JiraUser',

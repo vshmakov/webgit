@@ -27,6 +27,9 @@ export const RepositorySettings = observer(({repository}: RepositoryProps): Reac
                 <Checkbox
                     label='Use section commit prefix'
                     flag={repository.useSectionCommitMessagePrefix}/>
+                <Checkbox
+                    label='Push on commit'
+                    flag={repository.pushOnCommit}/>
             </div>
         </Hidden>
     )

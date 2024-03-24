@@ -21,6 +21,7 @@ import {loadWachIndex} from "./LoadWachIndex";
 import {RemoteState} from "./RemoteState";
 
 import {TimeTrackerState} from "./TimeTracker/TimeTrackerState";
+import {playSound} from "../Util/WithSound";
 
 export class RepositoryState {
     public commitHistory: LogResult | null = null
@@ -30,6 +31,7 @@ export class RepositoryState {
     public readonly timeTrackerState = new TimeTrackerState(this.path)
     public readonly useBranchAsCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseBranchAsCommitMessagePrefix, false, this.path)
     public readonly useSectionCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseSectionCommitMessagePrefix, false, this.path)
+    public readonly pushOnCommit = LocalStorageFlag.createByKey(LocalStorageKey.PushOnCommit, false, this.path)
     public sectionCommitMessagePrefix: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.SectionCommitMessagePrefix, '', this.path)
     public readonly fetchLoader = new Loader<void>(LocalStorageKey.FetchCalledAt, this.path, this.requestFetch.bind(this))
     public newBranchName: string = ''
@@ -195,7 +197,14 @@ export class RepositoryState {
             allowEmpty: this.allowEmptyCommit.isChecked,
             command: this.precommitCommandStorage.getValue(),
         })
-        await this.loadStatus()
+
+        if (this.pushOnCommit.isChecked) {
+            await playSound()
+            await this.push()
+        } else {
+            await this.loadStatus()
+        }
+
         disable(this.allowEmptyCommit)
         disable(this.openCommitSettings)
     }
