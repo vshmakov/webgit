@@ -198,11 +198,11 @@ export class RepositoryState {
             command: this.precommitCommandStorage.getValue(),
         })
 
+        await this.loadStatus()
+
         if (this.pushOnCommit.isChecked) {
             await playSound()
             await this.push()
-        } else {
-            await this.loadStatus()
         }
 
         disable(this.allowEmptyCommit)
