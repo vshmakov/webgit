@@ -30,6 +30,9 @@ export const RepositorySettings = observer(({repository}: RepositoryProps): Reac
                 <Checkbox
                     label='Push on commit'
                     flag={repository.pushOnCommit}/>
+                <Checkbox
+                    label='Use commit message as branch title'
+                    flag={repository.useCommitMessageAsBranchTitle}/>
             </div>
         </Hidden>
     )

@@ -32,6 +32,7 @@ export class RepositoryState {
     public readonly useBranchAsCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseBranchAsCommitMessagePrefix, false, this.path)
     public readonly useSectionCommitMessagePrefix = LocalStorageFlag.createByKey(LocalStorageKey.UseSectionCommitMessagePrefix, false, this.path)
     public readonly pushOnCommit = LocalStorageFlag.createByKey(LocalStorageKey.PushOnCommit, false, this.path)
+    public readonly useCommitMessageAsBranchTitle = LocalStorageFlag.createByKey(LocalStorageKey.UseCommitMessageAsBranchTitle, false, this.path)
     public sectionCommitMessagePrefix: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.SectionCommitMessagePrefix, '', this.path)
     public readonly fetchLoader = new Loader<void>(LocalStorageKey.FetchCalledAt, this.path, this.requestFetch.bind(this))
     public newBranchName: string = ''
@@ -95,6 +96,15 @@ export class RepositoryState {
 
     public getBranchName(branch: BranchSummaryBranch): string {
         const name = branch.name
+
+        if (this.useCommitMessageAsBranchTitle.isChecked) {
+            const commitMessage = new LocalStorage(LocalStorageKey.CommitMessage, '', JSON.stringify([this.path, name])).getValue()
+
+            if (commitMessage) {
+                return commitMessage
+            }
+        }
+
         const parts = getBranchNameParts(name)
         const provider = this.timeTrackerState.configuredProvider
 

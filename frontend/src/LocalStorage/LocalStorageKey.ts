@@ -11,6 +11,7 @@ export enum LocalStorageKey {
     UseBranchAsCommitMessagePrefix = 'UseBranchAsCommitMessagePrefix',
     UseSectionCommitMessagePrefix = 'UseSectionCommitMessagePrefix',
     PushOnCommit = 'PushOnCommit',
+    UseCommitMessageAsBranchTitle='UseCommitMessageAsBranchTitle',
     SectionCommitMessagePrefix = 'SectionCommitMessagePrefix',
     JiraPath = 'JiraPath',
     JiraUser = 'JiraUser',
