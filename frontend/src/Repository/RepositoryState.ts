@@ -221,7 +221,7 @@ export class RepositoryState {
 
     private getCommitMessage(): string {
         if (this.allowEmptyCommit.isChecked) {
-            return EmptyCommitMessage
+            return `${this.status.current} ${EmptyCommitMessage}`
         }
 
         let message = this.commitMessageStorage.getValue()

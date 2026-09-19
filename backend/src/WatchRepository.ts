@@ -4,6 +4,7 @@ import {SimpleGit} from "simple-git";
 const watch = require('node-watch')
 
 export async function watchRepository(directory: string, handler: () => void, git: SimpleGit): Promise<void> {
+return;
     const ignored = [
         '.git',
     ].map((path: string): string => getFilePath(directory, path))

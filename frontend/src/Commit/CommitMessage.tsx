@@ -9,7 +9,7 @@ import {getBranchNameParts} from "../Branch/getBranchNameParts";
 export const CommitMessage = observer(({repository}: RepositoryProps): ReactElement => {
     if (repository.allowEmptyCommit.isChecked) {
         return (
-            <div>{EmptyCommitMessage}</div>
+            <div>{repository.status.current} {EmptyCommitMessage}</div>
         )
     }
 
