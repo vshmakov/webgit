@@ -25,6 +25,9 @@ import {playSound} from "../Util/WithSound";
 
 export class RepositoryState {
     public commitHistory: LogResult | null = null
+    public historyLoading = false
+    public historyCanLoadMore = false
+    private historyOffset = 0
     public commitMessageStorage: LocalStorage<string> = new LocalStorage<string>(LocalStorageKey.CommitMessage, '', this.path)
     public readonly precommitCommandStorage = new LocalStorage<string>(LocalStorageKey.PrecommitCommand, '', this.path)
     public readonly remoteState = new RemoteState(this.path)
@@ -44,6 +47,7 @@ export class RepositoryState {
         (): boolean => !this.stageAllFilesBeforeCommit.isChecked
     )
     public readonly openCommitSettings = new InMemoryFlag(false)
+    public readonly showHistory = new InMemoryFlag(false)
     public readonly allowEmptyCommit = new BlockableFlag(
         new InMemoryFlag(false),
         (): boolean => 0 !== this.status.files.length
@@ -64,7 +68,6 @@ export class RepositoryState {
     ) {
         this.setStatus(this.status)
         makeAutoObservable(this)
-        this.loadCommitHistory()
     }
 
     public static async create(path: string): Promise<RepositoryState> {
@@ -85,9 +88,44 @@ export class RepositoryState {
         )
     }
 
-    private async loadCommitHistory(): Promise<void> {
-        const response = await this.request(Method.Get, '/commit/history')
-        this.setCommitHistory(await response.json())
+    public async loadCommitHistory(): Promise<void> {
+        if (null !== this.commitHistory) {
+            return
+        }
+
+        this.historyOffset = 0
+        await this.loadCommitHistoryPage()
+    }
+
+    public async loadMoreCommitHistory(): Promise<void> {
+        if (!this.historyCanLoadMore || this.historyLoading) {
+            return
+        }
+
+        await this.loadCommitHistoryPage()
+    }
+
+    private async loadCommitHistoryPage(): Promise<void> {
+        this.historyLoading = true
+
+        try {
+            const query = new URLSearchParams({
+                limit: '15',
+                skip: `${this.historyOffset}`
+            }).toString()
+            const response = await this.request(Method.Get, `/commit/history?${query}`)
+            const page = await response.json() as LogResult
+            const commits = this.commitHistory?.all || []
+
+            this.setCommitHistory({
+                ...page,
+                all: commits.concat(page.all)
+            })
+            this.historyOffset += page.all.length
+            this.historyCanLoadMore = 15 === page.all.length
+        } finally {
+            this.historyLoading = false
+        }
     }
 
     private setCommitHistory(commitHistory: LogResult): void {
@@ -157,14 +195,21 @@ export class RepositoryState {
         }
 
         this.version = version
+        this.invalidateCommitHistory()
         await this.loadStatus()
         this.setBranchs(await this.requestBranches())
     }
 
     public async loadStatus(): Promise<void> {
-        this.loadCommitHistory()
         const status = this.statusLoader.load()
         this.setStatus(await status)
+    }
+
+    private invalidateCommitHistory(): void {
+        this.commitHistory = null
+        this.historyOffset = 0
+        this.historyCanLoadMore = false
+        disable(this.showHistory)
     }
 
     private setStatus(status: StatusResult): void {

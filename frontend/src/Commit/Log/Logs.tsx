@@ -11,7 +11,7 @@ export const Logs = observer(({repository}: RepositoryProps): ReactElement => {
                                                                            key={log.hash}/>)
 
     return (
-        <Hidden label='History'>
+        <Hidden label='History' flag={repository.showHistory} onOpen={repository.loadCommitHistory.bind(repository)}>
             <table>
                 <thead>
                 <tr>
@@ -22,7 +22,21 @@ export const Logs = observer(({repository}: RepositoryProps): ReactElement => {
                     <th>Actions</th>
                 </tr>
                 </thead>
-                <tbody>{logs}</tbody>
+                <tbody>
+                {repository.historyLoading && 0 === logs.length
+                    ? <tr><td colSpan={5}>Loading history...</td></tr>
+                    : logs}
+                {repository.historyLoading && 0 !== logs.length
+                    ? <tr><td colSpan={5}>Loading history...</td></tr>
+                    : null}
+                {!repository.historyLoading && repository.historyCanLoadMore
+                    ? <tr><td colSpan={5}>
+                        <button type='button' onClick={() => repository.loadMoreCommitHistory()}>
+                            Show more
+                        </button>
+                    </td></tr>
+                    : null}
+                </tbody>
             </table>
         </Hidden>
     )

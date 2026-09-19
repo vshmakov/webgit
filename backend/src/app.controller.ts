@@ -273,8 +273,14 @@ export class AppController {
     }
 
     @Get('/commit/history')
-    public commitHistory(@Headers() headers: PathHeaders): Response<LogResult> {
-        return git(headers).log(['-n', '20'])
+    public commitHistory(
+        @Headers() headers: PathHeaders,
+        @Query() query: { limit?: string, skip?: string }
+    ): Response<LogResult> {
+        const limit = Number(query.limit) || 15
+        const skip = Number(query.skip) || 0
+
+        return git(headers).log(['-n', `${limit}`, '--skip', `${skip}`])
     }
 
     private async execCommand(command: string): Promise<boolean> {
