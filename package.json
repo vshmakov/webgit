@@ -1,0 +1,13 @@
+{
+  "name": "webgit",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix frontend run build && npm --prefix backend run build",
+    "start:prod": "if [ ! -f backend/dist/backend/src/main.js ]; then npm --prefix backend run build; fi; npm --prefix backend run start:prod",
+    "stop:prod": "if command -v fuser >/dev/null 2>&1; then fuser -k 3000/tcp 2>/dev/null || true; elif command -v lsof >/dev/null 2>&1; then lsof -ti tcp:3000 | xargs -r kill; fi",
+    "start:dev": "npm --prefix frontend run start",
+    "stop:dev": "if command -v fuser >/dev/null 2>&1; then fuser -k 3000/tcp 2>/dev/null || true; elif command -v lsof >/dev/null 2>&1; then lsof -ti tcp:3000 | xargs -r kill; fi",
+    "start:backend:dev": "npm --prefix backend run start:dev",
+    "stop:backend:dev": "if command -v fuser >/dev/null 2>&1; then fuser -k 5000/tcp 2>/dev/null || true; elif command -v lsof >/dev/null 2>&1; then lsof -ti tcp:5000 | xargs -r kill; fi"
+  }
+}
