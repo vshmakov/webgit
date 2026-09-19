@@ -17,7 +17,6 @@ import {RequestRepository} from "./RequestRepository";
 import {requestStatus} from "./RequestStatus";
 import {requestBranches} from "./RequestBranches";
 import {getBranchNameParts} from "../Branch/getBranchNameParts";
-import {loadWachIndex} from "./LoadWachIndex";
 import {RemoteState} from "./RemoteState";
 
 import {TimeTrackerState} from "./TimeTracker/TimeTrackerState";
@@ -60,7 +59,6 @@ export class RepositoryState {
         private readonly request: RequestRepository,
         public readonly statusLoader: Loader<StatusResult>,
         private readonly requestBranches: () => Promise<BranchesState>,
-        private watchIndex: number
     ) {
         this.setStatus(this.status)
         makeAutoObservable(this)
@@ -72,7 +70,6 @@ export class RepositoryState {
         const statusLoader = new Loader(LocalStorageKey.StatusCalledAt, path, requestStatus.bind(null, requestRepository))
         const requestRepositoryBranches = requestBranches.bind(null, requestRepository, path)
         const branches = requestRepositoryBranches()
-        const watchIndex = loadWachIndex(requestRepository)
 
         return new RepositoryState(
             path,
@@ -80,8 +77,7 @@ export class RepositoryState {
             await branches,
             requestRepository,
             statusLoader,
-            requestRepositoryBranches,
-            (await watchIndex) || 0
+            requestRepositoryBranches
         )
     }
 
@@ -150,21 +146,12 @@ export class RepositoryState {
     }
 
     public async checkChangedStatus(): Promise<void> {
-        const index = await loadWachIndex(this.request)
-
-        if (null === index || index <= this.watchIndex) {
-            return;
-        }
-
-        this.watchIndex = index
-        this.loadStatus()
+        this.setStatus(await this.statusLoader.load())
     }
 
     public async loadStatus(): Promise<void> {
         this.loadCommitHistory()
-        const index = loadWachIndex(this.request)
         const status = this.statusLoader.load()
-        this.watchIndex = (await index) || this.watchIndex
         this.setStatus(await status)
     }
 

@@ -16,7 +16,7 @@ export const Repository = observer(({repository}: RepositoryProps): ReactElement
     useEffect((): EmptyCallback => setIntervalEffect(calculateAgo.bind(null, repository), 60 * 1000))
     useEffect((): EmptyCallback => setIntervalEffect((): void => {
         repository.checkChangedStatus()
-    }, 500))
+    }, 1000))
 
     return (
         <div>
@@ -29,9 +29,6 @@ export const Repository = observer(({repository}: RepositoryProps): ReactElement
                     <button onClick={() => withSound(repository.loadStatus())} accessKey='s'>
                         Status {getCalledAgo(repository.statusLoader.ago)}
                     </button>
-                </div>
-                <div>
-                    <RepositorySettings repository={repository}/>
                 </div>
             </div>
             <Branches repository={repository}/>

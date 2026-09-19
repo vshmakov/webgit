@@ -14,10 +14,16 @@ import fetch from "node-fetch";
 import {isFileStaged} from "../../frontend/src/Shared/IsFileStaged";
 import {IssueQuery} from "./IssueQuery";
 import {PathHeaders} from "./PathHeaders";
-import {watchRepository} from "./WatchRepository";
 
 const clients: { [key: string]: SimpleGit } = {}
-const watchIndexes: { [key: string]: number } = {}
+const statusCache: {
+    [key: string]: {
+        status: StatusResult | null,
+        checking: Promise<StatusResult> | null,
+        lastStartedAt: number
+    }
+} = {}
+const STATUS_INTERVAL = 1000
 
 function getPath(headers: PathHeaders) {
     return decodeURIComponent(headers.path);
@@ -34,24 +40,53 @@ function git(headers: PathHeaders): SimpleGit {
     stdout.pipe(process.stdout);
 })*/
         clients[path] = client
-
-        watchIndexes[path] = 0
-        watchRepository(path, (): void => {
-            watchIndexes[path]++
-            // console.log(watchIndexes[path])
-        }, client)
     }
 
     return clients[path]
 }
 
-@Controller()
-export class AppController {
-    @Get('/repository/watch-index')
-    public watchIndex(@Headers() headers: PathHeaders): number {
-        return watchIndexes[getPath(headers)] || 0
+async function getCachedStatus(path: string, client: SimpleGit): Promise<StatusResult> {
+    const cached = statusCache[path] || {
+        status: null,
+        checking: null,
+        lastStartedAt: 0
+    }
+    statusCache[path] = cached
+
+    if (null === cached.status) {
+        return refreshStatus(cached, client)
     }
 
+    if (null === cached.checking && Date.now() - cached.lastStartedAt >= STATUS_INTERVAL) {
+        void refreshStatus(cached, client).catch((): void => undefined)
+    }
+
+    return cached.status
+}
+
+async function refreshStatus(
+    cached: { status: StatusResult | null, checking: Promise<StatusResult> | null, lastStartedAt: number },
+    client: SimpleGit
+): Promise<StatusResult> {
+    if (null !== cached.checking) {
+        return cached.checking
+    }
+
+    cached.lastStartedAt = Date.now()
+    cached.checking = client.status()
+        .then((status: StatusResult): StatusResult => {
+            cached.status = status
+            return status
+        })
+        .finally((): void => {
+            cached.checking = null
+        })
+
+    return cached.checking
+}
+
+@Controller()
+export class AppController {
     @Get('/jira/issue-summary')
     public async jiraIssueSummary(@Query() query: IssueQuery): Promise<string> {
         const response = await fetch(`${query.path}/rest/api/latest/issue/${query.key}`, {
@@ -140,7 +175,8 @@ export class AppController {
 
     @Get('/status')
     public async status(@Headers() headers: PathHeaders): Promise<StatusResult> {
-        return git(headers).status()
+        const path = getPath(headers)
+        return getCachedStatus(path, git(headers))
     }
 
     @Put('/file/decline')
