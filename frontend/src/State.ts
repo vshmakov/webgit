@@ -19,8 +19,22 @@ export class State {
     }
 
     public async setCurrentRepositoryPathFromParameter(path: string): Promise<void> {
-        this.currentRepositoryPathStorage.setValue(path)
+        this.selectRepositoryPath(path)
         await this.checkRepository(path)
+    }
+
+    public selectRepositoryPath(path: string): void {
+        this.currentRepositoryPathStorage.setValue(path)
+        this.moveRepositoryPathToTop(path)
+    }
+
+    private moveRepositoryPathToTop(path: string): void {
+        const paths = this.repositoryPathsStorage
+            .getValue()
+            .filter((repositoryPath: string): boolean => repositoryPath !== path)
+
+        paths.unshift(path)
+        this.repositoryPathsStorage.setValue(paths)
     }
 
     private async checkRepository(path: string): Promise<void> {
@@ -34,12 +48,11 @@ export class State {
     }
 
     public addRepositoryPath(path: string): void {
-        const paths = this.repositoryPathsStorage.getValue()
+        const paths = this.repositoryPathsStorage
+            .getValue()
+            .filter((repositoryPath: string): boolean => repositoryPath !== path)
 
-        if (!paths.includes(path)) {
-            paths.push(path)
-        }
-
+        paths.unshift(path)
         this.repositoryPathsStorage.setValue(paths)
     }
 

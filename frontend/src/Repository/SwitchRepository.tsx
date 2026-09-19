@@ -1,7 +1,6 @@
 import {observer} from "mobx-react";
 import {State} from "../State";
 import React, {ReactElement, useState} from "react";
-import {compareAlphabetically} from "../Util/CompareAlphabetically";
 import {RepositoryPath} from "./RepositoryPath";
 import {Hidden} from "../Flag/Hidden";
 import {preventDefault} from "../Util/PreventDefault";
@@ -13,7 +12,6 @@ export const SwitchRepository = observer(({state}: { state: State }): ReactEleme
     const paths = state.repositoryPathsStorage
         .getValue()
         .slice()
-        .sort((path1: string, path2: string): number => compareAlphabetically(getFilePathParts(path1).name, getFilePathParts(path2).name))
         .map((path: string): ReactElement => <RepositoryPath path={path} state={state} key={path}/>)
 
     return (
