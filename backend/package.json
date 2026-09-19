@@ -27,7 +27,6 @@
     "@nestjs/serve-static": "^2.2.2",
     "@types/node-fetch": "^2.5.12",
     "node-fetch": "^2.6.6",
-    "node-watch": "^0.7.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",

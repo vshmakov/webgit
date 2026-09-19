@@ -1,4 +1,5 @@
 import {Body, Controller, Get, Headers, Post, Put, Query} from '@nestjs/common';
+import {createHash} from 'crypto';
 import simpleGit, {
     BranchSummary,
     BranchSummaryBranch,
@@ -19,6 +20,7 @@ const clients: { [key: string]: SimpleGit } = {}
 const statusCache: {
     [key: string]: {
         status: StatusResult | null,
+        version: string | null,
         checking: Promise<StatusResult> | null,
         lastStartedAt: number
     }
@@ -48,6 +50,7 @@ function git(headers: PathHeaders): SimpleGit {
 async function getCachedStatus(path: string, client: SimpleGit): Promise<StatusResult> {
     const cached = statusCache[path] || {
         status: null,
+        version: null,
         checking: null,
         lastStartedAt: 0
     }
@@ -65,7 +68,12 @@ async function getCachedStatus(path: string, client: SimpleGit): Promise<StatusR
 }
 
 async function refreshStatus(
-    cached: { status: StatusResult | null, checking: Promise<StatusResult> | null, lastStartedAt: number },
+    cached: {
+        status: StatusResult | null,
+        version: string | null,
+        checking: Promise<StatusResult> | null,
+        lastStartedAt: number
+    },
     client: SimpleGit
 ): Promise<StatusResult> {
     if (null !== cached.checking) {
@@ -73,9 +81,15 @@ async function refreshStatus(
     }
 
     cached.lastStartedAt = Date.now()
-    cached.checking = client.status()
-        .then((status: StatusResult): StatusResult => {
+    cached.checking = Promise.all([
+        client.status(),
+        client.raw(['for-each-ref', '--format=%(refname)=%(objectname)', 'refs/heads', 'refs/remotes'])
+    ]).then(([status, refs]: [StatusResult, string]): StatusResult => {
             cached.status = status
+            cached.version = createHash('sha1')
+                .update(JSON.stringify(status))
+                .update(refs)
+                .digest('hex')
             return status
         })
         .finally((): void => {
@@ -177,6 +191,14 @@ export class AppController {
     public async status(@Headers() headers: PathHeaders): Promise<StatusResult> {
         const path = getPath(headers)
         return getCachedStatus(path, git(headers))
+    }
+
+    @Get('/repository/version')
+    public async version(@Headers() headers: PathHeaders): Promise<{ version: string | null }> {
+        const path = getPath(headers)
+        await getCachedStatus(path, git(headers))
+
+        return {version: statusCache[path].version}
     }
 
     @Put('/file/decline')

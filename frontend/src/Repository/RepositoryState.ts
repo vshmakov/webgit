@@ -15,6 +15,7 @@ import {EmptyCommitMessage} from "../Commit/EmptyCommitMessage";
 import {enable} from "../Flag/Enable";
 import {RequestRepository} from "./RequestRepository";
 import {requestStatus} from "./RequestStatus";
+import {requestVersion} from "./RequestVersion";
 import {requestBranches} from "./RequestBranches";
 import {getBranchNameParts} from "../Branch/getBranchNameParts";
 import {RemoteState} from "./RemoteState";
@@ -59,6 +60,7 @@ export class RepositoryState {
         private readonly request: RequestRepository,
         public readonly statusLoader: Loader<StatusResult>,
         private readonly requestBranches: () => Promise<BranchesState>,
+        private version: string | null
     ) {
         this.setStatus(this.status)
         makeAutoObservable(this)
@@ -70,6 +72,7 @@ export class RepositoryState {
         const statusLoader = new Loader(LocalStorageKey.StatusCalledAt, path, requestStatus.bind(null, requestRepository))
         const requestRepositoryBranches = requestBranches.bind(null, requestRepository, path)
         const branches = requestRepositoryBranches()
+        const version = requestVersion(requestRepository)
 
         return new RepositoryState(
             path,
@@ -77,7 +80,8 @@ export class RepositoryState {
             await branches,
             requestRepository,
             statusLoader,
-            requestRepositoryBranches
+            requestRepositoryBranches,
+            await version
         )
     }
 
@@ -146,7 +150,15 @@ export class RepositoryState {
     }
 
     public async checkChangedStatus(): Promise<void> {
-        this.setStatus(await this.statusLoader.load())
+        const version = await requestVersion(this.request)
+
+        if (null === version || version === this.version) {
+            return
+        }
+
+        this.version = version
+        await this.loadStatus()
+        this.setBranchs(await this.requestBranches())
     }
 
     public async loadStatus(): Promise<void> {
