@@ -89,7 +89,7 @@ export class RepositoryState {
     }
 
     public async loadCommitHistory(): Promise<void> {
-        if (null !== this.commitHistory) {
+        if (null !== this.commitHistory || this.historyLoading) {
             return
         }
 
