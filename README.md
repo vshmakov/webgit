@@ -4,13 +4,15 @@ Web-based Git GUI for local repositories.
 
 ## What it does
 
-- view repo status
-- switch branches
+- view repository status and files
+- switch and create branches
+- create, checkout, and delete tags
 - create commits
-- push/pull
-- merge/rebase
+- push and fetch changes
+- merge and rebase branches
 - stage and revert files
 - browse commit history
+- use a responsive interface for desktop and mobile screens
 
 ## Stack
 
@@ -18,16 +20,40 @@ Web-based Git GUI for local repositories.
 - MobX
 - NestJS
 - simple-git
+- Prettier
 
-## Run
+## Install
 
 ```bash
-npm install
+npm install --prefix frontend
+npm install --prefix backend
+```
+
+## Build and run
+
+```bash
 npm run build
 npm run start:prod
 ```
 
 Open: http://localhost:3000
+
+The build runs Prettier checks for both frontend and backend before compiling.
+
+## Formatting
+
+Check formatting without changing files:
+
+```bash
+npm run format:check
+```
+
+Apply formatting:
+
+```bash
+npm --prefix frontend run format
+npm --prefix backend run format
+```
 
 ## Notes
 
