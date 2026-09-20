@@ -1,5 +1,5 @@
 import {observer} from "mobx-react";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {getFilePathParts} from "./GetFilePathParts";
 import {withSound} from "../Util/WithSound";
 import {Checkbox} from "../Flag/Checkbox";

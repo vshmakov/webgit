@@ -1,5 +1,5 @@
 import {observer} from "mobx-react";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {isCurrent} from "./IsCurrent";
 import {HideButton} from "./HideButton";
 import {MergeBranchIntoCurrentButton} from "./MergeBranchIntoCurrentButton";

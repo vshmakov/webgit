@@ -1,5 +1,5 @@
 import {observer} from "mobx-react";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {Hidden} from "../Flag/Hidden";
 import {preventDefault} from "../Util/PreventDefault";
 import {withSound} from "../Util/WithSound";

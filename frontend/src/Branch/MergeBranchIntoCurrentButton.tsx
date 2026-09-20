@@ -1,5 +1,5 @@
 import {observer} from "mobx-react";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {withSound} from "../Util/WithSound";
 import {BranchProps} from "./BranchProps";
 import {RepositoryProps} from "../Repository/RepositoryProps";

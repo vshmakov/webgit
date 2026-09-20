@@ -1,5 +1,5 @@
 import {observer} from "mobx-react";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {Hidden} from "../../Flag/Hidden";
 import {RepositoryProps} from "../../Repository/RepositoryProps";
 import {DefaultLogFields} from "simple-git";

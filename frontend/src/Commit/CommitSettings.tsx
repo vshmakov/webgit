@@ -2,7 +2,7 @@ import {observer} from "mobx-react";
 import {Hidden} from "../Flag/Hidden";
 import {Checkbox} from "../Flag/Checkbox";
 import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {RepositoryProps} from "../Repository/RepositoryProps";
 
 export const CommitSettings = observer(({repository}: RepositoryProps): ReactElement => {

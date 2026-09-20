@@ -1,5 +1,5 @@
 import {observer} from "mobx-react";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {Flag} from "./Flag";
 import {BlockableFlag} from "./BlockableFlag";
 

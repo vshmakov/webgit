@@ -1,11 +1,10 @@
 import {observer} from "mobx-react";
 import {State} from "../State";
-import React, {ReactElement, useState} from "react";
+import {ReactElement, useState} from "react";
 import {RepositoryPath} from "./RepositoryPath";
 import {Hidden} from "../Flag/Hidden";
 import {preventDefault} from "../Util/PreventDefault";
 import {setInputValue} from "../Util/SetInputValue";
-import {getFilePathParts} from "../File/GetFilePathParts";
 
 export const SwitchRepository = observer(({state}: { state: State }): ReactElement => {
     const [path, setPath] = useState('')

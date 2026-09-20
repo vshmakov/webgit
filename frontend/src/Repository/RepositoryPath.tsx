@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import {State} from "../State";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {useNavigate} from "react-router-dom";
 import {getPathUrl} from "../Util/GetPathUrl";
 import {getFilePathParts} from "../File/GetFilePathParts";

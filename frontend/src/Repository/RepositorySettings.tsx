@@ -1,5 +1,5 @@
 import {observer} from "mobx-react";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {RepositoryProps} from "./RepositoryProps";
 import {Hidden} from '../Flag/Hidden'
 import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";

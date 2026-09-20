@@ -1,16 +1,16 @@
 import {observer} from "mobx-react";
 import {RepositoryState} from "./RepositoryState";
-import React, {ReactElement, useEffect} from "react";
+import {ReactElement, useEffect} from "react";
 import {withSound} from "../Util/WithSound";
 import {getCalledAgo} from "../Util/GetCalledAgo";
 import {Branches} from "../Branch/Branches";
 import {Commit} from "../Commit/Commit";
 import {Files} from "../File/Files";
-import {RepositorySettings} from "./RepositorySettings";
 import {EmptyCallback} from "../Util/EmptyCallback";
 import {RepositoryProps} from "./RepositoryProps";
 import {getRepositoryName} from "./GetRepositoryName";
 import {setIntervalEffect} from "../Util/SetIntervalEffect";
+import {Tags} from "../Tag/Tags";
 
 export const Repository = observer(({repository}: RepositoryProps): ReactElement => {
     useEffect((): EmptyCallback => setIntervalEffect(calculateAgo.bind(null, repository), 60 * 1000))
@@ -33,6 +33,7 @@ export const Repository = observer(({repository}: RepositoryProps): ReactElement
             </div>
             <Branches repository={repository}/>
             <Commit repository={repository}/>
+            <Tags repository={repository}/>
             <Files repository={repository}/>
         </div>
     )

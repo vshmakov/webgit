@@ -22,6 +22,8 @@ import {RemoteState} from "./RemoteState";
 
 import {TimeTrackerState} from "./TimeTracker/TimeTrackerState";
 import {playSound} from "../Util/WithSound";
+import {TagsState} from "../Tag/TagsState";
+import {requestTags} from "./RequestTags";
 
 export class RepositoryState {
     public commitHistory: LogResult | null = null
@@ -48,6 +50,9 @@ export class RepositoryState {
     )
     public readonly openCommitSettings = new InMemoryFlag(false)
     public readonly showHistory = new InMemoryFlag(false)
+    public readonly showTags = new InMemoryFlag(false)
+    public tags: TagsState | null = null
+    public newTagName: string = ''
     public readonly allowEmptyCommit = new BlockableFlag(
         new InMemoryFlag(false),
         (): boolean => 0 !== this.status.files.length
@@ -95,6 +100,27 @@ export class RepositoryState {
 
         this.historyOffset = 0
         await this.loadCommitHistoryPage()
+    }
+
+    public async loadTags(): Promise<void> {
+        const tags = await requestTags(this.request)
+
+        if (null === this.tags) {
+            this.tags = new TagsState(tags)
+        } else {
+            this.tags.setTags(tags)
+        }
+    }
+
+    public async createTag(): Promise<void> {
+        await this.request(Method.Post, '/tag/create', {name: this.newTagName})
+        this.newTagName = ''
+        await this.loadTags()
+    }
+
+    public async deleteTag(name: string): Promise<void> {
+        await this.request(Method.Delete, '/tag', {name: name})
+        await this.loadTags()
     }
 
     public async loadMoreCommitHistory(): Promise<void> {

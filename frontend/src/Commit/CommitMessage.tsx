@@ -1,7 +1,7 @@
 import {observer} from "mobx-react";
 import {SectionCommitPrefix} from "./SectionCommitPrefix";
 import {LocalStorageInput} from "../LocalStorage/LocalStorageInput";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {EmptyCommitMessage} from "./EmptyCommitMessage";
 import {RepositoryProps} from "../Repository/RepositoryProps";
 import {getBranchNameParts} from "../Branch/getBranchNameParts";

@@ -2,7 +2,7 @@ import {observer} from "mobx-react";
 import {BranchProps} from "./BranchProps";
 import {IndexProps} from "./IndexProps";
 import {RepositoryProps} from "../Repository/RepositoryProps";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {isCurrent} from "./IsCurrent";
 import {withSound} from "../Util/WithSound";
 import {BranchSummaryBranch} from "simple-git";

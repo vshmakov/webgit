@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Headers, Post, Put, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Headers, Post, Put, Query} from '@nestjs/common';
 import {createHash} from 'crypto';
 import simpleGit, {
     BranchSummary,
@@ -148,6 +148,23 @@ export class AppController {
     @Put('/checkout')
     public async checkout(@Headers() headers: PathHeaders, @Body() {reference}: { reference: string }): Promise<void> {
         await git(headers).checkout(reference)
+    }
+
+    @Get('/tags')
+    public async tags(@Headers() headers: PathHeaders): Promise<string[]> {
+        const result = await git(headers).raw(['tag', '--list'])
+
+        return result.split('\n').map((tag: string): string => tag.trim()).filter(Boolean)
+    }
+
+    @Post('/tag/create')
+    public async createTag(@Headers() headers: PathHeaders, @Body() {name}: { name: string }): Promise<void> {
+        await git(headers).addTag(name)
+    }
+
+    @Delete('/tag')
+    public async deleteTag(@Headers() headers: PathHeaders, @Body() {name}: { name: string }): Promise<void> {
+        await git(headers).tag(['-d', name])
     }
 
     @Put('/branch/rebase-tracking')

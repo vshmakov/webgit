@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import {LocalStorage} from "./LocalStorage";
-import React, {ReactElement} from "react";
+import {ReactElement} from "react";
 import {setInputValue} from "../Util/SetInputValue";
 
 interface Props {
