@@ -47,7 +47,12 @@ function git(headers: PathHeaders): SimpleGit {
     return clients[path]
 }
 
-async function getCachedStatus(path: string, client: SimpleGit): Promise<StatusResult> {
+function getStatusCache(path: string): {
+    status: StatusResult | null,
+    version: string | null,
+    checking: Promise<StatusResult> | null,
+    lastStartedAt: number
+} {
     const cached = statusCache[path] || {
         status: null,
         version: null,
@@ -55,6 +60,12 @@ async function getCachedStatus(path: string, client: SimpleGit): Promise<StatusR
         lastStartedAt: 0
     }
     statusCache[path] = cached
+
+    return cached
+}
+
+async function getCachedStatus(path: string, client: SimpleGit): Promise<StatusResult> {
+    const cached = getStatusCache(path)
 
     if (null === cached.status) {
         return refreshStatus(cached, client)
@@ -190,7 +201,7 @@ export class AppController {
     @Get('/status')
     public async status(@Headers() headers: PathHeaders): Promise<StatusResult> {
         const path = getPath(headers)
-        return getCachedStatus(path, git(headers))
+        return refreshStatus(getStatusCache(path), git(headers))
     }
 
     @Get('/repository/version')
