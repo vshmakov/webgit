@@ -16,14 +16,14 @@ export const App = observer(({ state }: { state: State }): ReactElement => {
   const { repository } = state
 
   return (
-    <div>
-      <div>
+    <div className="app-shell">
+      <header className="app-header">
         <h1>Webgit</h1>
         <SwitchRepository state={state} />
-      </div>
-      <div>
+      </header>
+      <main className="app-content">
         {null !== repository ? <Repository repository={repository} /> : null}
-      </div>
+      </main>
     </div>
   )
 })

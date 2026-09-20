@@ -1,0 +1,233 @@
+:root {
+  color-scheme: light;
+  --ink: #172331;
+  --muted: #667482;
+  --line: #d6dee5;
+  --panel: #ffffff;
+  --page: #eef3f5;
+  --accent: #176b87;
+  --accent-dark: #0e4d62;
+  --accent-soft: #e1f1f4;
+  --danger: #b43d3d;
+  --danger-soft: #fff0ee;
+  --shadow: 0 12px 28px rgba(23, 35, 49, 0.07);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: var(--page);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.46) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 35, 49, 0.025) 1px, transparent 1px),
+    var(--page);
+  background-size: 32px 32px;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  padding: 0.5rem 0.8rem;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent-dark);
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(23, 107, 135, 0.28);
+  outline-offset: 2px;
+}
+
+input[type="text"] {
+  min-width: 15rem;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0.52rem 0.65rem;
+  color: var(--ink);
+  background: #fff;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--accent);
+}
+
+.app-shell {
+  width: min(100% - 2rem, 1440px);
+  margin: 0 auto;
+  padding: 2.5rem 0 4rem;
+}
+
+.app-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.5rem 1.75rem;
+  border: 1px solid rgba(214, 222, 229, 0.9);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--shadow);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+h1 {
+  color: var(--accent-dark);
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1;
+}
+
+h2 {
+  font-size: 1.35rem;
+}
+
+h3 {
+  margin-bottom: 1rem;
+  color: var(--accent-dark);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.app-content {
+  margin-top: 1.25rem;
+}
+
+.repository-view {
+  display: grid;
+  gap: 1rem;
+}
+
+.repository-view > div:not(.repository-header),
+.repository-view > header {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 5px 16px rgba(23, 35, 49, 0.035);
+}
+
+.repository-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.repository-header > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: flex-end;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th,
+td {
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  color: var(--muted);
+  background: #f7fafb;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+tbody tr:hover {
+  background: var(--accent-soft);
+}
+
+td button + button {
+  margin-left: 0.45rem;
+}
+
+td:nth-last-child(1) {
+  white-space: nowrap;
+}
+
+code,
+td:nth-child(4) {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.84em;
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    width: min(100% - 1rem, 1440px);
+    padding-top: 0.5rem;
+  }
+
+  .app-header,
+  .repository-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .repository-header > div {
+    justify-content: flex-start;
+  }
+
+  .repository-view > div:not(.repository-header),
+  .repository-view > header {
+    padding: 1rem;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  input[type="text"] {
+    min-width: min(15rem, 100%);
+    flex: 1 1 12rem;
+  }
+}

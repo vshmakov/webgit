@@ -26,8 +26,8 @@ export const Repository = observer(
     )
 
     return (
-      <div>
-        <div>
+      <div className="repository-view">
+        <header className="repository-header">
           <h2>{getRepositoryName(repository.path)} repository</h2>
           <div>
             <button onClick={() => withSound(repository.fetch())} accessKey="t">
@@ -40,7 +40,7 @@ export const Repository = observer(
               Status {getCalledAgo(repository.statusLoader.ago)}
             </button>
           </div>
-        </div>
+        </header>
         <Branches repository={repository} />
         <Commit repository={repository} />
         <Tags repository={repository} />

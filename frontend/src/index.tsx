@@ -4,6 +4,7 @@ import { App } from "./App"
 import reportWebVitals from "./reportWebVitals"
 import { State } from "./State"
 import { BrowserRouter as Router } from "react-router-dom"
+import "./index.css"
 
 const state = new State()
 
