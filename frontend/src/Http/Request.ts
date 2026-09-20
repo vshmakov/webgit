@@ -1,13 +1,18 @@
-import {Method} from "./Method";
+import { Method } from "./Method"
 
-export async function request(path: string, method: Method, url: string, body: any = null): Promise<Response> {
-    return fetch(url, {
-        method: method,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            path: encodeURIComponent(path),
-        },
-        body: null !== body ? JSON.stringify(body) : null,
-    })
+export async function request(
+  path: string,
+  method: Method,
+  url: string,
+  body: any = null
+): Promise<Response> {
+  return fetch(url, {
+    method: method,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      path: encodeURIComponent(path)
+    },
+    body: null !== body ? JSON.stringify(body) : null
+  })
 }

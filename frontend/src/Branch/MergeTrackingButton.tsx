@@ -1,13 +1,18 @@
-import {observer} from "mobx-react";
-import {ReactElement} from "react";
-import {RepositoryProps} from "../Repository/RepositoryProps";
-import {withSound} from "../Util/WithSound";
+import { observer } from "mobx-react"
+import { ReactElement } from "react"
+import { RepositoryProps } from "../Repository/RepositoryProps"
+import { withSound } from "../Util/WithSound"
 
-export const MergeTrackingButton = observer(({repository}: RepositoryProps): ReactElement => {
-    return <button
+export const MergeTrackingButton = observer(
+  ({ repository }: RepositoryProps): ReactElement => {
+    return (
+      <button
         type="button"
         onClick={() => withSound(repository.mergeTrackingBranch())}
-        accessKey="l">
+        accessKey="l"
+      >
         Merge tracking
-    </button>;
-})
+      </button>
+    )
+  }
+)

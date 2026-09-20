@@ -1,14 +1,14 @@
-import {makeAutoObservable} from "mobx";
+import { makeAutoObservable } from "mobx"
 
 export class TagsState {
-    public tags: string[]
+  public tags: string[]
 
-    public constructor(tags: string[]) {
-        this.tags = tags
-        makeAutoObservable(this)
-    }
+  public constructor(tags: string[]) {
+    this.tags = tags
+    makeAutoObservable(this)
+  }
 
-    public setTags(tags: string[]): void {
-        this.tags = tags
-    }
+  public setTags(tags: string[]): void {
+    this.tags = tags
+  }
 }

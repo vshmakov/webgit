@@ -1,4 +1,4 @@
 export interface Flag {
-    isChecked: boolean,
-    toggle(): void,
+  isChecked: boolean
+  toggle(): void
 }

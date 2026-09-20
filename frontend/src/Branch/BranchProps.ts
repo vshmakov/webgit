@@ -1,5 +1,5 @@
-import {BranchSummaryBranch} from "simple-git";
+import { BranchSummaryBranch } from "simple-git"
 
 export interface BranchProps {
-    branch: BranchSummaryBranch
+  branch: BranchSummaryBranch
 }

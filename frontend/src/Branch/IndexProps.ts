@@ -1,3 +1,3 @@
 export interface IndexProps {
-    index: number
+  index: number
 }

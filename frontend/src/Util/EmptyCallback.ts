@@ -1,1 +1,1 @@
-export type EmptyCallback = () => void;
+export type EmptyCallback = () => void

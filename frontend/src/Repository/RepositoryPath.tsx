@@ -1,34 +1,40 @@
-import {observer} from "mobx-react";
-import {State} from "../State";
-import {ReactElement} from "react";
-import {useNavigate} from "react-router-dom";
-import {getPathUrl} from "../Util/GetPathUrl";
-import {getFilePathParts} from "../File/GetFilePathParts";
-import {capitalizeFirstLetter} from "../Util/CapitalizeFirstLetter";
+import { observer } from "mobx-react"
+import { State } from "../State"
+import { ReactElement } from "react"
+import { useNavigate } from "react-router-dom"
+import { getPathUrl } from "../Util/GetPathUrl"
+import { getFilePathParts } from "../File/GetFilePathParts"
+import { capitalizeFirstLetter } from "../Util/CapitalizeFirstLetter"
 
-export const RepositoryPath = observer(({path, state}: { path: string, state: State }): ReactElement => {
+export const RepositoryPath = observer(
+  ({ path, state }: { path: string; state: State }): ReactElement => {
     const navigate = useNavigate()
-    const {name, directory} = getFilePathParts(path)
+    const { name, directory } = getFilePathParts(path)
 
     return (
-        <tr>
-            <td>
-                <input
-                    type="radio"
-                    checked={path === state.currentRepositoryPathStorage.getValue()}
-                    onChange={() => {
-                        state.selectRepositoryPath(path)
-                        navigate(getPathUrl(path))
-                    }}
-                    aria-label={capitalizeFirstLetter(name)}/>
-            </td>
-            <td>{capitalizeFirstLetter(name)}</td>
-            <td>{directory}</td>
-            <td>
-                <button type='button' onClick={() => state.removeRepositoryPath(path)}>
-                    Remove
-                </button>
-            </td>
-        </tr>
+      <tr>
+        <td>
+          <input
+            type="radio"
+            checked={path === state.currentRepositoryPathStorage.getValue()}
+            onChange={() => {
+              state.selectRepositoryPath(path)
+              navigate(getPathUrl(path))
+            }}
+            aria-label={capitalizeFirstLetter(name)}
+          />
+        </td>
+        <td>{capitalizeFirstLetter(name)}</td>
+        <td>{directory}</td>
+        <td>
+          <button
+            type="button"
+            onClick={() => state.removeRepositoryPath(path)}
+          >
+            Remove
+          </button>
+        </td>
+      </tr>
     )
-})
+  }
+)

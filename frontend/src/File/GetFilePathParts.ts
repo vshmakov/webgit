@@ -1,8 +1,11 @@
-export function getFilePathParts(path: string): { name: string, directory: string } {
-    const parts = path.split('/')
+export function getFilePathParts(path: string): {
+  name: string
+  directory: string
+} {
+  const parts = path.split("/")
 
-    return {
-        name: parts.pop() || '',
-        directory: parts.join('/')
-    }
+  return {
+    name: parts.pop() || "",
+    directory: parts.join("/")
+  }
 }

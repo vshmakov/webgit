@@ -1,15 +1,13 @@
-import {observer} from "mobx-react";
-import {ReactElement} from "react";
-import {BranchProps} from "./BranchProps";
+import { observer } from "mobx-react"
+import { ReactElement } from "react"
+import { BranchProps } from "./BranchProps"
 
 interface Props extends BranchProps {
-    url: string,
+  url: string
 }
 
-export const CreatePullRequestLink = observer(({url, branch}: Props): ReactElement => {
-    return (
-        <a href={url}>
-            Create pull request
-        </a>
-    )
-})
+export const CreatePullRequestLink = observer(
+  ({ url, branch }: Props): ReactElement => {
+    return <a href={url}>Create pull request</a>
+  }
+)

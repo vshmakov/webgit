@@ -1,5 +1,5 @@
-import {RepositoryState} from "./RepositoryState";
+import { RepositoryState } from "./RepositoryState"
 
 export interface RepositoryProps {
-    repository: RepositoryState
+  repository: RepositoryState
 }

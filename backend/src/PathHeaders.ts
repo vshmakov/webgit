@@ -1,3 +1,3 @@
 export interface PathHeaders {
-    path: string
+  path: string;
 }

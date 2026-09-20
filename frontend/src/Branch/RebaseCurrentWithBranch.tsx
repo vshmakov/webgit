@@ -1,21 +1,21 @@
-import {observer} from "mobx-react";
-import {ReactElement} from "react";
-import {withSound} from "../Util/WithSound";
-import {BranchProps} from "./BranchProps";
-import {RepositoryProps} from "../Repository/RepositoryProps";
+import { observer } from "mobx-react"
+import { ReactElement } from "react"
+import { withSound } from "../Util/WithSound"
+import { BranchProps } from "./BranchProps"
+import { RepositoryProps } from "../Repository/RepositoryProps"
 
-export const RebaseCurrentWithBranch = observer(({
-                                                          branch,
-                                                          repository,
-                                                      }: BranchProps & RepositoryProps): ReactElement => {
-    const {status} = repository
+export const RebaseCurrentWithBranch = observer(
+  ({ branch, repository }: BranchProps & RepositoryProps): ReactElement => {
+    const { status } = repository
 
     return (
-        <button
-            type="button"
-            onClick={() => withSound(repository.rebaseCurrentToBranch(branch))}
-            accessKey="b">
-            Rebase {status.current} with
-        </button>
+      <button
+        type="button"
+        onClick={() => withSound(repository.rebaseCurrentToBranch(branch))}
+        accessKey="b"
+      >
+        Rebase {status.current} with
+      </button>
     )
-})
+  }
+)

@@ -1,1 +1,1 @@
-export const EmptyCommitMessage = 'Empty commit'
+export const EmptyCommitMessage = "Empty commit"

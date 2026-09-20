@@ -1,7 +1,7 @@
-import {Flag} from "./Flag";
+import { Flag } from "./Flag"
 
 export function disable(flag: Flag): void {
-    if (flag.isChecked) {
-        flag.toggle()
-    }
+  if (flag.isChecked) {
+    flag.toggle()
+  }
 }

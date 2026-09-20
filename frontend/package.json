@@ -24,8 +24,13 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
+        "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+        "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
+    },
+    "devDependencies": {
+        "prettier": "^2.8.8"
     },
     "eslintConfig": {
         "extends": [
