@@ -179,6 +179,20 @@ export class AppController {
     return git(headers).branchLocal();
   }
 
+  @Get('/branches/remote')
+  public async remoteBranches(
+    @Headers() headers: PathHeaders,
+  ): Promise<string[]> {
+    const summary = await git(headers).branch(['-r']);
+
+    return summary.all
+      .map((branch: string): string => branch.trim())
+      .filter(
+        (branch: string): boolean =>
+          Boolean(branch) && !branch.includes(' -> '),
+      );
+  }
+
   @Put('/checkout')
   public async checkout(
     @Headers() headers: PathHeaders,
@@ -274,6 +288,18 @@ export class AppController {
     @Body() { name }: { name: string },
   ): Promise<void> {
     await git(headers).branch(['-D', name]);
+  }
+
+  @Delete('/branch/remote')
+  public async deleteRemoteBranch(
+    @Headers() headers: PathHeaders,
+    @Body() { name }: { name: string },
+  ): Promise<void> {
+    const branchName = name.startsWith('origin/')
+      ? name.slice('origin/'.length)
+      : name;
+
+    await git(headers).push(['origin', '--delete', branchName]);
   }
 
   @Get('/status')

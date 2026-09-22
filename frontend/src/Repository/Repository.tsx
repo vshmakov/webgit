@@ -10,6 +10,7 @@ import { EmptyCallback } from "../Util/EmptyCallback"
 import { RepositoryProps } from "./RepositoryProps"
 import { getRepositoryName } from "./GetRepositoryName"
 import { setIntervalEffect } from "../Util/SetIntervalEffect"
+import { Hidden } from "../Flag/Hidden"
 import { Tags } from "../Tag/Tags"
 import { RepositorySettings } from "./RepositorySettings"
 
@@ -44,6 +45,47 @@ export const Repository = observer(
         </header>
         <RepositorySettings repository={repository} />
         <Branches repository={repository} />
+        <Hidden
+          label="Remote branches"
+          flag={repository.showRemoteBranches}
+          onOpen={repository.loadRemoteBranches.bind(repository)}
+        >
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Remote branch</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {repository.remoteBranches.map(
+                  (branch: string): ReactElement => (
+                    <tr key={branch}>
+                      <td>{branch}</td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={(): void => {
+                            if (
+                              window.confirm(
+                                `Delete remote branch "${branch}"? This action cannot be undone.`
+                              )
+                            ) {
+                              withSound(repository.deleteRemoteBranch(branch))
+                            }
+                          }}
+                        >
+                          Remove branch
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Hidden>
         <Tags repository={repository} />
         <Commit repository={repository} />
         <Files repository={repository} />

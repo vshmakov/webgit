@@ -88,6 +88,8 @@ export class RepositoryState {
   public readonly openCommitSettings = new InMemoryFlag(false)
   public readonly showHistory = new InMemoryFlag(false)
   public readonly showTags = new InMemoryFlag(false)
+  public readonly showRemoteBranches = new InMemoryFlag(false)
+  public remoteBranches: string[] = []
   public tags: TagsState | null = null
   public newTagName: string = ""
   public readonly allowEmptyCommit = new BlockableFlag(
@@ -170,6 +172,20 @@ export class RepositoryState {
   public async deleteTag(name: string): Promise<void> {
     await this.request(Method.Delete, "/tag", { name: name })
     await this.loadTags()
+  }
+
+  public async deleteRemoteBranch(branch: string): Promise<void> {
+    const name = branch.startsWith("origin/")
+      ? branch.slice("origin/".length)
+      : branch
+
+    await this.request(Method.Delete, "/branch/remote", { name: name })
+    await this.loadRemoteBranches()
+  }
+
+  public async loadRemoteBranches(): Promise<void> {
+    const response = await this.request(Method.Get, "/branches/remote")
+    this.remoteBranches = (await response.json()) as string[]
   }
 
   public async loadMoreCommitHistory(): Promise<void> {
