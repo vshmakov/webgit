@@ -13,7 +13,6 @@ import { CheckoutRadio } from "./CheckoutRadio"
 import { RepositoryProps } from "../Repository/RepositoryProps"
 import { withSound } from "../Util/WithSound"
 import { isCurrent } from "./IsCurrent"
-import { isPrevious } from "./IsPrevious"
 import { RebaseWithTrackingButton } from "./RebaseWithTrackingButton"
 import { RebaseCurrentWithBranch } from "./RebaseCurrentWithBranch"
 
@@ -23,12 +22,13 @@ export const Branch = observer(
     index,
     repository
   }: BranchProps & IndexProps & RepositoryProps): ReactElement => {
-    const { status, branches } = repository
+    const { status } = repository
     const url = repository.remoteState.getCreatePullRequestUrl(branch)
     const [showActions, setShowActions] = useState(false)
+    const canModifyAnotherBranch = !isCurrent(branch, status)
     const hasMoreActions =
       (isCurrent(branch, status) && null !== url) ||
-      isPrevious(branch, branches) ||
+      canModifyAnotherBranch ||
       canMergeTracking(branch, status)
 
     return (
@@ -45,6 +45,15 @@ export const Branch = observer(
           {" " + getTracking(branch, status)}
         </td>
         <td>
+          {canPush(branch, status) ? (
+            <PushButton repository={repository} />
+          ) : null}
+          {canMergeTracking(branch, status) ? (
+            <>
+              <RebaseWithTrackingButton repository={repository} />
+              <MergeTrackingButton repository={repository} />
+            </>
+          ) : null}
           {hasMoreActions ? (
             <>
               <button
@@ -58,7 +67,7 @@ export const Branch = observer(
                   {isCurrent(branch, status) && null !== url ? (
                     <CreatePullRequestLink url={url} branch={branch} />
                   ) : null}
-                  {isPrevious(branch, branches)
+                  {canModifyAnotherBranch
                     ? [
                         <RebaseCurrentWithBranch
                           branch={branch}
@@ -70,32 +79,25 @@ export const Branch = observer(
                         />
                       ]
                     : null}
-                  {canMergeTracking(branch, status)
-                    ? [
-                        <RebaseWithTrackingButton repository={repository} />,
-                        <MergeTrackingButton repository={repository} />
-                      ]
-                    : null}
-                  <button
-                    type="button"
-                    onClick={(): void => {
-                      if (
-                        window.confirm(
-                          `Delete branch "${branch.name}"? This action cannot be undone.`
-                        )
-                      ) {
-                        withSound(repository.deleteBranch(branch.name))
-                      }
-                    }}
-                  >
-                    Delete branch
-                  </button>
+                  {canModifyAnotherBranch ? (
+                    <button
+                      type="button"
+                      onClick={(): void => {
+                        if (
+                          window.confirm(
+                            `Delete branch "${branch.name}"? This action cannot be undone.`
+                          )
+                        ) {
+                          withSound(repository.deleteBranch(branch.name))
+                        }
+                      }}
+                    >
+                      Delete branch
+                    </button>
+                  ) : null}
                 </>
               ) : null}
             </>
-          ) : null}
-          {canPush(branch, status) ? (
-            <PushButton repository={repository} />
           ) : null}
         </td>
       </tr>
