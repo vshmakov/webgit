@@ -42,8 +42,8 @@ export const Repository = observer(
           </div>
         </header>
         <Branches repository={repository} />
-        <Commit repository={repository} />
         <Tags repository={repository} />
+        <Commit repository={repository} />
         <Files repository={repository} />
       </div>
     )
