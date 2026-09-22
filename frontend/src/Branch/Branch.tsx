@@ -25,6 +25,10 @@ export const Branch = observer(
     const { status, branches } = repository
     const url = repository.remoteState.getCreatePullRequestUrl(branch)
     const [showActions, setShowActions] = useState(false)
+    const hasMoreActions =
+      (isCurrent(branch, status) && null !== url) ||
+      isPrevious(branch, branches) ||
+      canMergeTracking(branch, status)
 
     return (
       <tr>
@@ -40,39 +44,43 @@ export const Branch = observer(
           {" " + getTracking(branch, status)}
         </td>
         <td>
-          <button
-            type="button"
-            onClick={(): void => setShowActions(!showActions)}
-          >
-            {showActions ? "Hide actions" : "Actions"}
-          </button>
-          {showActions ? (
+          {hasMoreActions ? (
             <>
-              {isCurrent(branch, status) && null !== url ? (
-                <CreatePullRequestLink url={url} branch={branch} />
-              ) : null}
-              {isPrevious(branch, branches)
-                ? [
-                    <RebaseCurrentWithBranch
-                      branch={branch}
-                      repository={repository}
-                    />,
-                    <MergeBranchIntoCurrentButton
-                      branch={branch}
-                      repository={repository}
-                    />
-                  ]
-                : null}
-              {canMergeTracking(branch, status)
-                ? [
-                    <RebaseWithTrackingButton repository={repository} />,
-                    <MergeTrackingButton repository={repository} />
-                  ]
-                : null}
-              {canPush(branch, status) ? (
-                <PushButton repository={repository} />
+              <button
+                type="button"
+                onClick={(): void => setShowActions(!showActions)}
+              >
+                {showActions ? "Hide actions" : "More actions"}
+              </button>
+              {showActions ? (
+                <>
+                  {isCurrent(branch, status) && null !== url ? (
+                    <CreatePullRequestLink url={url} branch={branch} />
+                  ) : null}
+                  {isPrevious(branch, branches)
+                    ? [
+                        <RebaseCurrentWithBranch
+                          branch={branch}
+                          repository={repository}
+                        />,
+                        <MergeBranchIntoCurrentButton
+                          branch={branch}
+                          repository={repository}
+                        />
+                      ]
+                    : null}
+                  {canMergeTracking(branch, status)
+                    ? [
+                        <RebaseWithTrackingButton repository={repository} />,
+                        <MergeTrackingButton repository={repository} />
+                      ]
+                    : null}
+                </>
               ) : null}
             </>
+          ) : null}
+          {canPush(branch, status) ? (
+            <PushButton repository={repository} />
           ) : null}
         </td>
       </tr>
