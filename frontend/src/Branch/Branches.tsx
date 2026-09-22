@@ -4,7 +4,6 @@ import { Hidden } from "../Flag/Hidden"
 import { preventDefault } from "../Util/PreventDefault"
 import { withSound } from "../Util/WithSound"
 import { BranchSummaryBranch } from "simple-git"
-import { Checkbox } from "../Flag/Checkbox"
 import { Branch } from "./Branch"
 import { setInputValue } from "../Util/SetInputValue"
 import { RepositoryProps } from "../Repository/RepositoryProps"
@@ -27,11 +26,6 @@ export const Branches = observer(
       <div>
         <h3>Branches</h3>
         <form>
-          <Checkbox
-            label={`Show hidden (${branches.hidden.length})`}
-            flag={branches.showHidden}
-            key={JSON.stringify(branches.hidden)}
-          />
           <table>
             <thead>
               <tr>

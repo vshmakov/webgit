@@ -11,6 +11,7 @@ import { RepositoryProps } from "./RepositoryProps"
 import { getRepositoryName } from "./GetRepositoryName"
 import { setIntervalEffect } from "../Util/SetIntervalEffect"
 import { Tags } from "../Tag/Tags"
+import { RepositorySettings } from "./RepositorySettings"
 
 export const Repository = observer(
   ({ repository }: RepositoryProps): ReactElement => {
@@ -41,6 +42,7 @@ export const Repository = observer(
             </button>
           </div>
         </header>
+        <RepositorySettings repository={repository} />
         <Branches repository={repository} />
         <Tags repository={repository} />
         <Commit repository={repository} />

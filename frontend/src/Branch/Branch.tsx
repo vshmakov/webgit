@@ -1,7 +1,5 @@
 import { observer } from "mobx-react"
-import { ReactElement } from "react"
-import { isCurrent } from "./IsCurrent"
-import { HideButton } from "./HideButton"
+import { ReactElement, useState } from "react"
 import { MergeBranchIntoCurrentButton } from "./MergeBranchIntoCurrentButton"
 import { getTracking } from "./GetTracking"
 import { BranchProps } from "./BranchProps"
@@ -13,6 +11,7 @@ import { CreatePullRequestLink } from "./CreatePullRequestLink"
 import { IndexProps } from "./IndexProps"
 import { CheckoutRadio } from "./CheckoutRadio"
 import { RepositoryProps } from "../Repository/RepositoryProps"
+import { isCurrent } from "./IsCurrent"
 import { isPrevious } from "./IsPrevious"
 import { RebaseWithTrackingButton } from "./RebaseWithTrackingButton"
 import { RebaseCurrentWithBranch } from "./RebaseCurrentWithBranch"
@@ -25,6 +24,7 @@ export const Branch = observer(
   }: BranchProps & IndexProps & RepositoryProps): ReactElement => {
     const { status, branches } = repository
     const url = repository.remoteState.getCreatePullRequestUrl(branch)
+    const [showActions, setShowActions] = useState(false)
 
     return (
       <tr>
@@ -40,34 +40,39 @@ export const Branch = observer(
           {" " + getTracking(branch, status)}
         </td>
         <td>
-          {isCurrent(branch, status) &&
-          null !== url &&
-          branches.showHidden.isChecked ? (
-            <CreatePullRequestLink url={url} branch={branch} />
-          ) : null}
-          {branches.showHidden.isChecked ? (
-            <HideButton branch={branch} repository={repository} />
-          ) : null}
-          {isPrevious(branch, branches)
-            ? [
-                <RebaseCurrentWithBranch
-                  branch={branch}
-                  repository={repository}
-                />,
-                <MergeBranchIntoCurrentButton
-                  branch={branch}
-                  repository={repository}
-                />
-              ]
-            : null}
-          {canMergeTracking(branch, status)
-            ? [
-                <RebaseWithTrackingButton repository={repository} />,
-                <MergeTrackingButton repository={repository} />
-              ]
-            : null}
-          {canPush(branch, status) ? (
-            <PushButton repository={repository} />
+          <button
+            type="button"
+            onClick={(): void => setShowActions(!showActions)}
+          >
+            {showActions ? "Hide actions" : "Actions"}
+          </button>
+          {showActions ? (
+            <>
+              {isCurrent(branch, status) && null !== url ? (
+                <CreatePullRequestLink url={url} branch={branch} />
+              ) : null}
+              {isPrevious(branch, branches)
+                ? [
+                    <RebaseCurrentWithBranch
+                      branch={branch}
+                      repository={repository}
+                    />,
+                    <MergeBranchIntoCurrentButton
+                      branch={branch}
+                      repository={repository}
+                    />
+                  ]
+                : null}
+              {canMergeTracking(branch, status)
+                ? [
+                    <RebaseWithTrackingButton repository={repository} />,
+                    <MergeTrackingButton repository={repository} />
+                  ]
+                : null}
+              {canPush(branch, status) ? (
+                <PushButton repository={repository} />
+              ) : null}
+            </>
           ) : null}
         </td>
       </tr>
