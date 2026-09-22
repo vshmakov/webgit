@@ -1,5 +1,5 @@
 import { observer } from "mobx-react"
-import { ReactElement } from "react"
+import { ReactElement, useState } from "react"
 import { Hidden } from "../Flag/Hidden"
 import { preventDefault } from "../Util/PreventDefault"
 import { withSound } from "../Util/WithSound"
@@ -11,7 +11,11 @@ import { RepositoryProps } from "../Repository/RepositoryProps"
 export const Branches = observer(
   ({ repository }: RepositoryProps): ReactElement => {
     const { branches } = repository
-    const rows = branches.sorted.map(
+    const [showAll, setShowAll] = useState(false)
+    const visibleBranches = showAll
+      ? branches.sorted
+      : branches.sorted.slice(0, 10)
+    const rows = visibleBranches.map(
       (branch: BranchSummaryBranch, index: number): ReactElement => (
         <Branch
           branch={branch}
@@ -36,6 +40,16 @@ export const Branches = observer(
             </thead>
             <tbody>{rows}</tbody>
           </table>
+          {!showAll && branches.sorted.length > 10 ? (
+            <button type="button" onClick={(): void => setShowAll(true)}>
+              Show more
+            </button>
+          ) : null}
+          {showAll && branches.sorted.length > 10 ? (
+            <button type="button" onClick={(): void => setShowAll(false)}>
+              Show less
+            </button>
+          ) : null}
         </form>
         <Hidden label="Create" flag={repository.isBranchCreation}>
           <form
