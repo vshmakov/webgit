@@ -11,6 +11,7 @@ import { CreatePullRequestLink } from "./CreatePullRequestLink"
 import { IndexProps } from "./IndexProps"
 import { CheckoutRadio } from "./CheckoutRadio"
 import { RepositoryProps } from "../Repository/RepositoryProps"
+import { withSound } from "../Util/WithSound"
 import { isCurrent } from "./IsCurrent"
 import { isPrevious } from "./IsPrevious"
 import { RebaseWithTrackingButton } from "./RebaseWithTrackingButton"
@@ -75,6 +76,20 @@ export const Branch = observer(
                         <MergeTrackingButton repository={repository} />
                       ]
                     : null}
+                  <button
+                    type="button"
+                    onClick={(): void => {
+                      if (
+                        window.confirm(
+                          `Delete branch "${branch.name}"? This action cannot be undone.`
+                        )
+                      ) {
+                        withSound(repository.deleteBranch(branch.name))
+                      }
+                    }}
+                  >
+                    Delete branch
+                  </button>
                 </>
               ) : null}
             </>

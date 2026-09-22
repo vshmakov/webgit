@@ -268,6 +268,14 @@ export class AppController {
     await git(headers).checkoutLocalBranch(name);
   }
 
+  @Delete('/branch')
+  public async deleteBranch(
+    @Headers() headers: PathHeaders,
+    @Body() { name }: { name: string },
+  ): Promise<void> {
+    await git(headers).branch(['-D', name]);
+  }
+
   @Get('/status')
   public async status(@Headers() headers: PathHeaders): Promise<StatusResult> {
     const path = getPath(headers);

@@ -440,6 +440,11 @@ export class RepositoryState {
     this.cleanBranchCreation()
   }
 
+  public async deleteBranch(name: string): Promise<void> {
+    await this.request(Method.Delete, "/branch", { name: name })
+    await this.loadBranches()
+  }
+
   private cleanBranchCreation() {
     this.newBranchName = ""
     disable(this.isBranchCreation)
